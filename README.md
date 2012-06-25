@@ -1,4 +1,4 @@
-unixkcd
+textmode
 =========
 
 An interactive web textmode game using Javascript, making use of the base code of [unixkcd](https://github.com/chromakode/xkcdfools), but removing most code which aren't needed for the game (and adding a lot of other code).
