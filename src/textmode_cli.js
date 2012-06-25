@@ -75,7 +75,7 @@ function linkFile(url) {
 
 Filesystem = {
 	'info.txt': {type:'file', read:function(terminal) {
-		terminal.print('Welcome to [GameName]');
+		terminal.print('Welcome to Textmode');
 		terminal.print($('<p>').html('Programmed and storyboard by <a href="https://github.com/TheLastProject">TheLastProject</a>'));
 		terminal.print($('<p>').html('Using the <a href="https://github.com/chromakode/xkcdfools">xkcdfools</a> codebase.'));
 		terminal.print($('<p>').html('Source code is available on <a href="https://github.com/TheLastProject/textmode">github</a>.'));
@@ -542,7 +542,7 @@ $(document).ready(function() {
 				$('#screen').one('cli-ready', function(e) {
 					<!-- Terminal.runCommand('cat welcome.txt'); -->
 				});
-					Terminal.print('Welcome to [GameName]');
+					Terminal.print('Welcome to Textmode');
 					Terminal.print($('<p>').html('Programmed and storyboard by <a href="https://github.com/TheLastProject">TheLastProject</a>'));
 					Terminal.print($('<p>').html('Based on the <a href="https://github.com/chromakode/xkcdfools">xkcdfools</a> codebase.'));
 					Terminal.print($('<p>').html('Source code is available on <a href="https://github.com/TheLastProject/textmode">github</a>.'));
