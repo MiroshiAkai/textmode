@@ -76,10 +76,9 @@ function linkFile(url) {
 Filesystem = {
 	'info.txt': {type:'file', read:function(terminal) {
 		terminal.print('Welcome to [GameName]');
-		terminal.print('Idea by Kolosos666');
 		terminal.print($('<p>').html('Programmed and storyboard by <a href="https://github.com/TheLastProject">TheLastProject</a>'));
 		terminal.print($('<p>').html('Using the <a href="https://github.com/chromakode/xkcdfools">xkcdfools</a> codebase.'));
-		terminal.print($('<p>').html('Source code will soon be available.'));
+		terminal.print($('<p>').html('Source code is available on <a href="https://github.com/TheLastProject/textmode">github</a>.'));
 		terminal.print('');
 	}},
 	'license.txt': {type:'file', read:function(terminal) {
@@ -546,7 +545,7 @@ $(document).ready(function() {
 					Terminal.print('Welcome to [GameName]');
 					Terminal.print($('<p>').html('Programmed and storyboard by <a href="https://github.com/TheLastProject">TheLastProject</a>'));
 					Terminal.print($('<p>').html('Based on the <a href="https://github.com/chromakode/xkcdfools">xkcdfools</a> codebase.'));
-					Terminal.print($('<p>').html('Source code will soon be available.'));
+					Terminal.print($('<p>').html('Source code is available on <a href="https://github.com/TheLastProject/textmode">github</a>.'));
 					Terminal.print('');
 					Terminal.print('Type "help" for instructions on how to play.');
 					Terminal.print('');
