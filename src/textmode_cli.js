@@ -35,45 +35,6 @@ function readCookie(name) {
 	return null;
 }
 
-function linkFile(url) {
-	return {type:'dir', enter:function() {
-		window.location = url;
-	}};
-}
-
-Filesystem = {
-	'info.txt': {type:'file', read:function(terminal) {
-		terminal.print('Welcome to Textmode');
-		terminal.print($('<p>').html('Programmed and storyboard by <a href="https://github.com/TheLastProject">TheLastProject</a>'));
-		terminal.print($('<p>').html('Using the <a href="https://github.com/chromakode/xkcdfools">xkcdfools</a> codebase.'));
-		terminal.print($('<p>').html('Source code is available on <a href="https://github.com/TheLastProject/textmode">github</a>.'));
-		terminal.print('');
-	}},
-	'license.txt': {type:'file', read:function(terminal) {
-		terminal.print($('<p>').html('Client-side logic for Wordpress CLI theme :: <a href="http://thrind.xamai.ca/">R. McFarland, 2006, 2007, 2008</a>'));
-		terminal.print($('<p>').html('jQuery rewrite and overhaul :: <a href="http://www.chromakode.com/">Chromakode, 2010</a>'));
-		terminal.print();
-		$.each([
-			'This program is free software; you can redistribute it and/or',
-			'modify it under the terms of the GNU General Public License',
-			'as published by the Free Software Foundation; either version 2',
-			'of the License, or (at your option) any later version.',
-			'',
-			'This program is distributed in the hope that it will be useful,',
-			'but WITHOUT ANY WARRANTY; without even the implied warranty of',
-			'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the',
-			'GNU General Public License for more details.',
-			'',
-			'You should have received a copy of the GNU General Public License',
-			'along with this program; if not, write to the Free Software',
-			'Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.'
-		], function(num, line) {
-			terminal.print(line);
-		});
-	}}
-};
-TerminalShell.pwd = Filesystem;
-
 // Indexing variables like a gentleman
 time=3
 if (time > 12) {
@@ -585,7 +546,6 @@ $(document).ready(function() {
 	}
 	$('#screen').bind('cli-load', function(e) {
 		$('#screen').one('cli-ready', function(e) {
-			<!-- Terminal.runCommand('cat welcome.txt'); -->
 		});
 			currentlocation=0
 			Terminal.print('Welcome to Textmode');
