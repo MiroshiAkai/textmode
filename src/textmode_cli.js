@@ -563,7 +563,7 @@ $(document).ready(function() {
 					Terminal.print('Type "help" for instructions on how to play.');
 					Terminal.print('');
 					loadinfo = readCookie('omnisavefile');
-					if (loadinfo >= 1) {
+					if (loadinfo != null) {
 						menu="savefiledetected"
 						Terminal.print('A save file has been detected. Would you like to load it? (yes/no)');
 					} else {
