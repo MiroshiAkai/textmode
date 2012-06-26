@@ -50,6 +50,7 @@ time_installed=false
 savestatus=0
 menu=false
 autosave=false
+silent_move=false
 
 Adventure = {
 	rooms: {
@@ -91,8 +92,40 @@ Adventure = {
 				} else {
 					terminal.setWorking(true);
 					Terminal.print('Connecting to the secure shell...');
-					setTimeout("Terminal.setWorking(false);", 2000);
-					setTimeout("Terminal.print('Connected succesfully. Ready to execute commands');", 2000);
+					setTimeout("Terminal.print('Connected succesfully.');", 2000);
+					if (!time_installed) {
+						setTimeout("Terminal.print('')", 3000);
+						setTimeout("Terminal.print('****************************************************');", 3000);
+						setTimeout("Terminal.print('Please be sure to read the installation instructions');", 3000);
+						setTimeout("Terminal.print('before proceeding with the configuration procedure!');", 3000);
+						setTimeout("Terminal.print('****************************************************');", 3000);
+						if (!timeService) {
+							duration=1500
+							setTimeout("Terminal.print('Makefile:34: *** timeService is undefined.  Stop.');", 3*duration);
+							setTimeout("Terminal.setWorking(false);",3*duration);
+						} else {
+							if (timeService == "valuewewant") {
+								duration=1500
+								setTimeout("Terminal.print('cd build.AMD/perlx-5.14.0-i686-linux-thread-multi; TOP=/home/omni/Desktop/time-2.9.9 /usr/bin/perl /home/omni/Desktop/time-2.9.9/perl/ext/Makefile.PL');", 3*duration);
+								setTimeout("Terminal.print('make[1]: Entering directory `/home/omni/Desktop/time-2.9.9/build.AMD/perlx-5.14.0-i686-linux-thread-multi');", 4*duration);
+								setTimeout("Terminal.print('cc -c  -I/home/omni/Desktop/time-2.9.9/lib/PTL/include -D_REENTRANT -D_GNU_SOURCE -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -march=i686 -mtune=generic -O2 -pipe   -DVERSION=\ -DXS_VERSION=\ -fPIC '-I/usr/lib/perl5/core_perl/CORE'  -DPerlVersion=5014 -Wno-nonnull CPlusPlus.c');", 5*duration);
+								setTimeout("Terminal.print('CPlusPlus.xs: In function 'XS_time__Core__CPlusPlus_create_function_wrapper':');", 6*duration);
+								setTimeout("Terminal.print('Compiled succesfully');", 8*duration);
+								setTimeout("Terminal.print('Installing Time module...');", 10*duration);
+								setTimeout("Terminal.print('Time module succesfully installed. Use start time to start it');", 13*duration);
+								setTimeout("Terminal.setWorking(false);", 13*duration);
+								time_installed=true
+								savestatus=3
+								if (autosave == true) {
+									Terminal.runCommand('save');
+								}
+							} else {
+								duration=1500
+								setTimeout("terminal.print('Makefile:34: *** timeService has an incorrect value.  Stop.');", 3*duration);
+								setTimeout("Terminal.setWorking(false);",3*duration);
+							}
+						}
+					}
 				}
 			}
 		},
@@ -110,7 +143,7 @@ Adventure = {
 			terminal.setWorking(true);
 			setTimeout("Terminal.print('You find a note and read its content.');", 2000);
 			setTimeout("Terminal.print('');", 4000);
-			setTimeout("Terminal.print('kolosos kolosos');", 4000);
+			setTimeout("Terminal.print('omni i4mY0vR90D');", 4000);
 			setTimeout("Terminal.print('');", 4000);
 			setTimeout("Terminal.print('----------------');", 4000);
 			setTimeout("Terminal.setWorking(false);", 4000);
@@ -127,6 +160,7 @@ Adventure = {
 			Adventure.location.enter(terminal);
 		}
 		Adventure.look(terminal);
+		silent_move=false
 	}
 };
 currentlocation = Adventure.location = Adventure.rooms[0];
@@ -162,33 +196,34 @@ TerminalShell.commands['restart'] = function(terminal) {
 }
 
 TerminalShell.commands['look'] = Adventure.look = function(terminal) {
-	if (currentlocation == 0) {
-		if (time_passes == false) {
-			Terminal.print('You are in an old science laboratory, with a computer and note lying down on a desk in front of you. There is a clock hanging on the concrete wall, but time doesn\'t seem to pass on it. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
+	if (silent_move == false) {
+		if (currentlocation == 0) {
+			if (time_passes == false) {
+				Terminal.print('You are in an old science laboratory, with a computer and note lying down on a desk in front of you. There is a clock hanging on the concrete wall, but time doesn\'t seem to pass on it. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
+			} else {
+				Terminal.print('You are in an old science laboratory, with a computer and note lying down on a desk in front of you. There is a clock hanging on the concrete wall, on which time passes slowly. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
+			}	
 		} else {
-			Terminal.print('You are in an old science laboratory, with a computer and note lying down on a desk in front of you. There is a clock hanging on the concrete wall, on which time passes slowly. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
-		}	
-	} else {
-		terminal.print(Adventure.location.description);	
-	}
-	if (Adventure.location.exits) {
-		terminal.print(timeinfo);
-		var possibleDirections = [];
-		$.each(Adventure.location.exits, function(name, id) {
-			possibleDirections.push(name);
-		});
-		terminal.print('Exits: '+possibleDirections.join(', '));
-		if (!menu) {
-		} else {
-			terminal.print('');
-			if (menu == "restart") {
-				terminal.print('Game wants to know if you want to restart the game (yes/no)');
-			}
-			if (menu == "autosave") {
-				terminal.print('Game wants to know if you want to enable autosave (yes/no)');
-			}
-			if (menu == "savefiledetected") {
-				terminal.print('Game wants to know if you want to load your previous savefile (yes/no)');
+			terminal.print(Adventure.location.description);	
+		}
+		if (Adventure.location.exits) {
+			terminal.print(timeinfo);
+			var possibleDirections = [];
+			$.each(Adventure.location.exits, function(name, id) {
+				possibleDirections.push(name);
+			});
+			terminal.print('Exits: '+possibleDirections.join(', '));
+			if (menu != false) {
+				terminal.print('');
+				if (menu == "restart") {
+					terminal.print('Game wants to know if you want to restart the game (yes/no)');
+				}
+				if (menu == "autosave") {
+					terminal.print('Game wants to know if you want to enable autosave (yes/no)');
+				}
+				if (menu == "savefiledetected") {
+					terminal.print('Game wants to know if you want to load your previous savefile (yes/no)');
+				}
 			}
 		}
 	}
@@ -213,8 +248,6 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 		Adventure.goTo(terminal, Adventure.location.exits[direction]);
 	} else if (!direction) {
 		terminal.print('Go where?');
-	} else if (direction == 'down') {
-		terminal.print("On our first date?");
 	} else {
 		terminal.print('You cannot go '+direction+'.');
 	}
@@ -328,11 +361,14 @@ TerminalShell.commands['inspect'] = function(terminal, object) {
 				}, 6000);
 			}
 		} else if (currentlocation == 1) {
-			if (object == "wall") {
+			if (object == "door") {
+				Terminal.print('This door leads to the laboratory');
+			} else if (object == "wall") {
 				Terminal.print('It looks like a pretty normal concrete wall.');
 			} else {
 				Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
 			}
+			
 		} else if (currentlocation == 201) {
 			if (object == "door") {
 				if (time>=7 && time<=17) {
@@ -411,17 +447,18 @@ TerminalShell.commands['login'] = function(terminal, username, password) {
 			if (!username) {
 				terminal.print('Usage: login username password');
 			} else {
-				if (username == 'kolosos') {
+				if (username == 'omni') {
 					if (!password) {
 						terminal.print('You must enter a password!');
 					} else {
-						if (password == 'kolosos') {
+						if (password == 'i4mY0vR90D') {
 							logged_in=true
 							terminal.print('You have logged in succesfully.');
 							savestatus=1
 							if (autosave == true) {
 								Terminal.runCommand('save');
 							}
+							silent_move=true
 							Adventure.goTo(terminal, 10000);
 						} else {
 							terminal.print('Incorrect password.');
@@ -434,58 +471,6 @@ TerminalShell.commands['login'] = function(terminal, username, password) {
 		}
 	}
 }
-
-TerminalShell.commands['make'] = function(terminal) {
-	if (!using_computer) {
-		terminal.print('Unrecognized command. Type "help" for assistance.');
-	} else {
-		if (!logged_in) {
-			terminal.print('Please login first!');
-		} else {
-			if (!timeService) {
-				duration=400
-				terminal.setWorking(true);
-				terminal.print('****************************************************');
-				terminal.print('Please be sure to read the installation instructions');
-				terminal.print('before proceeding with the configuration procedure!');
-				terminal.print('****************************************************');
-				setTimeout("Terminal.print('Makefile:34: *** timeService is undefined.  Stop.');", 3*duration);
-				setTimeout("Terminal.setWorking(false);",3*duration);
-			} else {
-				if (timeService == "valuewewant") {
-					duration=400
-					terminal.setWorking(true);
-					terminal.print('****************************************************');
-					terminal.print('Please be sure to read the installation instructions');
-					terminal.print('before proceeding with the configuration procedure!');
-					terminal.print('****************************************************');
-					setTimeout("Terminal.print('cd build.AMD/perlx-5.14.0-i686-linux-thread-multi; TOP=/home/omni/Desktop/time-2.9.9 /usr/bin/perl /home/omni/Desktop/time-2.9.9/perl/ext/Makefile.PL');", 3*duration);
-					setTimeout("Terminal.print('make[1]: Entering directory `/home/omni/Desktop/time-2.9.9/build.AMD/perlx-5.14.0-i686-linux-thread-multi');", 4*duration);
-					setTimeout("Terminal.print('cc -c  -I/home/omni/Desktop/time-2.9.9/lib/PTL/include -D_REENTRANT -D_GNU_SOURCE -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -march=i686 -mtune=generic -O2 -pipe   -DVERSION=\ -DXS_VERSION=\ -fPIC '-I/usr/lib/perl5/core_perl/CORE'  -DPerlVersion=5014 -Wno-nonnull CPlusPlus.c');", 5*duration);
-					setTimeout("Terminal.print('CPlusPlus.xs: In function 'XS_time__Core__CPlusPlus_create_function_wrapper':');", 6*duration);
-					setTimeout("Terminal.print('Compiled succesfully');", 10*duration);
-					setTimeout("Terminal.print('Installing Time module...');", 12*duration);
-					setTimeout("Terminal.print('Time module succesfully installed. Use start time to start it');", 15*duration);
-					setTimeout("Terminal.setWorking(false);", 15*duration);
-					time_installed=true
-					savestatus=3
-					if (autosave == true) {
-						Terminal.runCommand('save');
-					}
-				} else {
-					duration=400
-					terminal.setWorking(true);
-					terminal.print('****************************************************');
-					terminal.print('Please be sure to read the installation instructions');
-					terminal.print('before proceeding with the configuration procedure!');
-					terminal.print('****************************************************');
-					setTimeout("terminal.print('Makefile:34: *** timeService has an incorrect value.  Stop.');", 3*duration);
-					setTimeout("Terminal.setWorking(false);",3*duration);
-				}
-			}
-		}
-	}
-};
 
 TerminalShell.commands['start'] = function(terminal, program) {
 	if (!using_computer) {
