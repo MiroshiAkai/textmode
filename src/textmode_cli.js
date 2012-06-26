@@ -233,7 +233,15 @@ TerminalShell.commands['restart'] = function(terminal) {
 }
 
 TerminalShell.commands['look'] = Adventure.look = function(terminal) {
-	terminal.print(Adventure.location.description);	
+	if (currentlocation == 0) {
+		if (time_passes == false) {
+			Terminal.print('You are in an old science laboratory, with a computer and note lying down on a desk in front of you. There is a clock hanging on the concrete wall, but time doesn\'t seem to pass on it. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
+		} else {
+			Terminal.print('You are in an old science laboratory, with a computer and note lying down on a desk in front of you. There is a clock hanging on the concrete wall, on which time passes slowly. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
+		}	
+	} else {
+		terminal.print(Adventure.location.description);	
+	}
 	if (Adventure.location.exits) {
 		terminal.print(timeinfo);
 		var possibleDirections = [];
@@ -351,54 +359,58 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 };
 
 TerminalShell.commands['inspect'] = function(terminal, object) {
-	if (currentlocation == 0) {
-		if (!object) {
-			if (time_passes == false) {
-				Terminal.print('You are in an old science laboratory. There is a clock hanging on the concrete wall, but time doesn\'t seem to pass on it. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
-			} else {
-				Terminal.print('You are in an old science laboratory. There is a clock hanging on the concrete wall, on which time passes slowly. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
-			}
-		} else if (object == "computer") {
-			Terminal.print('It is an old computer, probably from around the 70s. It seems to be running Unix.');
-		} else if (object == "desk") {
-			Terminal.print('It is just a wooden desk.');
-		} else if (object == "drawer") {
-			Terminal.print('The drawer is made of wood, and seems slightly damaged due to old age, from the looks of it. It appears to be openable.');
-		} else if (object == "note") {
-			Terminal.print('It\'s a yellow sticky note, nothing remarkable, really.');
-		} else if (object == "spot") {
-			Terminal.print('You walk towards the wet spot on the floor and sit down next to it. Upon inspecting it, you inhale a gas without smell coming from it and temporarily lose consciousness...');
-			duration=2
-			$('#screen').fadeOut(4000);
-			window.setTimeout(function() {
-				terminal.setWorking(false);
-				$('#screen').fadeIn();
-				if (time_passes == true) {
-					time=time+(duration)
-					if (time >= 24) {
-						time=(time-24)
-					}
-					if (time > 12) {
-						timeinfo='\nIt is now '+(time-12)+':00PM';
-					} else {
-						timeinfo='\nIt is now '+time+':00AM.';
-					}
+	if (!object) {
+		Terminal.print('Inspect what?');
+	} else {
+		if (currentlocation == 0) {
+			if (object == "computer") {
+				Terminal.print('It is an old computer, probably from around the 70s. It seems to be running Unix.');
+			} else if (object == "clock") {
+				if (time_passes == false) {
+					Terminal.print('The hands of the clock don\'t move, but the clock doesn\'t look like it is broken.'+timeinfo);
+				} else {
+					Terminal.print('You look at the clock.'+timeinfo);
 				}
-					terminal.print(timeinfo);
-			}, 6000);
-		}
-	} else if (currentlocation == 201) {
-		if (object == "door") {
-			if (time>=7 && time<=17) {
-				Terminal.print('The door is slightly rusty, due to the old age. Upon inspecting the door and the lock, you come to the conclusion the door is open.');
+			} else if (object == "desk") {
+				Terminal.print('It is just a wooden desk.');
+			} else if (object == "drawer") {
+				Terminal.print('The drawer is made of wood, and seems slightly damaged due to old age, from the looks of it. It appears to be openable.');
+			} else if (object == "note") {
+				Terminal.print('It\'s a yellow sticky note, nothing remarkable, really.');
+			} else if (object == "spot") {
+				Terminal.print('You walk towards the wet spot on the floor and sit down next to it. Upon inspecting it, you inhale a gas without smell coming from it and temporarily lose consciousness...');
+				duration=2
+				$('#screen').fadeOut(4000);
+				window.setTimeout(function() {
+					terminal.setWorking(false);
+					$('#screen').fadeIn();
+					if (time_passes == true) {
+						time=time+(duration)
+						if (time >= 24) {
+							time=(time-24)
+						}
+						if (time > 12) {
+							timeinfo='\nIt is now '+(time-12)+':00PM';
+						} else {
+							timeinfo='\nIt is now '+time+':00AM.';
+						}
+					}
+						terminal.print(timeinfo);
+				}, 6000);
+			}
+		} else if (currentlocation == 201) {
+			if (object == "door") {
+				if (time>=7 && time<=17) {
+					Terminal.print('The door is slightly rusty, due to the old age. Upon inspecting the door and the lock, you come to the conclusion the door is open.');
+				} else {
+					Terminal.print('The door is slightly rusty, due to the old age. Upon inspecting the door and the lock, you come to the conclusion the door is closed.');
+				}
 			} else {
-				Terminal.print('The door is slightly rusty, due to the old age. Upon inspecting the door and the lock, you come to the conclusion the door is closed.');
+				Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
 			}
 		} else {
 			Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
 		}
-	} else {
-		Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
 	}
 };
 
@@ -592,6 +604,7 @@ TerminalShell.commands['stop'] = function(terminal, program) {
 TerminalShell.commands['help'] = TerminalShell.commands['halp'] = function(terminal) {
 	terminal.print('Type "go" to go to a direction. For example, "go west" to go west.');
 	terminal.print('Type "look" to look around the environment.');
+	terminal.print('Type "inspect" to inspect an object.');
 	terminal.print('Type "use" to use an object in the room. For example, type "use computer" to use a computer in the room. The "use" command is used for all kinds of interaction, so if you want to read a book write "use book" to do so.');
 	terminal.print('To stop using an object, type "back", "go back" or "exit".');
 }; 
