@@ -35,38 +35,6 @@ function readCookie(name) {
 	return null;
 }
 
-var xkcd = {
-	latest: null,
-	last: null,
-	cache: {},
-	base: 'http://dynamic.xkcd.com/api-0/jsonp/comic/',
-	
-	get: function(num, success, error) {
-		if (num == null) {
-			path = '';
-		} else if (Number(num)) {
-			path = String(num);
-		} else {
-			error(false);
-			return false;
-		}
-		
-		if (num in this.cache) {
-			this.last = this.cache[num];
-			success(this.cache[num]);
-		} else {
-			return $.ajax({
-				url: this.base+path,
-				dataType: 'jsonp',
-				success: $.proxy(function(data) {
-					this.last = this.cache[num] = data;
-					success(data);
-				}, this),
-				error: error});
-		}
-	}
-};
-
 function linkFile(url) {
 	return {type:'dir', enter:function() {
 		window.location = url;
@@ -616,30 +584,23 @@ $(document).ready(function() {
 		Terminal.promptActive = true;
 	}
 	$('#screen').bind('cli-load', function(e) {
-		xkcd.get(null, function(data) {
-			if (data) {
-				xkcd.latest = data;
-				$('#screen').one('cli-ready', function(e) {
-					<!-- Terminal.runCommand('cat welcome.txt'); -->
-				});
-					currentlocation=0
-					Terminal.print('Welcome to Textmode');
-					Terminal.print($('<p>').html('Programmed and storyboard by <a href="https://github.com/TheLastProject">TheLastProject</a>'));
-					Terminal.print($('<p>').html('Based on the <a href="https://github.com/chromakode/xkcdfools">xkcdfools</a> codebase.'));
-					Terminal.print($('<p>').html('Source code is available on <a href="https://github.com/TheLastProject/textmode">github</a>.'));
-					Terminal.print('');
-					Terminal.print('Type "help" for instructions on how to play.');
-					Terminal.print('');
-					loadinfo = readCookie('omnisavefile');
-					if (loadinfo != null) {
-						menu="savefiledetected"
-					} else {
-					menu="autosave"
-					}
-					Terminal.runCommand('look');
+		$('#screen').one('cli-ready', function(e) {
+			<!-- Terminal.runCommand('cat welcome.txt'); -->
+		});
+			currentlocation=0
+			Terminal.print('Welcome to Textmode');
+			Terminal.print($('<p>').html('Programmed and storyboard by <a href="https://github.com/TheLastProject">TheLastProject</a>'));
+			Terminal.print($('<p>').html('Based on the <a href="https://github.com/chromakode/xkcdfools">xkcdfools</a> codebase.'));
+			Terminal.print($('<p>').html('Source code is available on <a href="https://github.com/TheLastProject/textmode">github</a>.'));
+			Terminal.print('');
+			Terminal.print('Type "help" for instructions on how to play.');
+			Terminal.print('');
+			loadinfo = readCookie('omnisavefile');
+			if (loadinfo != null) {
+				menu="savefiledetected"
 			} else {
-				noData();
+			menu="autosave"
 			}
+			Terminal.runCommand('look');
 		}, noData);
-	});
 });
