@@ -121,11 +121,10 @@ time_installed=false
 savestatus=0
 menu=false
 autosave=false
-currentlocation=0
 
 Adventure = {
 	rooms: {
-		0:{description:'You are sitting behind a desk in a science laboratory. The desk has multiple drawers. In front of you you have a computer and a note lying next to it.', exits:{west:1}, objects:{computer:10000, note:10001, drawer:10002, drawers:10002}, location:0, enter:function(terminal) {
+		0:{description:'You are sitting behind a desk in a science laboratory. The desk has a single drawer. In front of you you have a computer and a note lying next to it.', exits:{west:1}, objects:{computer:10000, note:10001, drawer:10002}, location:0, enter:function(terminal) {
 				currentlocation=0
 				using_computer=false
 		}},
@@ -351,6 +350,59 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 	}
 };
 
+TerminalShell.commands['inspect'] = function(terminal, object) {
+	if (currentlocation == 0) {
+		if (!object) {
+			if (time_passes == false) {
+				Terminal.print('You are in an old science laboratory. There is a clock hanging on the concrete wall, but time doesn\'t seem to pass on it. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
+			} else {
+				Terminal.print('You are in an old science laboratory. There is a clock hanging on the concrete wall, on which time passes slowly. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
+			}
+		} else if (object == "computer") {
+			Terminal.print('It is an old computer, probably from around the 70s. It seems to be running Unix.');
+		} else if (object == "desk") {
+			Terminal.print('It is just a wooden desk.');
+		} else if (object == "drawer") {
+			Terminal.print('The drawer is made of wood, and seems slightly damaged due to old age, from the looks of it. It appears to be openable.');
+		} else if (object == "note") {
+			Terminal.print('It\'s a yellow sticky note, nothing remarkable, really.');
+		} else if (object == "spot") {
+			Terminal.print('You walk towards the wet spot on the floor and sit down next to it. Upon inspecting it, you inhale a gas without smell coming from it and temporarily lose consciousness...');
+			duration=2
+			$('#screen').fadeOut(4000);
+			window.setTimeout(function() {
+				terminal.setWorking(false);
+				$('#screen').fadeIn();
+				if (time_passes == true) {
+					time=time+(duration)
+					if (time >= 24) {
+						time=(time-24)
+					}
+					if (time > 12) {
+						timeinfo='\nIt is now '+(time-12)+':00PM';
+					} else {
+						timeinfo='\nIt is now '+time+':00AM.';
+					}
+				}
+					terminal.print(timeinfo);
+			}, 6000);
+		}
+	} else if (currentlocation == 201) {
+		if (object == "door") {
+			if (time>=7 && time<=17) {
+				Terminal.print('The door is slightly rusty, due to the old age. Upon inspecting the door and the lock, you come to the conclusion the door is open.');
+			} else {
+				Terminal.print('The door is slightly rusty, due to the old age. Upon inspecting the door and the lock, you come to the conclusion the door is closed.');
+			}
+		} else {
+			Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
+		}
+	} else {
+		Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
+	}
+};
+
+
 TerminalShell.commands['set'] = function(terminal, variable, value) {
 	if (!variable) {
 		terminal.print('Usage: set variable value.');
@@ -558,6 +610,7 @@ $(document).ready(function() {
 				$('#screen').one('cli-ready', function(e) {
 					<!-- Terminal.runCommand('cat welcome.txt'); -->
 				});
+					currentlocation=0
 					Terminal.print('Welcome to Textmode');
 					Terminal.print($('<p>').html('Programmed and storyboard by <a href="https://github.com/TheLastProject">TheLastProject</a>'));
 					Terminal.print($('<p>').html('Based on the <a href="https://github.com/chromakode/xkcdfools">xkcdfools</a> codebase.'));
