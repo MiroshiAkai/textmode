@@ -57,7 +57,7 @@ Adventure = {
 				currentlocation=0
 				using_computer=false
 		}},
-		1:{description:'You are in the hallway. Excluding the door to the science laboratory, there are no doors here.', exits:{east:0, north:2, south:4}, enter:function(terminal) {
+		1:{description:'You are in the hallway. Excluding the door to the science laboratory, which is located east of you, there are no doors here.', exits:{east:0, north:2, south:4}, enter:function(terminal) {
 				currentlocation=1
 		}},
 		2:{description:'You are in the hallway, next to some stairs.', exits:{south:1, north:3, up:100, down:200}, enter:function(terminal) {
@@ -69,7 +69,7 @@ Adventure = {
 		4:{description:'There is nothing interesting here, just more classrooms.', exits:{north:1}, enter:function(terminal) {
 				currentlocation=4
 		}},
-		100:{description:'You walk up the stairs and reach for the door. Upon grabbing the door knob, you notice the door is locked.', exits:{down:2}, enter:function(terminal) {
+		100:{description:'You are at the top of the stairs. You can only go down here, or try to go through the door.', exits:{down:2}, enter:function(terminal) {
 				currentlocation=100
 		}},
 		200:{description:'You are on the ground floor.', exits:{up:2, east:201}, enter:function(terminal) {
@@ -123,10 +123,10 @@ Adventure = {
 	
 	goTo: function(terminal, id) {
 		Adventure.location = Adventure.rooms[id];
-		Adventure.look(terminal);
 		if (Adventure.location.enter) {
 			Adventure.location.enter(terminal);
 		}
+		Adventure.look(terminal);
 	}
 };
 currentlocation = Adventure.location = Adventure.rooms[0];
@@ -326,6 +326,12 @@ TerminalShell.commands['inspect'] = function(terminal, object) {
 					}
 						terminal.print(timeinfo);
 				}, 6000);
+			}
+		} else if (currentlocation == 1) {
+			if (object == "wall") {
+				Terminal.print('It looks like a pretty normal concrete wall.');
+			} else {
+				Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
 			}
 		} else if (currentlocation == 201) {
 			if (object == "door") {
@@ -531,9 +537,10 @@ TerminalShell.commands['stop'] = function(terminal, program) {
 
 // No peeking!
 TerminalShell.commands['help'] = TerminalShell.commands['halp'] = function(terminal) {
+	terminal.print('Type "yes" or "no" to answer questions given by the system.');
 	terminal.print('Type "go" to go to a direction. For example, "go west" to go west.');
 	terminal.print('Type "look" to look around the environment.');
-	terminal.print('Type "inspect" to inspect an object.');
+	terminal.print('Type "inspect" to inspect an object. For example, "inspect clock" to inspect a clock.');
 	terminal.print('Type "use" to use an object in the room. For example, type "use computer" to use a computer in the room. The "use" command is used for all kinds of interaction, so if you want to read a book write "use book" to do so.');
 	terminal.print('To stop using an object, type "back", "go back" or "exit".');
 }; 
