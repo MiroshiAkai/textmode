@@ -245,7 +245,7 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 
 TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 	if (Adventure.location.exits && direction in Adventure.location.exits) {
-		if (time_passes = true) {
+		if (time_passes == true) {
 			random_time_passing=Math.round(Math.random() * 5)
 			if (random_time_passing==5) {
 				time=time+1
