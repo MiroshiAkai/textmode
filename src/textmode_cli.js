@@ -128,7 +128,7 @@ Adventure = {
 				currentlocation=0
 				using_computer=false
 		}},
-		1:{description:'You are in the hallway, next to the computer you first saw.', exits:{east:0, north:2, south:4}, enter:function(terminal) {
+		1:{description:'You are in the hallway. Excluding the door to the science laboratory, there are no doors here.', exits:{east:0, north:2, south:4}, enter:function(terminal) {
 				currentlocation=1
 		}},
 		2:{description:'You are in the hallway, next to some stairs.', exits:{south:1, north:3, up:100, down:200}, enter:function(terminal) {
@@ -253,13 +253,13 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 		} else {
 			terminal.print('');
 			if (menu == "restart") {
-				terminal.print('Game still wants to know if you want to restart the game (yes/no)');
+				terminal.print('Game wants to know if you want to restart the game (yes/no)');
 			}
 			if (menu == "autosave") {
-				terminal.print('Game still wants to know if you want to enable autosave (yes/no)');
+				terminal.print('Game wants to know if you want to enable autosave (yes/no)');
 			}
 			if (menu == "savefiledetected") {
-				terminal.print('Game still wants to know if you want to load your previous savefile (yes/no)');
+				terminal.print('Game wants to know if you want to load your previous savefile (yes/no)');
 			}
 		}
 	}
@@ -297,7 +297,7 @@ TerminalShell.commands['exit'] = TerminalShell.commands['back'] = function(termi
 
 TerminalShell.commands['yes'] = function(terminal) {
 	if (!menu) {
-		Terminal.print('Could not find a question to answer "yes" to');
+		Terminal.print('Could not find a question to answer "yes" to.');
 	}
 	if (menu == "restart") {
 		createCookie("omnisavefile","",-1);
@@ -307,7 +307,7 @@ TerminalShell.commands['yes'] = function(terminal) {
 	}
 	if (menu == "autosave") {
 		autosave=true
-		Terminal.print('Autosave has been enabled');
+		Terminal.print('Autosave has been enabled.');
 		menu=false
 	}
 	if (menu == "savefiledetected") {
@@ -319,19 +319,19 @@ TerminalShell.commands['yes'] = function(terminal) {
 
 TerminalShell.commands['no'] = function(terminal) {
 	if (!menu) {
-		Terminal.print('Could not find a question to answer "no" to');
+		Terminal.print('Could not find a question to answer "no" to.');
 	}
 	if (menu == "restart") {
-		Terminal.print('Your savefile has not been deleted');
+		Terminal.print('Your savefile has not been deleted.');
 		menu=false
 	}
 	if (menu == "autosave") {
 		autosave=false
-		Terminal.print('The game will not save automatically. Please type "save" when you want to save your game');
+		Terminal.print('The game will not save automatically. Please type "save" when you want to save your game.');
 		menu=false
 	}
 	if (menu == "savefiledetected") {
-		Terminal.print('Save file will not be loaded. Please note that if you enable autosave or save manually, your save file will be overwritten');
+		Terminal.print('Save file will not be loaded. Please note that if you enable autosave or save manually, your save file will be overwritten.');
 		Terminal.print('Would you like to enable autosave? (yes/no)');
 		menu="autosave"
 	}
@@ -500,7 +500,7 @@ TerminalShell.commands['login'] = function(terminal, username, password) {
 	}
 }
 
-TerminalShell.commands['make'] = function(terminal, object) {
+TerminalShell.commands['make'] = function(terminal) {
 	if (!using_computer) {
 		terminal.print('Unrecognized command. Type "help" for assistance.');
 	} else {
@@ -633,12 +633,10 @@ $(document).ready(function() {
 					loadinfo = readCookie('omnisavefile');
 					if (loadinfo != null) {
 						menu="savefiledetected"
-						Terminal.print('A save file has been detected. Would you like to load it? (yes/no)');
 					} else {
-					Terminal.print('Would you like to enable autosave? (yes/no)');
 					menu="autosave"
 					}
-					Terminal.runCommand('');
+					Terminal.runCommand('look');
 			} else {
 				noData();
 			}
