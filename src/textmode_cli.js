@@ -240,6 +240,19 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 			possibleDirections.push(name);
 		});
 		terminal.print('Exits: '+possibleDirections.join(', '));
+		if (!menu) {
+		} else {
+			terminal.print('');
+			if (menu == "restart") {
+				terminal.print('Game still wants to know if you want to restart the game (yes/no)');
+			}
+			if (menu == "autosave") {
+				terminal.print('Game still wants to know if you want to enable autosave (yes/no)');
+			}
+			if (menu == "savefiledetected") {
+				terminal.print('Game still wants to know if you want to load your previous savefile (yes/no)');
+			}
+		}
 	}
 };
 
@@ -304,7 +317,7 @@ TerminalShell.commands['no'] = function(terminal) {
 	}
 	if (menu == "autosave") {
 		autosave=false
-		Terminal.print('The game will not save automatically. Please type "save" to save your game');
+		Terminal.print('The game will not save automatically. Please type "save" when you want to save your game');
 		menu=false
 	}
 	if (menu == "savefiledetected") {
