@@ -150,7 +150,9 @@ Adventure = {
 		201:{description:'You have reached the school\'s front door.', exits:{west:200}, enter:function(terminal) {
 				currentlocation=201
 		}},
-		202:{description:'You are a freakin\' cheater, there is no legit way you can be here.'},
+		202:{description:'This area has not been made yet. Sending you back to the previous area...'}, enter:function(terminal) {
+				Adventure.goTo(Terminal,201);
+		},
 		666:{description:'You\'re dead!'},
 		
 		10000:{description:'You are now using the computer.', exits:{back:0}, objects:{computer: 10000}, enter:function(terminal) {
@@ -294,6 +296,7 @@ TerminalShell.commands['yes'] = function(terminal) {
 		createCookie("omnisavefile","",-1);
 		createCookie("omnisavefilelocation","",-1);
 		menu=false
+		window.location.reload()
 	}
 	if (menu == "autosave") {
 		autosave=true
