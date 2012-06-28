@@ -35,8 +35,47 @@ function readCookie(name) {
 	return null;
 }
 
+// Early semi-randomization code
+lockedcount=0
+hallway_length=Math.round(Math.random() * 5)+3
+stair_location=Math.round(Math.random() * hallway_length)
+amount_of_floors=Math.round(Math.random() * 5)
+var rooms1 = new Array(hallway_length);
+var rooms1description = new Array(hallway_length);
+var rooms1hascomputer = new Array(hallway_length);
+var rooms1hasdrawer = new Array(hallway_length);
+var rooms1hasclock = new Array(hallway_length);
+Terminal.print('Amount of rooms: '+rooms1.length);
+for (var i = 0; i < hallway_length ; i++){
+	if (Math.round(Math.random()) == 1) {
+		rooms1[i]='locked'
+	} else {
+		description='You are in a room.'
+		if (Math.round(Math.random()) == 1) {
+		      rooms1hascomputer[i]=1
+		      description = description + ' It contains a computer.';
+		} else {
+		      rooms1hascomputer[i]=0
+		}
+		if (Math.round(Math.random()) == 1) {
+		      rooms1hasdrawer[i]=1
+		      description = description + ' It contains a drawer.';
+		} else {
+		      rooms1hasdrawer[i]=0
+		}
+		if (Math.round(Math.random()) == 1) {
+		      rooms1hasclock[i]=1
+		      description = description + ' It contains a clock.';
+		} else {
+		      rooms1hasclock[i]=0
+		}
+		rooms1description[i] = description
+	}
+}
+
+
 // Indexing variables like a gentleman
-time=3
+time=Math.round(Math.random() * 24)
 if (time > 12) {
 	timeinfo='\nIt is now '+(time-12)+':00PM';
 } else {
@@ -54,17 +93,16 @@ silent_move=false
 
 Adventure = {
 	rooms: {
-		0:{description:'You are sitting behind a desk in a science laboratory. The desk has a single drawer. In front of you you have a computer and a note lying next to it.', exits:{west:1}, objects:{computer:10000, note:10001, drawer:10002}, location:0, enter:function(terminal) {
+		0:{description:'You are in a hallway. There is a door.', objects:{door:10}, enter:function(terminal) {
 				currentlocation=0
-				using_computer=false
 		}},
-		1:{description:'You are in the hallway. Excluding the door to the science laboratory, which is located east of you, there are no doors here.', exits:{east:0, north:2, south:4}, enter:function(terminal) {
+		10:{description:rooms1description[0], exits:{east:0}, enter:function(terminal) {
 				currentlocation=1
 		}},
-		2:{description:'You are in the hallway, next to some stairs.', exits:{south:1, north:3, up:100, down:200}, enter:function(terminal) {
+		11:{description:rooms1description[1], exits:{south:1, north:3, up:100, down:200}, enter:function(terminal) {
 				currentlocation=2
 		}},
-		3:{description:'There is nothing interesting here, just more classrooms.', exits:{south:2}, enter:function(terminal) {
+		12:{description:rooms1description[2], exits:{south:2}, enter:function(terminal) {
 				currentlocation=3
 		}},
 		4:{description:'There is nothing interesting here, just more classrooms.', exits:{north:1}, enter:function(terminal) {
@@ -197,15 +235,7 @@ TerminalShell.commands['restart'] = function(terminal) {
 
 TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 	if (silent_move == false) {
-		if (currentlocation == 0) {
-			if (time_passes == false) {
-				Terminal.print('You are in an old science laboratory, with a computer and note lying down on a desk in front of you. There is a clock hanging on the concrete wall, but time doesn\'t seem to pass on it. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
-			} else {
-				Terminal.print('You are in an old science laboratory, with a computer and note lying down on a desk in front of you. There is a clock hanging on the concrete wall, on which time passes slowly. There is a small wet spot on the floor near you. Besides that, the room doesn\'t appear to have any interesting content.');
-			}	
-		} else {
-			terminal.print(Adventure.location.description);	
-		}
+		terminal.print(Adventure.location.description);	
 		if (Adventure.location.exits) {
 			terminal.print(timeinfo);
 			var possibleDirections = [];
@@ -300,11 +330,18 @@ TerminalShell.commands['no'] = function(terminal) {
 }
 
 TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
-	if (Adventure.location.objects && object in Adventure.location.objects) {
-		Adventure.goTo(terminal, Adventure.location.objects[object]);
-	} else if (!object) {
+	objectlocation=currentlocation-1
+	if (!object) {
 		terminal.print('Use what?');
 	} else if (object == "door") {
+		if (currentlocation == 0) {
+			if (rooms1[0] == 'locked') {
+				Terminal.print('The door is locked!');
+			} else {
+				Terminal.print('You open the door.');
+				Adventure.goTo(Terminal, 10);
+			}
+		}
 		if (currentlocation == 201) {
 			if (time>=7 && time<=17) {
 				Terminal.print('You open the door');
@@ -312,6 +349,24 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 			} else {
 				Terminal.print('The door is locked');
 			}
+		} else {
+			terminal.print('You cannot use '+object+' or '+object+' is not in this room.');
+		}
+	} else if (object == "computer") {
+		if (rooms1hascomputer[objectlocation] == 1) {
+			Adventure.goTo(Terminal, 10000)
+		} else {
+			terminal.print('You cannot use '+object+' or '+object+' is not in this room.');
+		}
+	} else if (object == "clock") {
+		if (rooms1hasclock[objectlocation] == 1) {
+			Adventure.goTo(Terminal, 10000)
+		} else {
+			terminal.print('You cannot use '+object+' or '+object+' is not in this room.');
+		}
+	} else if (object == "drawer") {
+		if (rooms1hasdrawer[objectlocation] == 1) {
+			Adventure.goTo(Terminal, 10002)
 		} else {
 			terminal.print('You cannot use '+object+' or '+object+' is not in this room.');
 		}
