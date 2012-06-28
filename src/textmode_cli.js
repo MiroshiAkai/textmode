@@ -37,7 +37,7 @@ function readCookie(name) {
 
 // Early semi-randomization code
 lockedcount=0
-hallway_length=Math.round(Math.random() * 5)+3
+hallway_length=Math.round(Math.random() * 2)+3
 stair_location=Math.round(Math.random() * hallway_length)
 amount_of_floors=Math.round(Math.random() * 5)
 var rooms1 = new Array(hallway_length);
@@ -93,17 +93,41 @@ silent_move=false
 
 Adventure = {
 	rooms: {
-		0:{description:'You are in a hallway. There is a door.', objects:{door:10}, enter:function(terminal) {
+		0:{description:'You are in a hallway. There is a door.', exits:{north:1}, objects:{door:10}, enter:function(terminal) {
 				currentlocation=0
 		}},
-		10:{description:rooms1description[0], exits:{east:0}, enter:function(terminal) {
+		1:{description:'You are in a hallway. There is a door.', exits:{north:2, south:0}, objects:{door:11}, enter:function(terminal) {
 				currentlocation=1
 		}},
-		11:{description:rooms1description[1], exits:{south:1, north:3, up:100, down:200}, enter:function(terminal) {
+		2:{description:'You are in a hallway. There is a door.', exits:{north:3, south:1}, objects:{door:12}, enter:function(terminal) {
 				currentlocation=2
 		}},
-		12:{description:rooms1description[2], exits:{south:2}, enter:function(terminal) {
+		3:{description:'You are in a hallway. There is a door.', exits:{north:4, south:2}, objects:{door:13}, enter:function(terminal) {
 				currentlocation=3
+		}},
+		4:{description:'You are in a hallway. There is a door.', exits:{north:5, south:3}, objects:{door:14}, enter:function(terminal) {
+				currentlocation=4
+		}},
+		5:{description:'You are in a hallway. There is a door.', exits:{south:4}, objects:{door:15}, enter:function(terminal) {
+			currentlocation=5
+		}},				
+		10:{description:rooms1description[0], exits:{east:0}, enter:function(terminal) {
+				currentlocation=10
+		}},
+		11:{description:rooms1description[1], exits:{east:1}, enter:function(terminal) {
+				currentlocation=11
+		}},
+		12:{description:rooms1description[2], exits:{east:2}, enter:function(terminal) {
+				currentlocation=12
+		}},
+		13:{description:rooms1description[3], exits:{east:3}, enter:function(terminal) {
+				currentlocation=13
+		}},
+		14:{description:rooms1description[4], exits:{east:4}, enter:function(terminal) {
+				currentlocation=14
+		}},
+		15:{description:rooms1description[5], exits:{east:5}, enter:function(terminal) {
+				currentlocation=15
 		}},
 		4:{description:'There is nothing interesting here, just more classrooms.', exits:{north:1}, enter:function(terminal) {
 				currentlocation=4
@@ -330,27 +354,19 @@ TerminalShell.commands['no'] = function(terminal) {
 }
 
 TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
-	objectlocation=currentlocation-1
+	objectlocation=currentlocation-10
 	if (!object) {
 		terminal.print('Use what?');
 	} else if (object == "door") {
-		if (currentlocation == 0) {
-			if (rooms1[0] == 'locked') {
-				Terminal.print('The door is locked!');
-			} else {
-				Terminal.print('You open the door.');
-				Adventure.goTo(Terminal, 10);
+		for (var i = 0; i < hallway_length ; i++){
+			if (currentlocation == i) {
+				if (rooms1[i] == 'locked') {
+					Terminal.print('The door is locked!');
+				} else {
+					Terminal.print('You open the door.');
+					Adventure.goTo(Terminal, i+10);
+				}
 			}
-		}
-		if (currentlocation == 201) {
-			if (time>=7 && time<=17) {
-				Terminal.print('You open the door');
-				Adventure.goTo(Terminal, 202);
-			} else {
-				Terminal.print('The door is locked');
-			}
-		} else {
-			terminal.print('You cannot use '+object+' or '+object+' is not in this room.');
 		}
 	} else if (object == "computer") {
 		if (rooms1hascomputer[objectlocation] == 1) {
