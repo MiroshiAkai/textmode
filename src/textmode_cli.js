@@ -14,56 +14,37 @@ function randomChoice(items) {
 	return items[getRandomInt(0, items.length-1)];
 }
 
-function createCookie(name,value,days) {
-	if (days) {
-		var date = new Date();
-		date.setTime(date.getTime()+(days*24*60*60*1000));
-		var expires = "; expires="+date.toGMTString();
-	}
-	else var expires = "";
-	document.cookie = name+"="+value+expires+"; path=/";
-}
-
-function readCookie(name) {
-	var nameEQ = name + "=";
-	var ca = document.cookie.split(';');
-	for(var i=0;i < ca.length;i++) {
-		var c = ca[i];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	}
-	return null;
-}
-
 // Early semi-randomization code
 lockedcount=0
-hallway_length=Math.round(Math.random() * 2)+3
-stair_location=Math.round(Math.random() * hallway_length)
-amount_of_floors=Math.round(Math.random() * 5)
-var rooms1 = new Array(hallway_length * 2 + 1);
-var rooms1description = new Array(hallway_length * 2 + 1);
-var rooms1hascomputer = new Array(hallway_length * 2 + 1);
-var rooms1hasdrawer = new Array(hallway_length * 2 + 1);
-var rooms1hasclock = new Array(hallway_length * 2 + 1);
+hallway_length=getRandomInt(3,5)
+stair_location=getRandomInt(1,5)
+amount_of_floors=getRandomInt(1,3)
+var rooms1 = new Array(hallway_length * 2 - 1);
+var rooms1description = new Array(hallway_length * 2 - 1);
+var rooms1hascomputer = new Array(hallway_length * 2 - 1);
+var rooms1hasdrawer = new Array(hallway_length * 2 - 1);
+var rooms1hasclock = new Array(hallway_length * 2 - 1);
 Terminal.print('Amount of rooms: '+rooms1.length);
-for (var i = 0; i < hallway_length ; i++){
-	if (Math.round(Math.random()) == 1) {
+for (var i = 0; i <= hallway_length*2-1 ; i++){
+	if (getRandomInt(0,1) == 1) {
 		rooms1[i]='locked'
+		lockedcount=lockedcount+1
+		rooms1description[i] = 'This room is locked';
 	} else {
 		description='You are in a room.'
-		if (Math.round(Math.random()) == 1) {
+		if (getRandomInt(0,1) == 1) {
 		      rooms1hascomputer[i]=1
 		      description = description + ' It contains a computer.';
 		} else {
 		      rooms1hascomputer[i]=0
 		}
-		if (Math.round(Math.random()) == 1) {
+		if (getRandomInt(0,1) == 1) {
 		      rooms1hasdrawer[i]=1
 		      description = description + ' It contains a drawer.';
 		} else {
 		      rooms1hasdrawer[i]=0
 		}
-		if (Math.round(Math.random()) == 1) {
+		if (getRandomInt(0,1) == 1) {
 		      rooms1hasclock[i]=1
 		      description = description + ' It contains a clock.';
 		} else {
@@ -75,13 +56,13 @@ for (var i = 0; i < hallway_length ; i++){
 
 
 // Indexing variables like a gentleman
-time=Math.round(Math.random() * 24)
+time=getRandomInt(0,24)
 if (time > 12) {
 	timeinfo='\nIt is now '+(time-12)+':00PM';
 } else {
 	timeinfo='\nIt is now '+time+':00AM.';
 }
-time_passes=false
+time_passes=true
 logged_in=false
 timeService=false
 using_computer=false
@@ -93,44 +74,59 @@ silent_move=false
 
 Adventure = {
 	rooms: {
-		0:{description:'You are in a hallway. There is a door.', exits:{north:1}, objects:{door:10}, enter:function(terminal) {
+		0:{description:'You are in a hallway.', exits:{north:1, west:10, east:11}, enter:function(terminal) {
 				currentlocation=0
 		}},
-		1:{description:'You are in a hallway. There is a door.', exits:{north:2, south:0}, objects:{door:11}, enter:function(terminal) {
+		1:{description:'You are in a hallway.', exits:{north:2, south:0, west:12, east:13}, enter:function(terminal) {
 				currentlocation=1
 		}},
-		2:{description:'You are in a hallway. There is a door.', exits:{north:3, south:1}, objects:{door:12}, enter:function(terminal) {
+		2:{description:'You are in a hallway.', exits:{north:3, south:1, west:14, east:15}, enter:function(terminal) {
 				currentlocation=2
 		}},
-		3:{description:'You are in a hallway. There is a door.', exits:{north:4, south:2}, objects:{door:13}, enter:function(terminal) {
+		3:{description:'You are in a hallway.', exits:{north:4, south:2, west:16, east:17}, enter:function(terminal) {
 				currentlocation=3
 		}},
-		4:{description:'You are in a hallway. There is a door.', exits:{north:5, south:3}, objects:{door:14}, enter:function(terminal) {
+		4:{description:'You are in a hallway.', exits:{north:5, south:3, west:18, east:19}, enter:function(terminal) {
 				currentlocation=4
 		}},
-		5:{description:'You are in a hallway. There is a door.', exits:{south:4}, objects:{door:15}, enter:function(terminal) {
+		5:{description:'You are in a hallway.', exits:{south:4, west:20, east:21}, enter:function(terminal) {
 				currentlocation=5
 		}},				
 		10:{description:rooms1description[0], exits:{east:0}, enter:function(terminal) {
 				currentlocation=10
 		}},
-		11:{description:rooms1description[1], exits:{east:1}, enter:function(terminal) {
+		11:{description:rooms1description[1], exits:{west:0}, enter:function(terminal) {
 				currentlocation=11
 		}},
-		12:{description:rooms1description[2], exits:{east:2}, enter:function(terminal) {
+		12:{description:rooms1description[2], exits:{east:1}, enter:function(terminal) {
 				currentlocation=12
 		}},
-		13:{description:rooms1description[3], exits:{east:3}, enter:function(terminal) {
+		13:{description:rooms1description[3], exits:{west:1}, enter:function(terminal) {
 				currentlocation=13
 		}},
-		14:{description:rooms1description[4], exits:{east:4}, enter:function(terminal) {
+		14:{description:rooms1description[4], exits:{east:2}, enter:function(terminal) {
 				currentlocation=14
 		}},
-		15:{description:rooms1description[5], exits:{east:5}, enter:function(terminal) {
+		15:{description:rooms1description[5], exits:{west:2}, enter:function(terminal) {
 				currentlocation=15
 		}},
-		4:{description:'There is nothing interesting here, just more classrooms.', exits:{north:1}, enter:function(terminal) {
-				currentlocation=4
+		16:{description:rooms1description[6], exits:{east:3}, enter:function(terminal) {
+				currentlocation=16
+		}},
+		17:{description:rooms1description[7], exits:{west:3}, enter:function(terminal) {
+				currentlocation=17
+		}},
+		18:{description:rooms1description[8], exits:{east:4}, enter:function(terminal) {
+				currentlocation=18
+		}},
+		19:{description:rooms1description[9], exits:{west:4}, enter:function(terminal) {
+				currentlocation=19
+		}},
+		20:{description:rooms1description[10], exits:{east:5}, enter:function(terminal) {
+				currentlocation=20
+		}},
+		21:{description:rooms1description[11], exits:{west:5}, enter:function(terminal) {
+				currentlocation=21
 		}},
 		100:{description:'You are at the top of the stairs. You can only go down here, or try to go through the door.', exits:{down:2}, enter:function(terminal) {
 				currentlocation=100
@@ -227,36 +223,6 @@ Adventure = {
 };
 currentlocation = Adventure.location = Adventure.rooms[0];
 
-//Experimental save feature...
-TerminalShell.commands['save'] = function(terminal) {
-	createCookie('omnisavefile',savestatus,30)
-	createCookie('omnisavefilelocation',currentlocation, 30)
-	Terminal.print('Game saved, hopefully succesfully');
-}
-
-//Experimental load feature...
-TerminalShell.commands['load'] = function(terminal) {
-	currentlocation = readCookie('omnisavefilelocation');
-	Adventure.goTo(Terminal,currentlocation);
-	loadinfo = readCookie('omnisavefile');
-	if (loadinfo >= 1) {
-		logged_in=true
-		Terminal.print('Looks like we loaded your game, huh');
-	}
-	if (loadinfo >= 2) {
-		timeService="valuewewant"
-	}
-	if (loadinfo >= 3) {
-		time_installed=true
-	}
-}
-
-//Experimental save delete feature...
-TerminalShell.commands['restart'] = function(terminal) {
-	Terminal.print('This will delete your savefile and restart the game. Are you sure you want to do this? (yes/no)');
-	menu="restart"
-}
-
 TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 	if (silent_move == false) {
 		terminal.print(Adventure.location.description);	
@@ -286,7 +252,7 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 	if (Adventure.location.exits && direction in Adventure.location.exits) {
 		if (time_passes == true) {
-			random_time_passing=Math.round(Math.random() * 5)
+			random_time_passing=getRandomInt(0,5)
 			if (random_time_passing==5) {
 				time=time+1
 			}
@@ -299,7 +265,19 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 		} else {
 			timeinfo='\nIt is now '+time+':00AM.';
 		}
-		Adventure.goTo(terminal, Adventure.location.exits[direction]);
+		if (direction == 'west') {
+			destination=currentlocation
+		} else {
+			if (direction == 'east') {
+				destination=currentlocation+1
+			}
+		}
+		if (rooms1[destination] == 'locked') {
+			Terminal.print('The door is locked!')
+			Terminal.runCommand('look')
+		} else {
+			Adventure.goTo(terminal, Adventure.location.exits[direction]);
+		}
 	} else if (!direction) {
 		terminal.print('Go where?');
 	} else {
@@ -315,41 +293,11 @@ TerminalShell.commands['yes'] = function(terminal) {
 	if (!menu) {
 		Terminal.print('Could not find a question to answer "yes" to.');
 	}
-	if (menu == "restart") {
-		createCookie("omnisavefile","",-1);
-		createCookie("omnisavefilelocation","",-1);
-		menu=false
-		window.location.reload()
-	}
-	if (menu == "autosave") {
-		autosave=true
-		Terminal.print('Autosave has been enabled.');
-		menu=false
-	}
-	if (menu == "savefiledetected") {
-		Terminal.runCommand('load');
-		Terminal.print('Would you like to enable autosave? (yes/no)');
-		menu="autosave"
-	}
 }
 
 TerminalShell.commands['no'] = function(terminal) {
 	if (!menu) {
 		Terminal.print('Could not find a question to answer "no" to.');
-	}
-	if (menu == "restart") {
-		Terminal.print('Your savefile has not been deleted.');
-		menu=false
-	}
-	if (menu == "autosave") {
-		autosave=false
-		Terminal.print('The game will not save automatically. Please type "save" when you want to save your game.');
-		menu=false
-	}
-	if (menu == "savefiledetected") {
-		Terminal.print('Save file will not be loaded. Please note that if you enable autosave or save manually, your save file will be overwritten.');
-		Terminal.print('Would you like to enable autosave? (yes/no)');
-		menu="autosave"
 	}
 }
 
@@ -358,15 +306,11 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 	if (!object) {
 		terminal.print('Use what?');
 	} else if (object == "door") {
-		for (var i = 0; i < hallway_length ; i++){
-			if (currentlocation == i) {
-				if (rooms1[i] == 'locked') {
-					Terminal.print('The door is locked!');
-				} else {
-					Terminal.print('You open the door.');
-					Adventure.goTo(Terminal, i+10);
-				}
-			}
+		if (rooms1[currentlocation] == 'locked') {
+			Terminal.print('The door is locked!');
+		} else {
+			Terminal.print('You open the door.');
+			Adventure.goTo(Terminal, i+10);
 		}
 	} else if (object == "computer") {
 		if (rooms1hascomputer[objectlocation] == 1) {
@@ -607,12 +551,6 @@ $(document).ready(function() {
 			Terminal.print('');
 			Terminal.print('Type "help" for instructions on how to play.');
 			Terminal.print('');
-			loadinfo = readCookie('omnisavefile');
-			if (loadinfo != null) {
-				menu="savefiledetected"
-			} else {
-			menu="autosave"
-			}
 			Terminal.runCommand('look');
 		}, noData);
 });
