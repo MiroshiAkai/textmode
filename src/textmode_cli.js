@@ -40,11 +40,11 @@ lockedcount=0
 hallway_length=Math.round(Math.random() * 2)+3
 stair_location=Math.round(Math.random() * hallway_length)
 amount_of_floors=Math.round(Math.random() * 5)
-var rooms1 = new Array(hallway_length);
-var rooms1description = new Array(hallway_length);
-var rooms1hascomputer = new Array(hallway_length);
-var rooms1hasdrawer = new Array(hallway_length);
-var rooms1hasclock = new Array(hallway_length);
+var rooms1 = new Array(hallway_length * 2 + 1);
+var rooms1description = new Array(hallway_length * 2 + 1);
+var rooms1hascomputer = new Array(hallway_length * 2 + 1);
+var rooms1hasdrawer = new Array(hallway_length * 2 + 1);
+var rooms1hasclock = new Array(hallway_length * 2 + 1);
 Terminal.print('Amount of rooms: '+rooms1.length);
 for (var i = 0; i < hallway_length ; i++){
 	if (Math.round(Math.random()) == 1) {
@@ -109,7 +109,7 @@ Adventure = {
 				currentlocation=4
 		}},
 		5:{description:'You are in a hallway. There is a door.', exits:{south:4}, objects:{door:15}, enter:function(terminal) {
-			currentlocation=5
+				currentlocation=5
 		}},				
 		10:{description:rooms1description[0], exits:{east:0}, enter:function(terminal) {
 				currentlocation=10
@@ -372,72 +372,37 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 		if (rooms1hascomputer[objectlocation] == 1) {
 			Adventure.goTo(Terminal, 10000)
 		} else {
-			terminal.print('You cannot use '+object+' or '+object+' is not in this room.');
+			terminal.print('You cannot use '+object+'.');
 		}
 	} else if (object == "clock") {
 		if (rooms1hasclock[objectlocation] == 1) {
 			Adventure.goTo(Terminal, 10000)
 		} else {
-			terminal.print('You cannot use '+object+' or '+object+' is not in this room.');
+			terminal.print('You cannot use '+object+'.');
 		}
 	} else if (object == "drawer") {
 		if (rooms1hasdrawer[objectlocation] == 1) {
 			Adventure.goTo(Terminal, 10002)
 		} else {
-			terminal.print('You cannot use '+object+' or '+object+' is not in this room.');
+			terminal.print('You cannot use '+object+'.');
 		}
 	} else {
-		terminal.print('You cannot use '+object+' or '+object+' is not in this room.');
+		terminal.print('You cannot use '+object+'.');
 	}
 };
 
 TerminalShell.commands['inspect'] = function(terminal, object) {
+	objectlocation=currentlocation-10
 	if (!object) {
 		Terminal.print('Inspect what?');
 	} else {
-		if (currentlocation == 0) {
-			if (object == "computer") {
-				Terminal.print('It is an old computer, probably from around the 70s. It seems to be running Unix.');
-			} else if (object == "clock") {
-				if (time_passes == false) {
-					Terminal.print('The hands of the clock don\'t move, but the clock doesn\'t look like it is broken.'+timeinfo);
-				} else {
-					Terminal.print('You look at the clock.'+timeinfo);
-				}
-			} else if (object == "desk") {
-				Terminal.print('It is just a wooden desk.');
-			} else if (object == "drawer") {
-				Terminal.print('The drawer is made of wood, and seems slightly damaged due to old age, from the looks of it. It appears to be openable.');
-			} else if (object == "note") {
-				Terminal.print('It\'s a yellow sticky note, nothing remarkable, really.');
-			} else if (object == "spot") {
-				Terminal.print('You walk towards the wet spot on the floor and sit down next to it. Upon inspecting it, you inhale a gas without smell coming from it and temporarily lose consciousness...');
-				duration=2
-				$('#screen').fadeOut(4000);
-				window.setTimeout(function() {
-					terminal.setWorking(false);
-					$('#screen').fadeIn();
-					if (time_passes == true) {
-						time=time+(duration)
-						if (time >= 24) {
-							time=(time-24)
-						}
-						if (time > 12) {
-							timeinfo='\nIt is now '+(time-12)+':00PM';
-						} else {
-							timeinfo='\nIt is now '+time+':00AM.';
-						}
-					}
-						terminal.print(timeinfo);
-				}, 6000);
-			}
-		} else if (currentlocation == 1) {
+		if (currentlocation == 1) {
 			if (object == "door") {
 				Terminal.print('This door leads to the laboratory');
 			} else if (object == "wall") {
 				Terminal.print('It looks like a pretty normal concrete wall.');
 			} else {
-				Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
+				Terminal.print('You cannot inspect '+object+'.');
 			}
 			
 		} else if (currentlocation == 201) {
@@ -448,10 +413,34 @@ TerminalShell.commands['inspect'] = function(terminal, object) {
 					Terminal.print('The door is slightly rusty, due to the old age. Upon inspecting the door and the lock, you come to the conclusion the door is closed.');
 				}
 			} else {
-				Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
+				Terminal.print('You cannot inspect '+object+'.');
 			}
 		} else {
-			Terminal.print('You cannot inspect '+object+' or '+object+' is not in this room.');
+			if (object == "computer") {
+				if (rooms1hascomputer[objectlocation] == 1) {
+					Terminal.print('It is an old computer, probably from around the 70s. It seems to be running Unix.');
+				} else {
+					Terminal.print('You cannot inspect '+object+'.');
+				}
+			} else if (object == "clock") {
+				if (rooms1hasclock[objectlocation] == 1) {
+					if (time_passes == false) {
+						Terminal.print('The hands of the clock don\'t move, but the clock doesn\'t look like it is broken.'+timeinfo);
+					} else {
+						Terminal.print('You look at the clock.'+timeinfo);
+					}
+				} else {
+					Terminal.print('You cannot inspect '+object+'.');
+				}
+			} else if (object == "drawer") {
+				if (rooms1hasdrawer[objectlocation] == 1) {
+					Terminal.print('The drawer is made of wood, and seems slightly damaged due to old age, from the looks of it. It appears to be openable.');
+				} else {
+					Terminal.print('You cannot inspect '+object+'.');
+				}
+			} else {
+				Terminal.print('You cannot inspect '+object+'.');
+			}
 		}
 	}
 };
