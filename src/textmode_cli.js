@@ -18,13 +18,13 @@ function randomChoice(items) {
 lockedcount=0
 hallway_length=getRandomInt(3,5)
 stair_location=getRandomInt(1,5)
-amount_of_floors=getRandomInt(1,3)
+amount_of_floors=getRandomInt(3,3)
+computerlocation=getRandomInt(0, (hallway_length*2-1)*amount_of_floors)
 var rooms1 = new Array(hallway_length * 2 - 1);
 var rooms1description = new Array(hallway_length * 2 - 1);
 var rooms1hascomputer = new Array(hallway_length * 2 - 1);
 var rooms1hasdrawer = new Array(hallway_length * 2 - 1);
 var rooms1hasclock = new Array(hallway_length * 2 - 1);
-Terminal.print('Amount of rooms: '+rooms1.length);
 for (var i = 0; i <= hallway_length*2-1 ; i++){
 	if (getRandomInt(0,1) == 1) {
 		rooms1[i]='locked'
@@ -62,6 +62,7 @@ if (time > 12) {
 } else {
 	timeinfo='\nIt is now '+time+':00AM.';
 }
+destination=0
 time_passes=true
 logged_in=false
 timeService=false
@@ -71,6 +72,7 @@ savestatus=0
 menu=false
 autosave=false
 silent_move=false
+password=getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)
 
 Adventure = {
 	rooms: {
@@ -201,7 +203,7 @@ Adventure = {
 			terminal.setWorking(true);
 			setTimeout("Terminal.print('You find a note and read its content.');", 2000);
 			setTimeout("Terminal.print('');", 4000);
-			setTimeout("Terminal.print('omni i4mY0vR90D');", 4000);
+			setTimeout("Terminal.print('root '+password);", 4000);
 			setTimeout("Terminal.print('');", 4000);
 			setTimeout("Terminal.print('----------------');", 4000);
 			setTimeout("Terminal.setWorking(false);", 4000);
@@ -265,16 +267,20 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 		} else {
 			timeinfo='\nIt is now '+time+':00AM.';
 		}
-		if (direction == 'west') {
-			destination=currentlocation
-		} else {
-			if (direction == 'east') {
-				destination=currentlocation+1
+		if (destination >= 10 && destination >= 99)  {
+			if (direction == 'west') {
+				destination=currentlocation
+			} else {
+				if (direction == 'east') {
+					destination=currentlocation+1
+				}
 			}
-		}
-		if (rooms1[destination] == 'locked') {
-			Terminal.print('The door is locked!')
-			Terminal.runCommand('look')
+			if (rooms1[destination] == 'locked') {
+				Terminal.print('The door is locked!')
+				Terminal.runCommand('look')
+			} else {
+				Adventure.goTo(terminal, Adventure.location.exits[direction]);
+			}
 		} else {
 			Adventure.goTo(terminal, Adventure.location.exits[direction]);
 		}
@@ -441,7 +447,7 @@ TerminalShell.commands['sleep'] = TerminalShell.commands['rest'] = function(term
 	}, 2000);
 };
 
-TerminalShell.commands['login'] = function(terminal, username, password) {
+TerminalShell.commands['login'] = function(terminal, username, passwd) {
 	if (!using_computer) {
 		terminal.print('Unrecognized command. Type "help" for assistance.');
 	} else {
@@ -451,11 +457,11 @@ TerminalShell.commands['login'] = function(terminal, username, password) {
 			if (!username) {
 				terminal.print('Usage: login username password');
 			} else {
-				if (username == 'omni') {
-					if (!password) {
+				if (username == 'root') {
+					if (!passwd) {
 						terminal.print('You must enter a password!');
 					} else {
-						if (password == 'i4mY0vR90D') {
+						if (passwd == password) {
 							logged_in=true
 							terminal.print('You have logged in succesfully.');
 							savestatus=1
