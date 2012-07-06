@@ -260,7 +260,11 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 			}
 		}
 		if (time >= 24) {
-			time=(time-24)
+			do
+			{
+			time=time-24
+			}
+			while (time >= 24);
 		}
 		if (time > 12) {
 			timeinfo='\nIt is now '+(time-12)+':00PM';
@@ -435,7 +439,11 @@ TerminalShell.commands['sleep'] = TerminalShell.commands['rest'] = function(term
 		if (time_passes == true) {
 			time=time+(duration)
 			if (time >= 24) {
-				time=(time-24)
+				do
+				{
+				time=time-24
+				}
+				while (time >= 24);
 			}
 			if (time > 12) {
 				timeinfo='\nIt is now '+(time-12)+':00PM';
