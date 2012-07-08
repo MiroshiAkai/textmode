@@ -16,23 +16,25 @@ function randomChoice(items) {
 
 // Early semi-randomization code
 lockedcount=0
-hallway_length=getRandomInt(3,5)
+hallway_length=getRandomInt(1,5)
 stair_location=getRandomInt(1,5)
 amount_of_floors=getRandomInt(3,3)
-computerlocation=getRandomInt(0, (hallway_length*2-1)*amount_of_floors)
-var rooms1 = new Array(hallway_length * 2 - 1);
-var rooms1description = new Array(hallway_length * 2 - 1);
-var rooms1hascomputer = new Array(hallway_length * 2 - 1);
-var rooms1hasdrawer = new Array(hallway_length * 2 - 1);
-var rooms1hasclock = new Array(hallway_length * 2 - 1);
-for (var i = 0; i <= hallway_length*2-1 ; i++){
-	if (getRandomInt(0,1) == 1) {
+
+//Generate rooms
+var rooms1 = new Array(hallway_length*2+1);
+var rooms1description = new Array(hallway_length*2+1);
+var computerlocation = getRandomInt(1, (hallway_length*2+1));
+var rooms1hascomputer = new Array(hallway_length*2+1);
+var rooms1hasdrawer = new Array(hallway_length*2+1);
+var rooms1hasclock = new Array(hallway_length*2+1);
+for (var i = 0; i <= hallway_length*2+1 ; i++){
+	if (getRandomInt(0,1) == 1 && computerlocation != i) {
 		rooms1[i]='locked'
 		lockedcount=lockedcount+1
 		rooms1description[i] = 'This room is locked';
 	} else {
 		description='You are in a room.'
-		if (getRandomInt(0,1) == 1) {
+		if (computerlocation == i) {
 		      rooms1hascomputer[i]=1
 		      description = description + ' It contains a computer.';
 		} else {
@@ -76,22 +78,22 @@ password=getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRando
 
 Adventure = {
 	rooms: {
-		0:{description:'You are in a hallway.', exits:{north:1, west:10, east:11}, enter:function(terminal) {
+		0:{description:'You are in a hallway.', exits:{north:1, east:11, west:10}, enter:function(terminal) {
 				currentlocation=0
 		}},
-		1:{description:'You are in a hallway.', exits:{north:2, south:0, west:12, east:13}, enter:function(terminal) {
+		1:{description:'You are in a hallway.', exits:{north:2, east:13, south:0, west:12}, enter:function(terminal) {
 				currentlocation=1
 		}},
-		2:{description:'You are in a hallway.', exits:{north:3, south:1, west:14, east:15}, enter:function(terminal) {
+		2:{description:'You are in a hallway.', exits:{north:3, east:15, south:1, west:14}, enter:function(terminal) {
 				currentlocation=2
 		}},
-		3:{description:'You are in a hallway.', exits:{north:4, south:2, west:16, east:17}, enter:function(terminal) {
+		3:{description:'You are in a hallway.', exits:{north:4, east:17, south:2, west:16}, enter:function(terminal) {
 				currentlocation=3
 		}},
-		4:{description:'You are in a hallway.', exits:{north:5, south:3, west:18, east:19}, enter:function(terminal) {
+		4:{description:'You are in a hallway.', exits:{north:5, east:19, south:3, west:18}, enter:function(terminal) {
 				currentlocation=4
 		}},
-		5:{description:'You are in a hallway.', exits:{south:4, west:20, east:21}, enter:function(terminal) {
+		5:{description:'You are in a hallway.', exits:{east:21, south:4, west:20}, enter:function(terminal) {
 				currentlocation=5
 		}},				
 		10:{description:rooms1description[0], exits:{east:0}, enter:function(terminal) {
@@ -230,10 +232,16 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 		terminal.print(Adventure.location.description);	
 		if (Adventure.location.exits) {
 			terminal.print(timeinfo);
-			var possibleDirections = [];
-			$.each(Adventure.location.exits, function(name, id) {
+			if (currentlocation == 0) {
+				var possibleDirections = ['north', 'east', 'west'];
+			} else if (currentlocation == hallway_length) {
+				var possibleDirections = ['east', 'south', 'west'];
+			} else {
+				var possibleDirections = [];
+				$.each(Adventure.location.exits, function(name, id) {
 				possibleDirections.push(name);
-			});
+				});
+			}
 			terminal.print('Exits: '+possibleDirections.join(', '));
 			if (menu != false) {
 				terminal.print('');
@@ -271,7 +279,13 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 		} else {
 			timeinfo='\nIt is now '+time+':00AM.';
 		}
-		if (destination >= 10 && destination >= 99)  {
+		if (currentlocation == hallway_length) {
+			if (direction == 'north') {
+				terminal.print('You cannot go '+direction+'.');
+			} else {
+				Adventure.goTo(terminal, Adventure.location.exits[direction]);
+			}
+		} else if (destination >= 10 && destination <= 99) {
 			if (direction == 'west') {
 				destination=currentlocation
 			} else {
