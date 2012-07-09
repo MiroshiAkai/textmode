@@ -19,45 +19,9 @@ lockedcount=0
 hallway_length=getRandomInt(1,5)
 stair_location=getRandomInt(1,5)
 amount_of_floors=getRandomInt(3,3)
-
-//Generate rooms
-var rooms1 = new Array(hallway_length*2+1);
-var rooms1description = new Array(hallway_length*2+1);
-var computerlocation = getRandomInt(1, (hallway_length*2+1));
-var rooms1hascomputer = new Array(hallway_length*2+1);
-var rooms1hasdrawer = new Array(hallway_length*2+1);
-var rooms1hasclock = new Array(hallway_length*2+1);
-for (var i = 0; i <= hallway_length*2+1 ; i++){
-	if (getRandomInt(0,1) == 1 && computerlocation != i) {
-		rooms1[i]='locked'
-		lockedcount=lockedcount+1
-		rooms1description[i] = 'This room is locked';
-	} else {
-		description='You are in a room.'
-		if (computerlocation == i) {
-		      rooms1hascomputer[i]=1
-		      description = description + ' It contains a computer.';
-		} else {
-		      rooms1hascomputer[i]=0
-		}
-		if (getRandomInt(0,1) == 1) {
-		      rooms1hasdrawer[i]=1
-		      description = description + ' It contains a drawer.';
-		} else {
-		      rooms1hasdrawer[i]=0
-		}
-		if (getRandomInt(0,1) == 1) {
-		      rooms1hasclock[i]=1
-		      description = description + ' It contains a clock.';
-		} else {
-		      rooms1hasclock[i]=0
-		}
-		rooms1description[i] = description
-	}
-}
-
-
 // Indexing variables like a gentleman
+amountofmoves=0
+amountofroomsentered=0
 time=getRandomInt(0,24)
 if (time > 12) {
 	timeinfo='\nIt is now '+(time-12)+':00PM';
@@ -67,14 +31,127 @@ if (time > 12) {
 destination=0
 time_passes=true
 logged_in=false
-timeService=false
 using_computer=false
-time_installed=false
-savestatus=0
 menu=false
-autosave=false
 silent_move=false
-password=getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)
+password=getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)
+currentfloor=1
+var inventory = [];
+gameresult='playing'
+
+// Choose random gamemode and mutator
+gamemode=getRandomInt(1,1) // 1=Ghost
+mutator=getRandomInt(1,1) // 1=Turn-based, 2=Realtime
+
+// Execute gamemode-specific commands
+if (gamemode == 1) {
+	ghostfloor=1
+	randomInt=getRandomInt(1,2)
+	if (randomInt == 1) {
+		ghostweakness='crayon'
+	} else if (randomInt == 2) {
+		ghostweakness='screwdriver'
+	} else if (randomInt == 3) {
+		ghostweakness='flashlight'
+	}
+	amountofghostmoves=0
+	amountofscaressurvived=0
+	ghostlocationfloor=getRandomInt(1,1)
+	if (getRandomInt(1,2) == 1) {
+		ghostlocationroom=getRandomInt(0,(hallway_length));
+	} else {
+		ghostlocationroom=getRandomInt(0,(hallway_length*2+11));
+	}
+	if (ghostlocationfloor == 1) {
+		ghostlocation=ghostlocationroom
+		if ((ghostlocation > hallway_length) && (ghostlocation <=9)) {
+			ghostlocation = hallway_length
+		}
+	}
+	if (mutator == 2) {
+		// Realtime-specific code here
+	}
+};
+
+//Generate rooms
+var rooms1 = new Array(hallway_length*2+1);
+var rooms1description = new Array(hallway_length*2+1);
+var computerlocation = getRandomInt(0, (hallway_length*2+1));
+var crayonlocation = getRandomInt(0, (hallway_length*2+1));
+var flashlightlocation = getRandomInt(0, (hallway_length*2+1));
+var notelocation = getRandomInt(0, (hallway_length*2+1));
+var note = new Array(hallway_length*2+1);
+var screwdriverlocation = getRandomInt(0, (hallway_length*2+1));
+
+var rooms1hasclock = new Array(hallway_length*2+1);
+var rooms1hascomputer = new Array(hallway_length*2+1);
+var rooms1hascrayon = new Array(hallway_length*2+1);
+var rooms1hasdrawer = new Array(hallway_length*2+1);
+var rooms1hasflashlight = new Array(hallway_length*2+1);
+var rooms1hasnote = new Array(hallway_length*2+1);
+var rooms1hasscrewdriver = new Array(hallway_length*2+1);
+for (var i = 0; i <= (hallway_length*2+1) ; i++){
+	if (getRandomInt(0,1) == 1 && computerlocation != i && notelocation != i) {
+		rooms1[i]='locked'
+		lockedcount=lockedcount+1
+		description = 'This room is locked';
+	} else {
+		description='You are in a room.'
+		if (computerlocation == i) {
+			rooms1hascomputer[i]=1
+			description = description + ' It contains a computer.';
+		} else {
+			rooms1hascomputer[i]=0
+		}
+		if (getRandomInt(0,1) == 1) {
+			rooms1hasdrawer[i]=1
+			description = description + ' It contains a drawer.';
+		} else {
+			rooms1hasdrawer[i]=0
+		}
+		if (getRandomInt(0,1) == 1) {
+			rooms1hasclock[i]=1
+			description = description + ' It contains a clock.';
+		} else {
+			rooms1hasclock[i]=0
+		}
+		if ((notelocation == i) || (getRandomInt(0,1) == 1)) {
+			rooms1hasnote[i]=1
+			description = description + ' It contains a note.';
+			if (notelocation == i) {
+				note[i]='login: root '+password;
+			} else {
+				randomInt=getRandomInt(0,1)
+				if (randomInt == 0) {
+					note[i]='You\'re going to die...'
+				} else if (randomInt == 1) {
+					note[i]='There\'s a computer on the first floor'
+				}
+			}
+		} else {
+			rooms1hasnote[i]=0
+		}
+		if (crayonlocation == i) {
+			rooms1hascrayon[i]=1
+			description = description + ' There is crayon here.';
+		} else {
+			rooms1hascrayon[i]=0
+		}
+		if (screwdriverlocation == i) {
+			rooms1hasscrewdriver[i]=1
+			description = description + ' There is a screwdriver here.';
+		} else {
+			rooms1hasscrewdriver[i]=0
+		}
+		if (flashlightlocation == i) {
+			rooms1hasflashlight[i]=1
+			description = description + ' There is a flashlight.';
+		} else {
+			rooms1hasflashlight[i]=0
+		}
+	}
+	rooms1description[i] = description
+}
 
 Adventure = {
 	rooms: {
@@ -146,60 +223,6 @@ Adventure = {
 		},
 		666:{description:'You\'re dead!'},
 		
-		10000:{description:'You are now using the computer.', exits:{back:0}, objects:{computer: 10000}, enter:function(terminal) {
-				currentlocation=10000
-				using_computer=true
-				if (!logged_in) {
-					Terminal.print('Please login using the "login" command.');
-				} else {
-					terminal.setWorking(true);
-					Terminal.print('Connecting to the secure shell...');
-					setTimeout("Terminal.print('Connected succesfully.');", 2000);
-					if (!time_installed) {
-						setTimeout("Terminal.print('')", 3000);
-						setTimeout("Terminal.print('****************************************************');", 3000);
-						setTimeout("Terminal.print('Please be sure to read the installation instructions');", 3000);
-						setTimeout("Terminal.print('before proceeding with the configuration procedure!');", 3000);
-						setTimeout("Terminal.print('****************************************************');", 3000);
-						if (!timeService) {
-							duration=1500
-							setTimeout("Terminal.print('Makefile:34: *** timeService is undefined.  Stop.');", 3*duration);
-							setTimeout("Terminal.setWorking(false);",3*duration);
-						} else {
-							if (timeService == "valuewewant") {
-								duration=1500
-								setTimeout("Terminal.print('cd build.AMD/perlx-5.14.0-i686-linux-thread-multi; TOP=/home/omni/Desktop/time-2.9.9 /usr/bin/perl /home/omni/Desktop/time-2.9.9/perl/ext/Makefile.PL');", 3*duration);
-								setTimeout("Terminal.print('make[1]: Entering directory `/home/omni/Desktop/time-2.9.9/build.AMD/perlx-5.14.0-i686-linux-thread-multi');", 4*duration);
-								setTimeout("Terminal.print('cc -c  -I/home/omni/Desktop/time-2.9.9/lib/PTL/include -D_REENTRANT -D_GNU_SOURCE -fno-strict-aliasing -pipe -fstack-protector -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -march=i686 -mtune=generic -O2 -pipe   -DVERSION=\ -DXS_VERSION=\ -fPIC '-I/usr/lib/perl5/core_perl/CORE'  -DPerlVersion=5014 -Wno-nonnull CPlusPlus.c');", 5*duration);
-								setTimeout("Terminal.print('CPlusPlus.xs: In function 'XS_time__Core__CPlusPlus_create_function_wrapper':');", 6*duration);
-								setTimeout("Terminal.print('Compiled succesfully');", 8*duration);
-								setTimeout("Terminal.print('Installing Time module...');", 10*duration);
-								setTimeout("Terminal.print('Time module succesfully installed. Use start time to start it');", 13*duration);
-								setTimeout("Terminal.setWorking(false);", 13*duration);
-								time_installed=true
-								savestatus=3
-								if (autosave == true) {
-									Terminal.runCommand('save');
-								}
-							} else {
-								duration=1500
-								setTimeout("terminal.print('Makefile:34: *** timeService has an incorrect value.  Stop.');", 3*duration);
-								setTimeout("Terminal.setWorking(false);",3*duration);
-							}
-						}
-					}
-				}
-			}
-		},
-		10001:{description:'You grab the note and read its content.', enter:function(terminal) {
-			terminal.print('');
-			terminal.setWorking(true);
-			setTimeout("Terminal.setWorking(false);", 2000);
-			setTimeout("Terminal.print('The note is empty.');", 2000);
-			setTimeout("Terminal.print('');", 2000);
-			setTimeout("Terminal.print('----------------');", 2000);
-			setTimeout("Adventure.goTo(Terminal, 0);", 2000);
-		}},
 		10002:{description:'You open the drawers.', enter:function(terminal) {
 			terminal.print('');
 			terminal.setWorking(true);
@@ -223,6 +246,10 @@ Adventure = {
 		}
 		Adventure.look(terminal);
 		silent_move=false
+		using_computer=false
+		if (mutator == 1) {
+			Adventure.gamemode(terminal);
+		}
 	}
 };
 currentlocation = Adventure.location = Adventure.rooms[0];
@@ -234,7 +261,7 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 			terminal.print(timeinfo);
 			if (currentlocation == 0) {
 				var possibleDirections = ['north', 'east', 'west'];
-			} else if (currentlocation == hallway_length) {
+			} else if (currentlocation >= hallway_length) {
 				var possibleDirections = ['east', 'south', 'west'];
 			} else {
 				var possibleDirections = [];
@@ -243,16 +270,11 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 				});
 			}
 			terminal.print('Exits: '+possibleDirections.join(', '));
+			terminal.print('Hallway length: '+hallway_length+'');
 			if (menu != false) {
 				terminal.print('');
-				if (menu == "restart") {
-					terminal.print('Game wants to know if you want to restart the game (yes/no)');
-				}
-				if (menu == "autosave") {
-					terminal.print('Game wants to know if you want to enable autosave (yes/no)');
-				}
-				if (menu == "savefiledetected") {
-					terminal.print('Game wants to know if you want to load your previous savefile (yes/no)');
+				if (menu == "newgame") {
+					terminal.print('Would you like to start a new game?');
 				}
 			}
 		}
@@ -283,6 +305,7 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 			if (direction == 'north') {
 				terminal.print('You cannot go '+direction+'.');
 			} else {
+				amountofmoves=amountofmoves+1
 				Adventure.goTo(terminal, Adventure.location.exits[direction]);
 			}
 		} else if (destination >= 10 && destination <= 99) {
@@ -297,9 +320,12 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 				Terminal.print('The door is locked!')
 				Terminal.runCommand('look')
 			} else {
+				amountofroomsentered=amountofroomsentered+1
+				amountofmoves=amountofmoves+1				
 				Adventure.goTo(terminal, Adventure.location.exits[direction]);
 			}
 		} else {
+			amountofmoves=amountofmoves+1
 			Adventure.goTo(terminal, Adventure.location.exits[direction]);
 		}
 	} else if (!direction) {
@@ -309,19 +335,19 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 	}
 };
 
-TerminalShell.commands['exit'] = TerminalShell.commands['back'] = function(terminal, direction) {
-	Terminal.runCommand('go back');
-}
-
 TerminalShell.commands['yes'] = function(terminal) {
 	if (!menu) {
 		Terminal.print('Could not find a question to answer "yes" to.');
+	} else if (menu='newgame') {
+		location.reload(true);
 	}
 }
 
 TerminalShell.commands['no'] = function(terminal) {
 	if (!menu) {
 		Terminal.print('Could not find a question to answer "no" to.');
+	} else if (menu='newgame') {
+		Terminal.print('No new game has been started, please refresh the page if you want to continue playing.');
 	}
 }
 
@@ -336,50 +362,120 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 			Terminal.print('You open the door.');
 			Adventure.goTo(Terminal, i+10);
 		}
-	} else if (object == "computer") {
-		if (rooms1hascomputer[objectlocation] == 1) {
-			Adventure.goTo(Terminal, 10000)
+	} else if (object == "clock") {
+		if (rooms1hasclock[objectlocation] == 1) {
+			terminal.print('You cannot use '+object+'.');
 		} else {
 			terminal.print('You cannot use '+object+'.');
 		}
-	} else if (object == "clock") {
-		if (rooms1hasclock[objectlocation] == 1) {
-			Adventure.goTo(Terminal, 10000)
+	} else if (object == "computer") {
+		if (rooms1hascomputer[objectlocation] == 1) {
+			using_computer=true
+			if (logged_in == false) {
+				terminal.print('Please login using the "login" command.');
+			} else {
+				if (gamemode == 1) {
+					Terminal.setWorking(true);
+					terminal.print('Searching for the ghost...');
+					setTimeout("Terminal.print('You are at: Floor '+currentfloor+'.');", 2000);
+					setTimeout("Terminal.print('The ghost is at: Floor '+ghostfloor+'.');", 2500);
+					if (ghostlocation >= 0 && ghostlocation <= 9) {
+						setTimeout("Terminal.print('The ghost is in the hallway.');", 3000);
+					} else if (ghostlocation >= 10 && ghostlocation <= 99) {
+						setTimeout("Terminal.print('The ghost is in a room.');", 3000);
+					}
+					setTimeout("Terminal.print('Searching for weakness...');", 3500);
+					setTimeout("Terminal.print('The ghost can be defeated using: '+ghostweakness+'.');", 5000);
+					setTimeout("Terminal.print('Connection closed...');", 5000);
+					Terminal.setWorking(false);
+					using_computer=false
+				}
+			}
 		} else {
 			terminal.print('You cannot use '+object+'.');
 		}
 	} else if (object == "drawer") {
 		if (rooms1hasdrawer[objectlocation] == 1) {
-			Adventure.goTo(Terminal, 10002)
+			terminal.print('You cannot use '+object+'.');
 		} else {
 			terminal.print('You cannot use '+object+'.');
 		}
+	} else if (object == "note") {
+		terminal.print('You grab the note and start reading...');
+		terminal.setWorking(true);
+		terminal.print('');
+		setTimeout("Terminal.print(note[objectlocation])", 2000);
+		terminal.setWorking(false);
 	} else {
 		terminal.print('You cannot use '+object+'.');
 	}
 };
 
+TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
+	objectlocation=currentlocation-10
+	if (!object) {
+		terminal.print('Take what?');
+	} else {
+		if ((object == 'crayon' && crayonlocation == objectlocation) || (object == 'flashlight' && flashlightlocation == objectlocation) || (object == 'screwdriver' && screwdriverlocation == objectlocation)) {
+			if (gamemode == 1) { // Ghost
+				if (inventory.length >= 1) {
+					terminal.print('Your inventory is full!');
+				} else {
+					terminal.print(object+' has been put in your inventory.');
+					inventory.push(object);
+				}
+			}
+		} else {
+			terminal.print('You cannot take '+object+'.');
+		}
+	}
+};
+
+TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
+	if (!object) {
+		terminal.print('Drop what?');
+	} else {
+		if ($.inArray(object, inventory) != -1) {
+			// Remove from inventory code here...
+			objectlocation=currentlocation-10
+			if (object == 'crayon') {
+				crayonlocation=currentlocation
+				var inventory = [];
+			} else if (object == 'flashlight') {
+				flashlightlocation=currentlocation
+				var inventory = [];
+			} else if (object == 'screwdriver') {
+				screwdriverlocation=currentlocation
+				var inventory = [];
+			}
+			terminal.print('You dropped '+object+'.');
+		} else {
+			terminal.print('Could not find '+object+' in your inventory.');
+		}
+	}
+};
+
+TerminalShell.commands['inventory'] = function(terminal) {
+	inventoryoutput='Inventory: '
+	for (i = 0; i < inventory.length; i++) {
+		inventoryoutput=inventoryoutput+inventory[i]
+	}
+	if (inventoryoutput == 'Inventory: ') {
+		terminal.print('Your inventory is empty.')
+	} else {
+		terminal.print(inventoryoutput);
+	}
+};
 TerminalShell.commands['inspect'] = function(terminal, object) {
 	objectlocation=currentlocation-10
 	if (!object) {
 		Terminal.print('Inspect what?');
 	} else {
-		if (currentlocation == 1) {
+		if (currentlocation >= 0 && currentlocation <= 9) {
 			if (object == "door") {
 				Terminal.print('This door leads to the laboratory');
 			} else if (object == "wall") {
 				Terminal.print('It looks like a pretty normal concrete wall.');
-			} else {
-				Terminal.print('You cannot inspect '+object+'.');
-			}
-			
-		} else if (currentlocation == 201) {
-			if (object == "door") {
-				if (time>=7 && time<=17) {
-					Terminal.print('The door is slightly rusty, due to the old age. Upon inspecting the door and the lock, you come to the conclusion the door is open.');
-				} else {
-					Terminal.print('The door is slightly rusty, due to the old age. Upon inspecting the door and the lock, you come to the conclusion the door is closed.');
-				}
 			} else {
 				Terminal.print('You cannot inspect '+object+'.');
 			}
@@ -408,31 +504,6 @@ TerminalShell.commands['inspect'] = function(terminal, object) {
 				}
 			} else {
 				Terminal.print('You cannot inspect '+object+'.');
-			}
-		}
-	}
-};
-
-
-TerminalShell.commands['set'] = function(terminal, variable, value) {
-	if (!variable) {
-		terminal.print('Usage: set variable value.');
-	}
-	if (variable == "timeService") {
-		if (!value) {
-			if (!timeService) {
-				terminal.print(variable+' has no value.');
-			} else {
-				terminal.print(variable+': '+timeService);
-			}
-		} else {
-			timeService=value;
-			terminal.print('Variable '+variable+' has been sat to '+value);
-			if (value == "valuewewant") {
-				savestatus=2
-				if (autosave == true) {
-					Terminal.runCommand('save');
-				}
 			}
 		}
 	}
@@ -486,12 +557,7 @@ TerminalShell.commands['login'] = function(terminal, username, passwd) {
 						if (passwd == password) {
 							logged_in=true
 							terminal.print('You have logged in succesfully.');
-							savestatus=1
-							if (autosave == true) {
-								Terminal.runCommand('save');
-							}
-							silent_move=true
-							Adventure.goTo(terminal, 10000);
+							Terminal.runCommand('use computer');
 						} else {
 							terminal.print('Incorrect password.');
 						}
@@ -504,63 +570,114 @@ TerminalShell.commands['login'] = function(terminal, username, passwd) {
 	}
 }
 
-TerminalShell.commands['start'] = function(terminal, program) {
-	if (!using_computer) {
-		terminal.print('Unrecognized command. Type "help" for assistance.');
-	} else {
-		if (!program) {
-			terminal.print('Usage: start program.');
-		} else {
-			if (program == "time") {
-				if (time_installed == true) {
-					terminal.setWorking(true);
-					terminal.print('Starting time...');
-					setTimeout("Terminal.print('Time was started succesfully');", 2000);
-					setTimeout("Terminal.setWorking(false);", 2000);
-					time_passes=true
-				} else {
-					terminal.print(program+' could not be found.');
-				}
+// Gamemode-specific code
+Adventure.gamemode = function(terminal) {
+	if (gamemode == 1) { // Ghost
+		ghostmove=getRandomInt(1,10) // Decides if the Ghost moves
+		if (ghostmove == 1) {
+			amountofghostmoves=amountofghostmoves+1
+			ghostlocationfloor=getRandomInt(1,1)
+			if (getRandomInt(1,2) == 1) {
+				ghostlocationroom=getRandomInt(0, hallway_length);
 			} else {
-				terminal.print(program+' could not be found.');
+				ghostlocationroom=getRandomInt(0, (hallway_length*2+11));
+			}
+			if (ghostlocationfloor == 1) {
+				ghostlocation=ghostlocationroom
+				if ((ghostlocation > hallway_length) && (ghostlocation <=9)) {
+					ghostlocation = hallway_length
+				}
 			}
 		}
+		if (currentlocation == ghostlocation) {
+			if ($.inArray(ghostweakness, inventory) != -1) {
+				terminal.print('You use the '+ghostweakness+' in your inventory on the ghost.');
+				terminal.print('The ghost makes a terrible noise and disappears.');
+				terminal.print('You win!');
+				gameresult='won'
+			} else {
+				if ((getRandomInt(0,1) == 1)) {
+					terminal.print('The ghost got you! GAME OVER!');
+					gameresult='lost'
+				} else {
+					terminal.print('BOO!');
+					shake($('#screen'));
+					amountofscaressurvived=amountofscaressurvived+1
+					amountofghostmoves=amountofghostmoves+1
+					ghostlocationfloor=getRandomInt(1,1)
+					if (getRandomInt(1,2) == 1) {
+						ghostlocationroom=getRandomInt(0, hallway_length);
+					} else {
+						ghostlocationroom=getRandomInt(0,(hallway_length*2+11))
+					}
+					if (ghostlocationfloor == 1) {
+						ghostlocation=ghostlocationroom
+						if ((ghostlocation > hallway_length) && (ghostlocation <=9)) {
+							ghostlocation = hallway_length
+						}
+					}
+				}
+			}
+		} else {
+			if (getRandomInt(1,20) == 1) {
+				terminal.print('You feel a cold shiver...');
+			}
+			// Debug
+			terminal.print('You are at '+currentlocation+'. The ghost is at '+ghostlocation+'.');
+		}
+	}
+	if ((gameresult=='won') || (gameresult=='lost')) {
+		Adventure.gameresult(terminal);
 	}
 };
 
-TerminalShell.commands['stop'] = function(terminal, program) {
-	if (!using_computer) {
-		terminal.print('Unrecognized command. Type "help" for assistance.');
-	} else {
-		if (!program) {
-			terminal.print('Usage: stop program.');
+Adventure.gameresult = function(terminal) {
+	if (gamemode == 1) {
+		terminal.print('');
+		terminal.print('=== Game Statistics ===');
+		terminal.print('Gamemode: Ghost');
+		if (mutator == 1) {
+			terminal.print('Mutator: Turn-based');
+		} else if (mutator == 2) {
+			terminal.print('Mutator: Realtime');
 		} else {
-			if (program == "time") {
-				if (time_installed == "true") {
-					terminal.setWorking(true);
-					terminal.print('Stopping time...');
-					setTimeout("Terminal.print('Time was stopped succesfully');", 2000);
-					setTimeout("Terminal.setWorking(false);", 2000);
-					time_passes=false
-				} else {
-					terminal.print(program+' could not be found.');
-				}
-			} else {
-				terminal.print(program+' could not be found.');
-			}
+			terminal.print('Mutator: Unknown');
+		}
+		terminal.print('Amount of moves: '+amountofmoves+'.');
+		terminal.print('Amount of ghost moves: '+amountofghostmoves+'.');
+		terminal.print('Amount of scares survived: '+amountofscaressurvived+'.');
+		terminal.print('Amount of rooms entered: '+amountofroomsentered+'.');
+		terminal.print('Playtime: '+playtime+' seconds.');
+		terminal.print('');
+		if (gameresult == 'lost') {
+			terminal.print('The game was LOST');
+		} else if (gameresult == 'won') {
+			terminal.print('The game was WON');
+		} else {
+			terminal.print('The game ended with an undefined status (neither won nor lost)');
 		}
 	}
+	menu='newgame'
+	terminal.print('Do you want to start a new game? (yes/no)');
 };
 
 // No peeking!
-TerminalShell.commands['help'] = TerminalShell.commands['halp'] = function(terminal) {
+TerminalShell.commands['help'] = function(terminal) {
 	terminal.print('Type "yes" or "no" to answer questions given by the system.');
 	terminal.print('Type "go" to go to a direction. For example, "go west" to go west.');
 	terminal.print('Type "look" to look around the environment.');
-	terminal.print('Type "inspect" to inspect an object. For example, "inspect clock" to inspect a clock.');
+	terminal.print('Type "take" to add an item to your inventory. For example, "take crayon" to put a crayon in your inventory.');
 	terminal.print('Type "use" to use an object in the room. For example, type "use computer" to use a computer in the room. The "use" command is used for all kinds of interaction, so if you want to read a book write "use book" to do so.');
-	terminal.print('To stop using an object, type "back", "go back" or "exit".');
 }; 
+
+function shake(elems) {
+	elems.css('position', 'relative');
+	for (var i = 0; i <= 100; i++) {
+		return window.setTimeout(function() {
+			elems.css({top:getRandomInt(-3, 3), left:getRandomInt(-3, 3)});
+		}, 100);
+	}
+}
 
 $(document).ready(function() {
 	Terminal.promptActive = false;
@@ -579,6 +696,26 @@ $(document).ready(function() {
 			Terminal.print('');
 			Terminal.print('Type "help" for instructions on how to play.');
 			Terminal.print('');
-			Terminal.runCommand('look');
+			setTimeout("Terminal.print('=== Game Start ===');", 500);
+			if (gamemode == 1) {
+				setTimeout("Terminal.print('=== Gamemode: GHOST ===');", 1000);
+				if (mutator == 1) {
+					setTimeout("Terminal.print('=== Mutator: Turn-based ===');", 1500);
+				} else if (mutator == 2) {
+					setTimeout("Terminal.print('=== Mutator: Realtime ===');", 1500);
+				} else {
+					setTimeout("Terminal.print('ERROR REQUESTING MUTATOR STATUS');", 1500);
+				}
+				setTimeout("Terminal.print('=== Winning condition: Meet the ghost while carrying the item which is his weakness ===');", 2000);
+				setTimeout("Terminal.print('=== Losing condition: Meet the ghost without carrying the required item ===');", 2500);
+				setTimeout("Terminal.print('=== Helpful object(s): Computer, Note ===');", 3000);
+			} else {
+				setTimeout("Terminal.print('Critical error, please refresh the page...');", 1000);
+			}
+			setTimeout("Terminal.print('');", 3000);
+			setTimeout("Terminal.runCommand('look');", 3500);
+			// Initialize timer
+			playtime=0
+			setInterval("playtime=playtime+1", 1000);
 		}, noData);
 });
