@@ -29,6 +29,7 @@ if (time > 12) {
 	timeinfo='\nIt is now '+time+':00AM.';
 }
 destination=0
+lasthallway=0
 time_passes=true
 logged_in=false
 using_computer=false
@@ -38,6 +39,7 @@ password=getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRando
 currentfloor=1
 var inventory = [];
 gameresult='playing'
+gameover=0
 
 // Choose random gamemode and mutator
 gamemode=getRandomInt(1,1) // 1=Ghost
@@ -175,39 +177,51 @@ Adventure = {
 		}},				
 		10:{description:rooms1description[0], exits:{east:0}, enter:function(terminal) {
 				currentlocation=10
+				lasthallway=0
 		}},
 		11:{description:rooms1description[1], exits:{west:0}, enter:function(terminal) {
 				currentlocation=11
+				lasthallway=0
 		}},
 		12:{description:rooms1description[2], exits:{east:1}, enter:function(terminal) {
 				currentlocation=12
+				lasthallway=1
 		}},
 		13:{description:rooms1description[3], exits:{west:1}, enter:function(terminal) {
 				currentlocation=13
+				lasthallway=1
 		}},
 		14:{description:rooms1description[4], exits:{east:2}, enter:function(terminal) {
 				currentlocation=14
+				lasthallway=2
 		}},
 		15:{description:rooms1description[5], exits:{west:2}, enter:function(terminal) {
 				currentlocation=15
+				lasthallway=2
 		}},
 		16:{description:rooms1description[6], exits:{east:3}, enter:function(terminal) {
 				currentlocation=16
+				lasthallway=3
 		}},
 		17:{description:rooms1description[7], exits:{west:3}, enter:function(terminal) {
 				currentlocation=17
+				lasthallway=3
 		}},
 		18:{description:rooms1description[8], exits:{east:4}, enter:function(terminal) {
 				currentlocation=18
+				lasthallway=4
 		}},
 		19:{description:rooms1description[9], exits:{west:4}, enter:function(terminal) {
 				currentlocation=19
+				lasthallway=4
 		}},
 		20:{description:rooms1description[10], exits:{east:5}, enter:function(terminal) {
 				currentlocation=20
+				lasthallway=5
 		}},
 		21:{description:rooms1description[11], exits:{west:5}, enter:function(terminal) {
 				currentlocation=21
+				lasthallway=5
 		}},
 		100:{description:'You are at the top of the stairs. You can only go down here, or try to go through the door.', exits:{down:2}, enter:function(terminal) {
 				currentlocation=100
@@ -255,83 +269,89 @@ Adventure = {
 currentlocation = Adventure.location = Adventure.rooms[0];
 
 TerminalShell.commands['look'] = Adventure.look = function(terminal) {
-	if (silent_move == false) {
-		terminal.print(Adventure.location.description);	
-		if (Adventure.location.exits) {
-			terminal.print(timeinfo);
-			if (currentlocation == 0) {
-				var possibleDirections = ['north', 'east', 'west'];
-			} else if (currentlocation >= hallway_length) {
-				var possibleDirections = ['east', 'south', 'west'];
-			} else {
-				var possibleDirections = [];
-				$.each(Adventure.location.exits, function(name, id) {
-				possibleDirections.push(name);
-				});
-			}
-			terminal.print('Exits: '+possibleDirections.join(', '));
-			terminal.print('Hallway length: '+hallway_length+'');
-			if (menu != false) {
-				terminal.print('');
-				if (menu == "newgame") {
-					terminal.print('Would you like to start a new game?');
+	if (gameover == 0) {
+		if (silent_move == false) {
+			terminal.print(Adventure.location.description);	
+			if (Adventure.location.exits) {
+				terminal.print(timeinfo);
+				if (currentlocation == 0) {
+					var possibleDirections = ['north', 'east', 'west'];
+				} else if (currentlocation >= hallway_length) {
+					var possibleDirections = ['east', 'south', 'west'];
+				} else {
+					var possibleDirections = [];
+					$.each(Adventure.location.exits, function(name, id) {
+					possibleDirections.push(name);
+					});
+				}
+				terminal.print('Exits: '+possibleDirections.join(', '));
+				if (menu != false) {
+					terminal.print('');
+					if (menu == "newgame") {
+						terminal.print('Would you like to start a new game?');
+					}
 				}
 			}
 		}
+	} else {
+		terminal.print('This action cannot be executed when the match has ended.');
 	}
 };
 
 TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
-	if (Adventure.location.exits && direction in Adventure.location.exits) {
-		if (time_passes == true) {
-			random_time_passing=getRandomInt(0,5)
-			if (random_time_passing==5) {
-				time=time+1
+	if (gameover == 0) {
+		if (Adventure.location.exits && direction in Adventure.location.exits) {
+			destination=Adventure.location.exits[direction]
+			terminal.print('destination = '+destination);
+			if (time_passes == true) {
+				random_time_passing=getRandomInt(0,5)
+				if (random_time_passing==5) {
+					time=time+1
+				}
 			}
-		}
-		if (time >= 24) {
-			do
-			{
-			time=time-24
+			if (time >= 24) {
+				do
+				{
+				time=time-24
+				}
+				while (time >= 24);
 			}
-			while (time >= 24);
-		}
-		if (time > 12) {
-			timeinfo='\nIt is now '+(time-12)+':00PM';
-		} else {
-			timeinfo='\nIt is now '+time+':00AM.';
-		}
-		if (currentlocation == hallway_length) {
-			if (direction == 'north') {
-				terminal.print('You cannot go '+direction+'.');
+			if (time > 12) {
+				timeinfo='\nIt is now '+(time-12)+':00PM';
+			} else {
+				timeinfo='\nIt is now '+time+':00AM.';
+			}
+			if (currentlocation == hallway_length) {
+				if (direction == 'north') {
+					terminal.print('You cannot go '+direction+'.');
+				}
+			}
+			if (destination >= 10 && destination <= 99) {
+				if (direction == 'west') {
+					destination=destination-10
+				} else {
+					if (direction == 'east') {
+						destination=destination-10
+					}
+				}
+				if (rooms1[destination] == 'locked') {
+					terminal.print('The door is locked!')
+				} else {
+					amountofroomsentered=amountofroomsentered+1
+					amountofmoves=amountofmoves+1				
+					Adventure.goTo(terminal, Adventure.location.exits[direction]);
+				}
 			} else {
 				amountofmoves=amountofmoves+1
 				Adventure.goTo(terminal, Adventure.location.exits[direction]);
 			}
-		} else if (destination >= 10 && destination <= 99) {
-			if (direction == 'west') {
-				destination=currentlocation
-			} else {
-				if (direction == 'east') {
-					destination=currentlocation+1
-				}
-			}
-			if (rooms1[destination] == 'locked') {
-				Terminal.print('The door is locked!')
-				Terminal.runCommand('look')
-			} else {
-				amountofroomsentered=amountofroomsentered+1
-				amountofmoves=amountofmoves+1				
-				Adventure.goTo(terminal, Adventure.location.exits[direction]);
-			}
+		} else if (!direction) {
+			terminal.print('Go where?');
 		} else {
-			amountofmoves=amountofmoves+1
-			Adventure.goTo(terminal, Adventure.location.exits[direction]);
+			terminal.print('You cannot go '+direction+'.');
 		}
-	} else if (!direction) {
-		terminal.print('Go where?');
 	} else {
-		terminal.print('You cannot go '+direction+'.');
+		terminal.print('This action cannot be executed when the match has ended.');
 	}
 };
 
@@ -352,221 +372,256 @@ TerminalShell.commands['no'] = function(terminal) {
 }
 
 TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
-	objectlocation=currentlocation-10
-	if (!object) {
-		terminal.print('Use what?');
-	} else if (object == "door") {
-		if (rooms1[currentlocation] == 'locked') {
-			Terminal.print('The door is locked!');
-		} else {
-			Terminal.print('You open the door.');
-			Adventure.goTo(Terminal, i+10);
-		}
-	} else if (object == "clock") {
-		if (rooms1hasclock[objectlocation] == 1) {
-			terminal.print('You cannot use '+object+'.');
-		} else {
-			terminal.print('You cannot use '+object+'.');
-		}
-	} else if (object == "computer") {
-		if (rooms1hascomputer[objectlocation] == 1) {
-			using_computer=true
-			if (logged_in == false) {
-				terminal.print('Please login using the "login" command.');
+	if (gameover == 0) {
+		objectlocation=currentlocation-10
+		if (!object) {
+			terminal.print('Use what?');
+		} else if (object == "door") {
+			if (rooms1[currentlocation] == 'locked') {
+				Terminal.print('The door is locked!');
 			} else {
-				if (gamemode == 1) {
-					Terminal.setWorking(true);
-					terminal.print('Searching for the ghost...');
-					setTimeout("Terminal.print('You are at: Floor '+currentfloor+'.');", 2000);
-					setTimeout("Terminal.print('The ghost is at: Floor '+ghostfloor+'.');", 2500);
-					if (ghostlocation >= 0 && ghostlocation <= 9) {
-						setTimeout("Terminal.print('The ghost is in the hallway.');", 3000);
-					} else if (ghostlocation >= 10 && ghostlocation <= 99) {
-						setTimeout("Terminal.print('The ghost is in a room.');", 3000);
-					}
-					setTimeout("Terminal.print('Searching for weakness...');", 3500);
-					setTimeout("Terminal.print('The ghost can be defeated using: '+ghostweakness+'.');", 5000);
-					setTimeout("Terminal.print('Connection closed...');", 5000);
-					Terminal.setWorking(false);
-					using_computer=false
-				}
+				Terminal.print('You open the door.');
+				Adventure.goTo(Terminal, i+10);
 			}
+		} else if (object == "clock") {
+			if (rooms1hasclock[objectlocation] == 1) {
+				terminal.print('You cannot use '+object+'.');
+			} else {
+				terminal.print('You cannot use '+object+'.');
+			}
+		} else if (object == "computer") {
+			if (rooms1hascomputer[objectlocation] == 1) {
+				using_computer=true
+				if (logged_in == false) {
+					terminal.print('Please login using the "login" command.');
+				} else {
+					if (gamemode == 1) {
+						Terminal.setWorking(true);
+						terminal.print('Searching for the ghost...');
+						setTimeout("Terminal.print('You are at: Floor '+currentfloor+'.');", 2000);
+						setTimeout("Terminal.print('The ghost is at: Floor '+ghostfloor+'.');", 2500);
+						if (ghostlocation >= 0 && ghostlocation <= 9) {
+							setTimeout("Terminal.print('The ghost is in the hallway.');", 3000);
+						} else if (ghostlocation >= 10 && ghostlocation <= 99) {
+							setTimeout("Terminal.print('The ghost is in a room.');", 3000);
+						}
+						setTimeout("Terminal.print('Searching for weakness...');", 3500);
+						setTimeout("Terminal.print('The ghost can be defeated using: '+ghostweakness+'.');", 5000);
+						setTimeout("Terminal.print('Connection closed...');", 5000);
+						Terminal.setWorking(false);
+						using_computer=false
+					}
+				}
+			} else {
+				terminal.print('You cannot use '+object+'.');
+			}
+		} else if (object == "drawer") {
+			if (rooms1hasdrawer[objectlocation] == 1) {
+				terminal.print('You cannot use '+object+'.');
+			} else {
+				terminal.print('You cannot use '+object+'.');
+			}
+		} else if (object == "note") {
+			terminal.print('You grab the note and start reading...');
+			terminal.setWorking(true);
+			terminal.print('');
+			setTimeout("Terminal.print(note[objectlocation])", 2000);
+			terminal.setWorking(false);
 		} else {
 			terminal.print('You cannot use '+object+'.');
 		}
-	} else if (object == "drawer") {
-		if (rooms1hasdrawer[objectlocation] == 1) {
-			terminal.print('You cannot use '+object+'.');
-		} else {
-			terminal.print('You cannot use '+object+'.');
-		}
-	} else if (object == "note") {
-		terminal.print('You grab the note and start reading...');
-		terminal.setWorking(true);
-		terminal.print('');
-		setTimeout("Terminal.print(note[objectlocation])", 2000);
-		terminal.setWorking(false);
 	} else {
-		terminal.print('You cannot use '+object+'.');
+		terminal.print('This action cannot be executed when the match has ended.');
 	}
 };
 
 TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
-	objectlocation=currentlocation-10
-	if (!object) {
-		terminal.print('Take what?');
-	} else {
-		if ((object == 'crayon' && crayonlocation == objectlocation) || (object == 'flashlight' && flashlightlocation == objectlocation) || (object == 'screwdriver' && screwdriverlocation == objectlocation)) {
-			if (gamemode == 1) { // Ghost
-				if (inventory.length >= 1) {
-					terminal.print('Your inventory is full!');
-				} else {
-					terminal.print(object+' has been put in your inventory.');
-					inventory.push(object);
-				}
-			}
+  	if (gameover == 0) {
+		objectlocation=currentlocation-10
+		if (!object) {
+			terminal.print('Take what?');
 		} else {
-			terminal.print('You cannot take '+object+'.');
+			if ((object == 'crayon' && crayonlocation == objectlocation) || (object == 'flashlight' && flashlightlocation == objectlocation) || (object == 'screwdriver' && screwdriverlocation == objectlocation)) {
+				if (gamemode == 1) { // Ghost
+					if (inventory.length >= 1) {
+						terminal.print('Your inventory is full!');
+					} else {
+						terminal.print(object+' has been put in your inventory.');
+						inventory.push(object);
+						if (object == 'crayon') {
+							rooms1hascrayon[objectlocation]=0
+						} else if (object == 'flashlight') {
+							rooms1hasflashlight[objectlocation]=0
+						} else if (object == 'screwdriver') {
+							rooms1hasscrewdriver[objectlocation]=0
+						}
+					}
+				}
+			} else {
+				terminal.print('You cannot take '+object+'.');
+			}
 		}
+	} else {
+		terminal.print('This action cannot be executed when the match has ended.');
 	}
 };
 
 TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
-	if (!object) {
-		terminal.print('Drop what?');
-	} else {
-		if ($.inArray(object, inventory) != -1) {
-			// Remove from inventory code here...
-			objectlocation=currentlocation-10
-			if (object == 'crayon') {
-				crayonlocation=currentlocation
-				var inventory = [];
-			} else if (object == 'flashlight') {
-				flashlightlocation=currentlocation
-				var inventory = [];
-			} else if (object == 'screwdriver') {
-				screwdriverlocation=currentlocation
-				var inventory = [];
-			}
-			terminal.print('You dropped '+object+'.');
+	if (gameover == 0) {  
+		if (!object) {
+			terminal.print('Drop what?');
 		} else {
-			terminal.print('Could not find '+object+' in your inventory.');
+			if ($.inArray(object, inventory) != -1) {
+				// Remove from inventory code here...
+				objectlocation=currentlocation-10
+				if (object == 'crayon') {
+					rooms1hascrayon[objectlocation]=1
+					var inventory = [];
+				} else if (object == 'flashlight') {
+					rooms1hascrayon[objectlocation]=1
+					var inventory = [];
+				} else if (object == 'screwdriver') {
+					rooms1hascrayon[objectlocation]=1
+					var inventory = [];
+				}
+				terminal.print('You dropped '+object+'.');
+			} else {
+				terminal.print('Could not find '+object+' in your inventory.');
+			}
 		}
+	} else {
+		terminal.print('This action cannot be executed when the match has ended.');
 	}
 };
 
 TerminalShell.commands['inventory'] = function(terminal) {
-	inventoryoutput='Inventory: '
-	for (i = 0; i < inventory.length; i++) {
-		inventoryoutput=inventoryoutput+inventory[i]
-	}
-	if (inventoryoutput == 'Inventory: ') {
-		terminal.print('Your inventory is empty.')
+	if (gameover == 0) { 
+		inventoryoutput='Inventory: '
+		for (i = 0; i < inventory.length; i++) {
+			inventoryoutput=inventoryoutput+inventory[i]
+		}
+		if (inventoryoutput == 'Inventory: ') {
+			terminal.print('Your inventory is empty.')
+		} else {
+			terminal.print(inventoryoutput);
+		}
 	} else {
-		terminal.print(inventoryoutput);
+		terminal.print('This action cannot be executed when the match has ended.');
 	}
 };
 TerminalShell.commands['inspect'] = function(terminal, object) {
-	objectlocation=currentlocation-10
-	if (!object) {
-		Terminal.print('Inspect what?');
-	} else {
-		if (currentlocation >= 0 && currentlocation <= 9) {
-			if (object == "door") {
-				Terminal.print('This door leads to the laboratory');
-			} else if (object == "wall") {
-				Terminal.print('It looks like a pretty normal concrete wall.');
-			} else {
-				Terminal.print('You cannot inspect '+object+'.');
-			}
+	if (gameover == 0) { 
+		objectlocation=currentlocation-10
+		if (!object) {
+			Terminal.print('Inspect what?');
 		} else {
-			if (object == "computer") {
-				if (rooms1hascomputer[objectlocation] == 1) {
-					Terminal.print('It is an old computer, probably from around the 70s. It seems to be running Unix.');
+			if (currentlocation >= 0 && currentlocation <= 9) {
+				if (object == "door") {
+					Terminal.print('This door leads to the laboratory');
+				} else if (object == "wall") {
+					Terminal.print('It looks like a pretty normal concrete wall.');
 				} else {
 					Terminal.print('You cannot inspect '+object+'.');
 				}
-			} else if (object == "clock") {
-				if (rooms1hasclock[objectlocation] == 1) {
-					if (time_passes == false) {
-						Terminal.print('The hands of the clock don\'t move, but the clock doesn\'t look like it is broken.'+timeinfo);
+			} else {
+				if (object == "computer") {
+					if (rooms1hascomputer[objectlocation] == 1) {
+						Terminal.print('It is an old computer, probably from around the 70s. It seems to be running Unix.');
 					} else {
-						Terminal.print('You look at the clock.'+timeinfo);
+						Terminal.print('You cannot inspect '+object+'.');
+					}
+				} else if (object == "clock") {
+					if (rooms1hasclock[objectlocation] == 1) {
+						if (time_passes == false) {
+							Terminal.print('The hands of the clock don\'t move, but the clock doesn\'t look like it is broken.'+timeinfo);
+						} else {
+							Terminal.print('You look at the clock.'+timeinfo);
+						}
+					} else {
+						Terminal.print('You cannot inspect '+object+'.');
+					}
+				} else if (object == "drawer") {
+					if (rooms1hasdrawer[objectlocation] == 1) {
+						Terminal.print('The drawer is made of wood, and seems slightly damaged due to old age, from the looks of it. It appears to be openable.');
+					} else {
+						Terminal.print('You cannot inspect '+object+'.');
 					}
 				} else {
 					Terminal.print('You cannot inspect '+object+'.');
 				}
-			} else if (object == "drawer") {
-				if (rooms1hasdrawer[objectlocation] == 1) {
-					Terminal.print('The drawer is made of wood, and seems slightly damaged due to old age, from the looks of it. It appears to be openable.');
-				} else {
-					Terminal.print('You cannot inspect '+object+'.');
-				}
-			} else {
-				Terminal.print('You cannot inspect '+object+'.');
 			}
 		}
+	} else {
+		terminal.print('This action cannot be executed when the match has ended.');
 	}
 };
 
 TerminalShell.commands['sleep'] = TerminalShell.commands['rest'] = function(terminal, duration) {
-	duration = Number(duration);
-	if (!duration) {
-		terminal.print('TIP: If you type a number behind "rest", you will rest for that many hours. If no number has been entered, you will rest for 1 hour.');
-		duration = 1;
-	}
-	terminal.setWorking(true);
-	terminal.print("You go to rest.");
-	$('#screen').fadeOut(1000);
-	window.setTimeout(function() {
-		terminal.setWorking(false);
-		$('#screen').fadeIn();
-		if (time_passes == true) {
-			time=time+(duration)
-			if (time >= 24) {
-				do
-				{
-				time=time-24
-				}
-				while (time >= 24);
-			}
-			if (time > 12) {
-				timeinfo='\nIt is now '+(time-12)+':00PM';
-			} else {
-				timeinfo='\nIt is now '+time+':00AM.';
-			}
+	if (gameover == 0) { 
+		duration = Number(duration);
+		if (!duration) {
+			terminal.print('TIP: If you type a number behind "rest", you will rest for that many hours. If no number has been entered, you will rest for 1 hour.');
+			duration = 1;
 		}
-			terminal.print(timeinfo);
-	}, 2000);
+		terminal.setWorking(true);
+		terminal.print("You go to rest.");
+		$('#screen').fadeOut(1000);
+		window.setTimeout(function() {
+			terminal.setWorking(false);
+			$('#screen').fadeIn();
+			if (time_passes == true) {
+				time=time+(duration)
+				if (time >= 24) {
+					do
+					{
+					time=time-24
+					}
+					while (time >= 24);
+				}
+				if (time > 12) {
+					timeinfo='\nIt is now '+(time-12)+':00PM';
+				} else {
+					timeinfo='\nIt is now '+time+':00AM.';
+				}
+			}
+				terminal.print(timeinfo);
+		}, 2000);
+	} else {
+		terminal.print('This action cannot be executed when the match has ended.');
+	}
 };
 
 TerminalShell.commands['login'] = function(terminal, username, passwd) {
-	if (!using_computer) {
-		terminal.print('Unrecognized command. Type "help" for assistance.');
-	} else {
-		if (logged_in == true) {
-			terminal.print('You are already logged in!')
+	if (gameover == 0) { 
+		if (!using_computer) {
+			terminal.print('Unrecognized command. Type "help" for assistance.');
 		} else {
-			if (!username) {
-				terminal.print('Usage: login username password');
+			if (logged_in == true) {
+				terminal.print('You are already logged in!')
 			} else {
-				if (username == 'root') {
-					if (!passwd) {
-						terminal.print('You must enter a password!');
-					} else {
-						if (passwd == password) {
-							logged_in=true
-							terminal.print('You have logged in succesfully.');
-							Terminal.runCommand('use computer');
-						} else {
-							terminal.print('Incorrect password.');
-						}
-					}
+				if (!username) {
+					terminal.print('Usage: login username password');
 				} else {
-					terminal.print('Incorrect user credentials');
+					if (username == 'root') {
+						if (!passwd) {
+							terminal.print('You must enter a password!');
+						} else {
+							if (passwd == password) {
+								logged_in=true
+								terminal.print('You have logged in succesfully.');
+								Terminal.runCommand('use computer');
+							} else {
+								terminal.print('Incorrect password.');
+							}
+						}
+					} else {
+						terminal.print('Incorrect user credentials');
+					}
 				}
 			}
 		}
+	} else {
+		terminal.print('This action cannot be executed when the match has ended.');
 	}
 }
 
@@ -595,10 +650,12 @@ Adventure.gamemode = function(terminal) {
 				terminal.print('The ghost makes a terrible noise and disappears.');
 				terminal.print('You win!');
 				gameresult='won'
+				gameover=1
 			} else {
 				if ((getRandomInt(0,1) == 1)) {
 					terminal.print('The ghost got you! GAME OVER!');
 					gameresult='lost'
+					gameover=1
 				} else {
 					terminal.print('BOO!');
 					shake($('#screen'));
@@ -623,7 +680,7 @@ Adventure.gamemode = function(terminal) {
 				terminal.print('You feel a cold shiver...');
 			}
 			// Debug
-			terminal.print('You are at '+currentlocation+'. The ghost is at '+ghostlocation+'.');
+			// terminal.print('You are at '+currentlocation+'. The ghost is at '+ghostlocation+'.');
 		}
 	}
 	if ((gameresult=='won') || (gameresult=='lost')) {
