@@ -14,6 +14,26 @@ function randomChoice(items) {
 	return items[getRandomInt(0, items.length-1)];
 }
 
+function objectNameToId(object) {
+	if (object == "computer") {
+		objectid=0
+	} else if (object == "crayons") {
+		objectid=1
+	} else if (object == "flashlight") {
+		objectid=2
+	} else if (object == "note") {
+		objectid=3
+	} else if (object == "screwdriver") {
+		objectid=4
+	} else if (object == "clock") {
+		objectid=5
+	} else if (object == "drawer") {
+		objectid=6
+	} else {
+		objectid=-1
+	}
+}
+
 // Early semi-randomization code
 lockedcount=0
 hallway_length=getRandomInt(1,5)
@@ -40,6 +60,7 @@ currentfloor=1
 var inventory = [];
 gameresult='playing'
 gameover=0
+objectid=-1
 
 // Choose random gamemode and mutator
 gamemode=getRandomInt(1,1) // 1=Ghost
@@ -77,82 +98,112 @@ if (gamemode == 1) {
 
 //Generate rooms
 var rooms1 = new Array(hallway_length*2+1);
-var rooms1description = new Array(hallway_length*2+1);
-var computerlocation = getRandomInt(0, (hallway_length*2+1));
-var crayonlocation = getRandomInt(0, (hallway_length*2+1));
-var flashlightlocation = getRandomInt(0, (hallway_length*2+1));
-var notelocation = getRandomInt(0, (hallway_length*2+1));
+var roomdescription = new Array(hallway_length*2+1);
+var itemlocation = new Array(5);
+for (i = 0; i <= 5; i++) {
+	itemlocation[i] = getRandomInt(0, (hallway_length*2+1));
+}
+itemname = new Array(5);
+itemname[0]="computer"
+itemname[1]="crayons"
+itemname[2]="flashlight"
+itemname[3]="note"
+itemname[4]="screwdriver"
+itemname[5]="clock"
+itemname[6]="drawer"
 var note = new Array(hallway_length*2+1);
-var screwdriverlocation = getRandomInt(0, (hallway_length*2+1));
 
-var rooms1hasclock = new Array(hallway_length*2+1);
-var rooms1hascomputer = new Array(hallway_length*2+1);
-var rooms1hascrayon = new Array(hallway_length*2+1);
-var rooms1hasdrawer = new Array(hallway_length*2+1);
-var rooms1hasflashlight = new Array(hallway_length*2+1);
-var rooms1hasnote = new Array(hallway_length*2+1);
-var rooms1hasscrewdriver = new Array(hallway_length*2+1);
+var roomcontainsitem = new Array(7)
+for (i = 0; i <=7; i++) {
+	roomcontainsitem[i] = new Array
+}
+roomcontainsitemname = new Array(7)
+roomcontainsitemlongname = new Array(7)
+roomcontainsitemname[0]="computer"
+roomcontainsitemlongname[0]="a computer"
+roomcontainsitemname[1]="crayons"
+roomcontainsitemlongname[1]="a box of crayons"
+roomcontainsitemname[2]="flashlight"
+roomcontainsitemlongname[2]="a flashlight"
+roomcontainsitemname[3]="note"
+roomcontainsitemlongname[3]="a note"
+roomcontainsitemname[4]="screwdriver"
+roomcontainsitemlongname[4]="a screwdriver"
+roomcontainsitemname[5]="clock"
+roomcontainsitemlongname[5]="a clock"
+roomcontainsitemname[6]="drawer"
+roomcontainsitemlongname[6]="a drawer"
+
+
 for (var i = 0; i <= (hallway_length*2+1) ; i++){
-	if (getRandomInt(0,1) == 1 && computerlocation != i && notelocation != i) {
-		rooms1[i]='locked'
-		lockedcount=lockedcount+1
-		description = 'This room is locked';
-	} else {
-		description='You are in a room.'
-		if (computerlocation == i) {
-			rooms1hascomputer[i]=1
-			description = description + ' It contains a computer.';
-		} else {
-			rooms1hascomputer[i]=0
-		}
-		if (getRandomInt(0,1) == 1) {
-			rooms1hasdrawer[i]=1
-			description = description + ' It contains a drawer.';
-		} else {
-			rooms1hasdrawer[i]=0
-		}
-		if (getRandomInt(0,1) == 1) {
-			rooms1hasclock[i]=1
-			description = description + ' It contains a clock.';
-		} else {
-			rooms1hasclock[i]=0
-		}
-		if ((notelocation == i) || (getRandomInt(0,1) == 1)) {
-			rooms1hasnote[i]=1
-			description = description + ' It contains a note.';
-			if (notelocation == i) {
-				note[i]='login: root '+password;
-			} else {
-				randomInt=getRandomInt(0,1)
-				if (randomInt == 0) {
-					note[i]='You\'re going to die...'
-				} else if (randomInt == 1) {
-					note[i]='There\'s a computer on the first floor'
-				}
-			}
-		} else {
-			rooms1hasnote[i]=0
-		}
-		if (crayonlocation == i) {
-			rooms1hascrayon[i]=1
-			description = description + ' There is crayon here.';
-		} else {
-			rooms1hascrayon[i]=0
-		}
-		if (screwdriverlocation == i) {
-			rooms1hasscrewdriver[i]=1
-			description = description + ' There is a screwdriver here.';
-		} else {
-			rooms1hasscrewdriver[i]=0
-		}
-		if (flashlightlocation == i) {
-			rooms1hasflashlight[i]=1
-			description = description + ' There is a flashlight.';
-		} else {
-			rooms1hasflashlight[i]=0
+	containsitem=0
+	var description = new Array()
+	for (var j = 0; j <= itemlocation.length; j++) {
+		if (itemlocation[j] == 1) {
+			containsitem=1
 		}
 	}
-	rooms1description[i] = description
+	if (getRandomInt(0,1) == 1 && containsitem != 0) {
+		rooms1[i]='locked'
+		lockedcount=lockedcount+1
+		roomdescription[i]='The room is locked'
+	} else {
+		for (j = 0; j <= roomcontainsitem.length; j++) {
+			if (j <= itemlocation.length) {
+				if (itemlocation[j] == i) {
+					roomcontainsitem[j].push(i)
+					description.push(roomcontainsitemlongname[j]);
+				} else if (j >=5) {
+					if (getRandomInt(0,1) == 1) {
+						roomcontainsitem[j].push(i)
+						description.push(roomcontainsitemlongname[j]);
+					}
+				}
+			}
+		}
+		roomdescription[i] = 'You are in a room.'
+		for (j = 0; j <= description.length; j++) {
+			if (j == 0 && description.length >= 1) {
+				roomdescription[i] = roomdescription[i] + ' The room contains '+description.shift()
+			} else if (j == 0) {
+				roomdescription[i] = roomdescription[i] + ' It only contains '+description.shift()+'.'
+			} 
+			if (j == 1 && description.length >= 2) {
+				roomdescription[i] = roomdescription[i] + ', '+description.shift()
+			} else if (j == 1) {
+				roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
+			}
+			if (j == 2) {
+				roomdescription[i] = roomdescription[i] + ', and '+description.shift()+'.'
+			}
+			if (j == 3 && description.length >= 4) {
+				roomdescription[i] = roomdescription[i] + ' It also contains '+description.shift()
+			} else if (j == 3) {
+				roomdescription[i] = roomdescription[i] + ' It also contains '+description.shift()+'.'
+			}
+			if (j == 4 && description.length >= 5) {
+				roomdescription[i] = roomdescription[i] + ', '+description.shift()
+			} else if (j == 4) {
+				roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
+			}
+			if (j == 5) {
+				roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
+			}
+			if (j == 6 && description.length == 6) {
+				roomdescription[i] = roomdescription[i] + ' You can also see '+description.shift()+'.'
+			} else if (j == 6 && description.length >= 7) {
+				roomdescription[i] = roomdescription[i] + ' You can also see '+description.shift()
+			}
+			if (j == 7) {
+				for (j = 7; j <= description.length-1; j++) {
+					roomdescription[i] = roomdescription[i] + ', '+description.shift()
+				}
+				if (j == description.length) {
+					roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
+				}
+			}
+		}
+	}
 }
 
 Adventure = {
@@ -175,51 +226,51 @@ Adventure = {
 		5:{description:'You are in a hallway.', exits:{east:21, south:4, west:20}, enter:function(terminal) {
 				currentlocation=5
 		}},				
-		10:{description:rooms1description[0], exits:{east:0}, enter:function(terminal) {
+		10:{description:roomdescription[0], exits:{east:0}, enter:function(terminal) {
 				currentlocation=10
 				lasthallway=0
 		}},
-		11:{description:rooms1description[1], exits:{west:0}, enter:function(terminal) {
+		11:{description:roomdescription[1], exits:{west:0}, enter:function(terminal) {
 				currentlocation=11
 				lasthallway=0
 		}},
-		12:{description:rooms1description[2], exits:{east:1}, enter:function(terminal) {
+		12:{description:roomdescription[2], exits:{east:1}, enter:function(terminal) {
 				currentlocation=12
 				lasthallway=1
 		}},
-		13:{description:rooms1description[3], exits:{west:1}, enter:function(terminal) {
+		13:{description:roomdescription[3], exits:{west:1}, enter:function(terminal) {
 				currentlocation=13
 				lasthallway=1
 		}},
-		14:{description:rooms1description[4], exits:{east:2}, enter:function(terminal) {
+		14:{description:roomdescription[4], exits:{east:2}, enter:function(terminal) {
 				currentlocation=14
 				lasthallway=2
 		}},
-		15:{description:rooms1description[5], exits:{west:2}, enter:function(terminal) {
+		15:{description:roomdescription[5], exits:{west:2}, enter:function(terminal) {
 				currentlocation=15
 				lasthallway=2
 		}},
-		16:{description:rooms1description[6], exits:{east:3}, enter:function(terminal) {
+		16:{description:roomdescription[6], exits:{east:3}, enter:function(terminal) {
 				currentlocation=16
 				lasthallway=3
 		}},
-		17:{description:rooms1description[7], exits:{west:3}, enter:function(terminal) {
+		17:{description:roomdescription[7], exits:{west:3}, enter:function(terminal) {
 				currentlocation=17
 				lasthallway=3
 		}},
-		18:{description:rooms1description[8], exits:{east:4}, enter:function(terminal) {
+		18:{description:roomdescription[8], exits:{east:4}, enter:function(terminal) {
 				currentlocation=18
 				lasthallway=4
 		}},
-		19:{description:rooms1description[9], exits:{west:4}, enter:function(terminal) {
+		19:{description:roomdescription[9], exits:{west:4}, enter:function(terminal) {
 				currentlocation=19
 				lasthallway=4
 		}},
-		20:{description:rooms1description[10], exits:{east:5}, enter:function(terminal) {
+		20:{description:roomdescription[10], exits:{east:5}, enter:function(terminal) {
 				currentlocation=20
 				lasthallway=5
 		}},
-		21:{description:rooms1description[11], exits:{west:5}, enter:function(terminal) {
+		21:{description:roomdescription[11], exits:{west:5}, enter:function(terminal) {
 				currentlocation=21
 				lasthallway=5
 		}},
@@ -236,18 +287,6 @@ Adventure = {
 				Adventure.goTo(Terminal,201);
 		},
 		666:{description:'You\'re dead!'},
-		
-		10002:{description:'You open the drawers.', enter:function(terminal) {
-			terminal.print('');
-			terminal.setWorking(true);
-			setTimeout("Terminal.print('You find a note and read its content.');", 2000);
-			setTimeout("Terminal.print('');", 4000);
-			setTimeout("Terminal.print('root '+password);", 4000);
-			setTimeout("Terminal.print('');", 4000);
-			setTimeout("Terminal.print('----------------');", 4000);
-			setTimeout("Terminal.setWorking(false);", 4000);
-			setTimeout("Adventure.goTo(Terminal, 0);", 4000);
-		}},
 	},
 	status: {
 		alive: true,
@@ -276,7 +315,7 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 				terminal.print(timeinfo);
 				if (currentlocation == 0) {
 					var possibleDirections = ['north', 'east', 'west'];
-				} else if (currentlocation >= hallway_length) {
+				} else if (currentlocation >= hallway_length && currentlocation <= 9) {
 					var possibleDirections = ['east', 'south', 'west'];
 				} else {
 					var possibleDirections = [];
@@ -302,7 +341,6 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 	if (gameover == 0) {
 		if (Adventure.location.exits && direction in Adventure.location.exits) {
 			destination=Adventure.location.exits[direction]
-			terminal.print('destination = '+destination);
 			if (time_passes == true) {
 				random_time_passing=getRandomInt(0,5)
 				if (random_time_passing==5) {
@@ -372,63 +410,53 @@ TerminalShell.commands['no'] = function(terminal) {
 }
 
 TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
+	// Convert objects to numbers
+	objectNameToId(object);
 	if (gameover == 0) {
 		objectlocation=currentlocation-10
 		if (!object) {
 			terminal.print('Use what?');
-		} else if (object == "door") {
-			if (rooms1[currentlocation] == 'locked') {
-				Terminal.print('The door is locked!');
+// 		} else if (object == "computer") {
+// 			if (rooms1hascomputer[objectlocation] == 1) {
+// 				using_computer=true
+// 				if (logged_in == false) {
+// 					terminal.print('Please login using the "login" command.');
+// 				} else {
+// 					if (gamemode == 1) {
+// 						Terminal.setWorking(true);
+// 						terminal.print('Searching for the ghost...');
+// 						setTimeout("Terminal.print('You are at: Floor '+currentfloor+'.');", 2000);
+// 						setTimeout("Terminal.print('The ghost is at: Floor '+ghostfloor+'.');", 2500);
+// 						if (ghostlocation >= 0 && ghostlocation <= 9) {
+// 							setTimeout("Terminal.print('The ghost is in the hallway.');", 3000);
+// 						} else if (ghostlocation >= 10 && ghostlocation <= 99) {
+// 							setTimeout("Terminal.print('The ghost is in a room.');", 3000);
+// 						}
+// 						setTimeout("Terminal.print('Searching for weakness...');", 3500);
+// 						setTimeout("Terminal.print('The ghost can be defeated using: '+ghostweakness+'.');", 5000);
+// 						setTimeout("Terminal.print('Connection closed...');", 5000);
+// 						Terminal.setWorking(false);
+// 						using_computer=false
+// 					}
+// 				}
+// 			} else {
+// 				terminal.print('You cannot use '+object+'.');
+// 			}
+// 		} else if (object == "note") {
+// 			if (roomcontainsitemname
+// 			terminal.print('You grab the note and start reading...');
+// 			terminal.setWorking(true);
+// 			terminal.print('');
+// 			setTimeout("Terminal.print(note[objectlocation])", 2000);
+// 			terminal.setWorking(false);
+		} else if (objectid != -1) {
+			if (roomcontainsitem[objectid].indexOf(objectlocation) != -1) {
+				terminal.print('You try to use the '+roomcontainsitemlongname[objectid]+', but nothing useful seems to happen.');
 			} else {
-				Terminal.print('You open the door.');
-				Adventure.goTo(Terminal, i+10);
+				terminal.print('There is no '+roomcontainsitemname[objectid]+' here.');
 			}
-		} else if (object == "clock") {
-			if (rooms1hasclock[objectlocation] == 1) {
-				terminal.print('You cannot use '+object+'.');
-			} else {
-				terminal.print('You cannot use '+object+'.');
-			}
-		} else if (object == "computer") {
-			if (rooms1hascomputer[objectlocation] == 1) {
-				using_computer=true
-				if (logged_in == false) {
-					terminal.print('Please login using the "login" command.');
-				} else {
-					if (gamemode == 1) {
-						Terminal.setWorking(true);
-						terminal.print('Searching for the ghost...');
-						setTimeout("Terminal.print('You are at: Floor '+currentfloor+'.');", 2000);
-						setTimeout("Terminal.print('The ghost is at: Floor '+ghostfloor+'.');", 2500);
-						if (ghostlocation >= 0 && ghostlocation <= 9) {
-							setTimeout("Terminal.print('The ghost is in the hallway.');", 3000);
-						} else if (ghostlocation >= 10 && ghostlocation <= 99) {
-							setTimeout("Terminal.print('The ghost is in a room.');", 3000);
-						}
-						setTimeout("Terminal.print('Searching for weakness...');", 3500);
-						setTimeout("Terminal.print('The ghost can be defeated using: '+ghostweakness+'.');", 5000);
-						setTimeout("Terminal.print('Connection closed...');", 5000);
-						Terminal.setWorking(false);
-						using_computer=false
-					}
-				}
-			} else {
-				terminal.print('You cannot use '+object+'.');
-			}
-		} else if (object == "drawer") {
-			if (rooms1hasdrawer[objectlocation] == 1) {
-				terminal.print('You cannot use '+object+'.');
-			} else {
-				terminal.print('You cannot use '+object+'.');
-			}
-		} else if (object == "note") {
-			terminal.print('You grab the note and start reading...');
-			terminal.setWorking(true);
-			terminal.print('');
-			setTimeout("Terminal.print(note[objectlocation])", 2000);
-			terminal.setWorking(false);
 		} else {
-			terminal.print('You cannot use '+object+'.');
+			terminal.print('There is no '+object+' here.');
 		}
 	} else {
 		terminal.print('This action cannot be executed when the match has ended.');
@@ -474,15 +502,14 @@ TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
 			if ($.inArray(object, inventory) != -1) {
 				// Remove from inventory code here...
 				objectlocation=currentlocation-10
+				objectininventory = inventory.indexOf(object)
+				inventory.splice(objectininventory, 1);
 				if (object == 'crayon') {
 					rooms1hascrayon[objectlocation]=1
-					var inventory = [];
 				} else if (object == 'flashlight') {
 					rooms1hascrayon[objectlocation]=1
-					var inventory = [];
 				} else if (object == 'screwdriver') {
 					rooms1hascrayon[objectlocation]=1
-					var inventory = [];
 				}
 				terminal.print('You dropped '+object+'.');
 			} else {
