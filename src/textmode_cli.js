@@ -99,26 +99,24 @@ if (gamemode == 1) {
 //Generate rooms
 var rooms1 = new Array(hallway_length*2+1);
 var roomdescription = new Array(hallway_length*2+1);
-var itemlocation = new Array(5);
-for (i = 0; i <= 5; i++) {
+var itemlocation = new Array(4);
+for (i = 0; i <= 4; i++) {
 	itemlocation[i] = getRandomInt(0, (hallway_length*2+1));
 }
-itemname = new Array(5);
+itemname = new Array(4);
 itemname[0]="computer"
 itemname[1]="crayons"
 itemname[2]="flashlight"
 itemname[3]="note"
 itemname[4]="screwdriver"
-itemname[5]="clock"
-itemname[6]="drawer"
 var note = new Array(hallway_length*2+1);
 
-var roomcontainsitem = new Array(7)
-for (i = 0; i <=7; i++) {
+var roomcontainsitem = new Array(6)
+for (i = 0; i <=6; i++) {
 	roomcontainsitem[i] = new Array
 }
-roomcontainsitemname = new Array(7)
-roomcontainsitemlongname = new Array(7)
+roomcontainsitemname = new Array(6)
+roomcontainsitemlongname = new Array(6)
 roomcontainsitemname[0]="computer"
 roomcontainsitemlongname[0]="a computer"
 roomcontainsitemname[1]="crayons"
@@ -153,7 +151,7 @@ for (var i = 0; i <= (hallway_length*2+1) ; i++){
 				if (itemlocation[j] == i) {
 					roomcontainsitem[j].push(i)
 					description.push(roomcontainsitemlongname[j]);
-				} else if (j >=5) {
+				} else if (j >= 4) {
 					if (getRandomInt(0,1) == 1) {
 						roomcontainsitem[j].push(i)
 						description.push(roomcontainsitemlongname[j]);
@@ -163,12 +161,12 @@ for (var i = 0; i <= (hallway_length*2+1) ; i++){
 		}
 		roomdescription[i] = 'You are in a room.'
 		for (j = 0; j <= description.length; j++) {
-			if (j == 0 && description.length >= 1) {
+			if (j == 0 && description.length >= 2) {
 				roomdescription[i] = roomdescription[i] + ' The room contains '+description.shift()
 			} else if (j == 0) {
 				roomdescription[i] = roomdescription[i] + ' It only contains '+description.shift()+'.'
 			} 
-			if (j == 1 && description.length >= 2) {
+			if (j == 1 && description.length >= 3) {
 				roomdescription[i] = roomdescription[i] + ', '+description.shift()
 			} else if (j == 1) {
 				roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
@@ -176,12 +174,12 @@ for (var i = 0; i <= (hallway_length*2+1) ; i++){
 			if (j == 2) {
 				roomdescription[i] = roomdescription[i] + ', and '+description.shift()+'.'
 			}
-			if (j == 3 && description.length >= 4) {
+			if (j == 3 && description.length >= 5) {
 				roomdescription[i] = roomdescription[i] + ' It also contains '+description.shift()
 			} else if (j == 3) {
 				roomdescription[i] = roomdescription[i] + ' It also contains '+description.shift()+'.'
 			}
-			if (j == 4 && description.length >= 5) {
+			if (j == 4 && description.length >= 6) {
 				roomdescription[i] = roomdescription[i] + ', '+description.shift()
 			} else if (j == 4) {
 				roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
@@ -189,9 +187,9 @@ for (var i = 0; i <= (hallway_length*2+1) ; i++){
 			if (j == 5) {
 				roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
 			}
-			if (j == 6 && description.length == 6) {
+			if (j == 6 && description.length == 7) {
 				roomdescription[i] = roomdescription[i] + ' You can also see '+description.shift()+'.'
-			} else if (j == 6 && description.length >= 7) {
+			} else if (j == 6 && description.length >= 8) {
 				roomdescription[i] = roomdescription[i] + ' You can also see '+description.shift()
 			}
 			if (j == 7) {
@@ -465,29 +463,26 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 
 TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
   	if (gameover == 0) {
+		objectNameToId(object)
 		objectlocation=currentlocation-10
 		if (!object) {
 			terminal.print('Take what?');
-		} else {
-			if ((object == 'crayon' && crayonlocation == objectlocation) || (object == 'flashlight' && flashlightlocation == objectlocation) || (object == 'screwdriver' && screwdriverlocation == objectlocation)) {
+		} else if (objectid != -1) {
+			if (roomcontainsitem[objectid].indexOf(objectlocation) != -1) {
 				if (gamemode == 1) { // Ghost
 					if (inventory.length >= 1) {
 						terminal.print('Your inventory is full!');
 					} else {
-						terminal.print(object+' has been put in your inventory.');
+						terminal.print(roomcontainsitemlongname[objectid]+' has been put in your inventory.');
 						inventory.push(object);
-						if (object == 'crayon') {
-							rooms1hascrayon[objectlocation]=0
-						} else if (object == 'flashlight') {
-							rooms1hasflashlight[objectlocation]=0
-						} else if (object == 'screwdriver') {
-							rooms1hasscrewdriver[objectlocation]=0
-						}
+						roomcontainsitem[objectid].splice(roomcontainsitem[objectid].indexOf(objectlocation), 1)
 					}
 				}
 			} else {
 				terminal.print('You cannot take '+object+'.');
 			}
+		} else {
+			terminal.print('You cannot take '+object+'.');
 		}
 	} else {
 		terminal.print('This action cannot be executed when the match has ended.');
@@ -499,18 +494,12 @@ TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
 		if (!object) {
 			terminal.print('Drop what?');
 		} else {
+			objectNameToId(object)
 			if ($.inArray(object, inventory) != -1) {
-				// Remove from inventory code here...
 				objectlocation=currentlocation-10
 				objectininventory = inventory.indexOf(object)
 				inventory.splice(objectininventory, 1);
-				if (object == 'crayon') {
-					rooms1hascrayon[objectlocation]=1
-				} else if (object == 'flashlight') {
-					rooms1hascrayon[objectlocation]=1
-				} else if (object == 'screwdriver') {
-					rooms1hascrayon[objectlocation]=1
-				}
+				roomcontainsitem[objectid].push(currentlocation-10)
 				terminal.print('You dropped '+object+'.');
 			} else {
 				terminal.print('Could not find '+object+' in your inventory.');
@@ -523,9 +512,15 @@ TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
 
 TerminalShell.commands['inventory'] = function(terminal) {
 	if (gameover == 0) { 
+		inventory.sort()
 		inventoryoutput='Inventory: '
 		for (i = 0; i < inventory.length; i++) {
 			inventoryoutput=inventoryoutput+inventory[i]
+			if (i+1 < inventory.length) {
+				inventoryoutput=inventoryoutput+', '
+			} else {
+				inventoryoutput=inventoryoutput+'.'
+			}
 		}
 		if (inventoryoutput == 'Inventory: ') {
 			terminal.print('Your inventory is empty.')
