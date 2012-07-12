@@ -34,10 +34,53 @@ function objectNameToId(object) {
 	}
 }
 
+function createDescription(currentlocation) {
+	for (j = 0; j <= description[i].length; j++) {
+		if (j == 0 && description[i].length >= 2) {
+			roomdescription[i] = roomdescription[i] + ' The room contains '+description[i].shift()
+		} else if (j == 0 && description[i].length >= 1) {
+			roomdescription[i] = roomdescription[i] + ' It only contains '+description[i].shift()+'.'
+		} 
+		if (j == 1 && description[i].length >= 3) {
+			roomdescription[i] = roomdescription[i] + ', '+description[i].shift()
+		} else if (j == 1) {
+			roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+		}
+		if (j == 2) {
+			roomdescription[i] = roomdescription[i] + ', and '+description[i].shift()+'.'
+		}
+		if (j == 3 && description[i].length >= 5) {
+			roomdescription[i] = roomdescription[i] + ' It also contains '+description[i].shift()
+		} else if (j == 3) {
+			roomdescription[i] = roomdescription[i] + ' It also contains '+description[i].shift()+'.'
+		}
+		if (j == 4 && description[i].length >= 6) {
+			roomdescription[i] = roomdescription[i] + ', '+description[i].shift()
+		} else if (j == 4) {
+			roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+		}
+		if (j == 5) {
+			roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+		}
+		if (j == 6 && description[i].length == 7) {
+			roomdescription[i] = roomdescription[i] + ' You can also see '+description[i].shift()+'.'
+		} else if (j == 6 && description[i].length >= 8) {
+			roomdescription[i] = roomdescription[i] + ' You can also see '+description[i].shift()
+		}
+		if (j == 7) {
+			for (j = 7; j <= description[i].length-1; j++) {
+				roomdescription[i] = roomdescription[i] + ', '+description[i].shift()
+			}
+			if (j == description[i].length) {
+				roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+			}
+		}
+	}
+}
+
 // Early semi-randomization code
 lockedcount=0
-hallway_length=getRandomInt(1,5)
-stair_location=getRandomInt(1,5)
+hallway_length=getRandomInt(1,9)
 amount_of_floors=getRandomInt(3,3)
 // Indexing variables like a gentleman
 amountofmoves=0
@@ -83,7 +126,7 @@ if (gamemode == 1) {
 	if (getRandomInt(1,2) == 1) {
 		ghostlocationroom=getRandomInt(0,(hallway_length));
 	} else {
-		ghostlocationroom=getRandomInt(0,(hallway_length*2+11));
+		ghostlocationroom=getRandomInt(0,(hallway_length*3+51));
 	}
 	if (ghostlocationfloor == 1) {
 		ghostlocation=ghostlocationroom
@@ -97,11 +140,12 @@ if (gamemode == 1) {
 };
 
 //Generate rooms
-var rooms1 = new Array(hallway_length*2+1);
-var roomdescription = new Array(hallway_length*2+1);
+var rooms1 = new Array(hallway_length*3+5);
+var roomdescription = new Array(hallway_length*3+5);
+var lightstatus = new Array(hallway_length*3+5);
 var itemlocation = new Array(4);
 for (i = 0; i <= 4; i++) {
-	itemlocation[i] = getRandomInt(0, (hallway_length*2+1));
+	itemlocation[i] = getRandomInt(0, (hallway_length*3+5));
 }
 itemname = new Array(4);
 itemname[0]="computer"
@@ -109,7 +153,7 @@ itemname[1]="crayons"
 itemname[2]="flashlight"
 itemname[3]="note"
 itemname[4]="screwdriver"
-var note = new Array(hallway_length*2+1);
+var note = new Array(hallway_length*3+5);
 
 var roomcontainsitem = new Array(6)
 for (i = 0; i <=6; i++) {
@@ -132,145 +176,159 @@ roomcontainsitemlongname[5]="a clock"
 roomcontainsitemname[6]="drawer"
 roomcontainsitemlongname[6]="a drawer"
 
-
-for (var i = 0; i <= (hallway_length*2+1) ; i++){
-	containsitem=0
-	var description = new Array()
-	for (var j = 0; j <= itemlocation.length; j++) {
-		if (itemlocation[j] == 1) {
-			containsitem=1
+var description = new Array()
+for (var i = 0; i <= (hallway_length*3+5) ; i++){
+	description[i] = new Array()	
+	if (i >= 0 && i <= 9) { // Generate hallway
+		roomdescription[i] = 'You are in a hallway.'
+		lightstatus[i] = getRandomInt(1, 3)
+		if (lightstatus[i] != 1) {
+			roomdescription[i] = roomdescription[i] + ' The fluorescent lamp shines brightly.'
+		} else if (lightstatus[i] == 1) {
+			roomdescription[i] = roomdescription[i] + ' The fluorescent lamp flickers.'
 		}
-	}
-	if (getRandomInt(0,1) == 1 && containsitem != 0) {
-		rooms1[i]='locked'
-		lockedcount=lockedcount+1
-		roomdescription[i]='The room is locked'
-	} else {
-		for (j = 0; j <= roomcontainsitem.length; j++) {
-			if (j <= itemlocation.length) {
-				if (itemlocation[j] == i) {
-					roomcontainsitem[j].push(i)
-					description.push(roomcontainsitemlongname[j]);
-				} else if (j >= 4) {
-					if (getRandomInt(0,1) == 1) {
+	} else { // Generate rooms
+		containsitem=0
+		for (var j = 0; j <= itemlocation.length; j++) {
+			if (itemlocation[j] == 1) {
+				containsitem=1
+			}
+		}
+		if (getRandomInt(0,1) == 1 && containsitem != 0) {
+			rooms1[i]='locked'
+			lockedcount=lockedcount+1
+			roomdescription[i]='The room is locked'
+		} else {
+			for (j = 0; j <= roomcontainsitem.length; j++) {
+				if (j <= itemlocation.length) {
+					if (itemlocation[j] == i) {
 						roomcontainsitem[j].push(i)
-						description.push(roomcontainsitemlongname[j]);
+						description[i].push(roomcontainsitemlongname[j]);
+					} else if (j >= 4) {
+						if (getRandomInt(0,1) == 1) {
+							roomcontainsitem[j].push(i)
+							description[i].push(roomcontainsitemlongname[j]);
+						}
 					}
 				}
 			}
-		}
-		roomdescription[i] = 'You are in a room.'
-		for (j = 0; j <= description.length; j++) {
-			if (j == 0 && description.length >= 2) {
-				roomdescription[i] = roomdescription[i] + ' The room contains '+description.shift()
-			} else if (j == 0) {
-				roomdescription[i] = roomdescription[i] + ' It only contains '+description.shift()+'.'
-			} 
-			if (j == 1 && description.length >= 3) {
-				roomdescription[i] = roomdescription[i] + ', '+description.shift()
-			} else if (j == 1) {
-				roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
-			}
-			if (j == 2) {
-				roomdescription[i] = roomdescription[i] + ', and '+description.shift()+'.'
-			}
-			if (j == 3 && description.length >= 5) {
-				roomdescription[i] = roomdescription[i] + ' It also contains '+description.shift()
-			} else if (j == 3) {
-				roomdescription[i] = roomdescription[i] + ' It also contains '+description.shift()+'.'
-			}
-			if (j == 4 && description.length >= 6) {
-				roomdescription[i] = roomdescription[i] + ', '+description.shift()
-			} else if (j == 4) {
-				roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
-			}
-			if (j == 5) {
-				roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
-			}
-			if (j == 6 && description.length == 7) {
-				roomdescription[i] = roomdescription[i] + ' You can also see '+description.shift()+'.'
-			} else if (j == 6 && description.length >= 8) {
-				roomdescription[i] = roomdescription[i] + ' You can also see '+description.shift()
-			}
-			if (j == 7) {
-				for (j = 7; j <= description.length-1; j++) {
-					roomdescription[i] = roomdescription[i] + ', '+description.shift()
-				}
-				if (j == description.length) {
-					roomdescription[i] = roomdescription[i] + ' and '+description.shift()+'.'
-				}
-			}
+			roomdescription[i] = 'You are in a room.'
 		}
 	}
+	createDescription(i)
 }
 
 Adventure = {
 	rooms: {
-		0:{description:'You are in a hallway.', exits:{north:1, east:11, west:10}, enter:function(terminal) {
+		0:{description:roomdescription[0], exits:{north:1, east:11, west:10}, enter:function(terminal) {
 				currentlocation=0
 		}},
-		1:{description:'You are in a hallway.', exits:{north:2, east:13, south:0, west:12}, enter:function(terminal) {
+		1:{description:roomdescription[1], exits:{north:2, east:13, south:0, west:12}, enter:function(terminal) {
 				currentlocation=1
 		}},
-		2:{description:'You are in a hallway.', exits:{north:3, east:15, south:1, west:14}, enter:function(terminal) {
+		2:{description:roomdescription[2], exits:{north:3, east:15, south:1, west:14}, enter:function(terminal) {
 				currentlocation=2
 		}},
-		3:{description:'You are in a hallway.', exits:{north:4, east:17, south:2, west:16}, enter:function(terminal) {
+		3:{description:roomdescription[3], exits:{north:4, east:17, south:2, west:16}, enter:function(terminal) {
 				currentlocation=3
 		}},
-		4:{description:'You are in a hallway.', exits:{north:5, east:19, south:3, west:18}, enter:function(terminal) {
+		4:{description:roomdescription[4], exits:{north:5, east:19, south:3, west:18}, enter:function(terminal) {
 				currentlocation=4
 		}},
-		5:{description:'You are in a hallway.', exits:{east:21, south:4, west:20}, enter:function(terminal) {
+		5:{description:roomdescription[5], exits:{north:6, east:21, south:4, west:20}, enter:function(terminal) {
 				currentlocation=5
-		}},				
-		10:{description:roomdescription[0], exits:{east:0}, enter:function(terminal) {
+		}},	
+		6:{description:roomdescription[6], exits:{north:7, east:23, south:5, west:22}, enter:function(terminal) {
+				currentlocation=6
+		}},
+		7:{description:roomdescription[7], exits:{north:8, east:25, south:6, west:24}, enter:function(terminal) {
+				currentlocation=7
+		}},
+		8:{description:roomdescription[8], exits:{north:9, east:27, south:7, west:26}, enter:function(terminal) {
+				currentlocation=8
+		}},
+		9:{description:roomdescription[9], exits:{east:29, south:8, west:28}, enter:function(terminal) {
+				currentlocation=9
+		}},	
+		10:{description:roomdescription[10], exits:{east:0}, enter:function(terminal) {
 				currentlocation=10
 				lasthallway=0
 		}},
-		11:{description:roomdescription[1], exits:{west:0}, enter:function(terminal) {
+		11:{description:roomdescription[11], exits:{west:0}, enter:function(terminal) {
 				currentlocation=11
 				lasthallway=0
 		}},
-		12:{description:roomdescription[2], exits:{east:1}, enter:function(terminal) {
+		12:{description:roomdescription[12], exits:{east:1}, enter:function(terminal) {
 				currentlocation=12
 				lasthallway=1
 		}},
-		13:{description:roomdescription[3], exits:{west:1}, enter:function(terminal) {
+		13:{description:roomdescription[13], exits:{west:1}, enter:function(terminal) {
 				currentlocation=13
 				lasthallway=1
 		}},
-		14:{description:roomdescription[4], exits:{east:2}, enter:function(terminal) {
+		14:{description:roomdescription[14], exits:{east:2}, enter:function(terminal) {
 				currentlocation=14
 				lasthallway=2
 		}},
-		15:{description:roomdescription[5], exits:{west:2}, enter:function(terminal) {
+		15:{description:roomdescription[15], exits:{west:2}, enter:function(terminal) {
 				currentlocation=15
 				lasthallway=2
 		}},
-		16:{description:roomdescription[6], exits:{east:3}, enter:function(terminal) {
+		16:{description:roomdescription[16], exits:{east:3}, enter:function(terminal) {
 				currentlocation=16
 				lasthallway=3
 		}},
-		17:{description:roomdescription[7], exits:{west:3}, enter:function(terminal) {
+		17:{description:roomdescription[17], exits:{west:3}, enter:function(terminal) {
 				currentlocation=17
 				lasthallway=3
 		}},
-		18:{description:roomdescription[8], exits:{east:4}, enter:function(terminal) {
+		18:{description:roomdescription[18], exits:{east:4}, enter:function(terminal) {
 				currentlocation=18
 				lasthallway=4
 		}},
-		19:{description:roomdescription[9], exits:{west:4}, enter:function(terminal) {
+		19:{description:roomdescription[19], exits:{west:4}, enter:function(terminal) {
 				currentlocation=19
 				lasthallway=4
 		}},
-		20:{description:roomdescription[10], exits:{east:5}, enter:function(terminal) {
+		20:{description:roomdescription[20], exits:{east:5}, enter:function(terminal) {
 				currentlocation=20
 				lasthallway=5
 		}},
-		21:{description:roomdescription[11], exits:{west:5}, enter:function(terminal) {
+		21:{description:roomdescription[21], exits:{west:5}, enter:function(terminal) {
 				currentlocation=21
 				lasthallway=5
+		}},
+		22:{description:roomdescription[22], exits:{east:6}, enter:function(terminal) {
+				currentlocation=22
+				lasthallway=6
+		}},
+		23:{description:roomdescription[23], exits:{west:6}, enter:function(terminal) {
+				currentlocation=23
+				lasthallway=6
+		}},
+		24:{description:roomdescription[24], exits:{east:7}, enter:function(terminal) {
+				currentlocation=24
+				lasthallway=7
+		}},
+		25:{description:roomdescription[25], exits:{west:7}, enter:function(terminal) {
+				currentlocation=25
+				lasthallway=7
+		}},
+		26:{description:roomdescription[26], exits:{east:8}, enter:function(terminal) {
+				currentlocation=26
+				lasthallway=8
+		}},
+		27:{description:roomdescription[27], exits:{west:8}, enter:function(terminal) {
+				currentlocation=27
+				lasthallway=8
+		}},
+		28:{description:roomdescription[28], exits:{east:9}, enter:function(terminal) {
+				currentlocation=28
+				lasthallway=9
+		}},
+		29:{description:roomdescription[29], exits:{west:9}, enter:function(terminal) {
+				currentlocation=29
+				lasthallway=9
 		}},
 		100:{description:'You are at the top of the stairs. You can only go down here, or try to go through the door.', exits:{down:2}, enter:function(terminal) {
 				currentlocation=100
@@ -330,6 +388,9 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 				}
 			}
 		}
+		if (lightstatus[currentlocation] == 1) {
+			flicker($('#screen'));
+		}
 	} else {
 		terminal.print('This action cannot be executed when the match has ended.');
 	}
@@ -362,7 +423,7 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 					terminal.print('You cannot go '+direction+'.');
 				}
 			}
-			if (destination >= 10 && destination <= 99) {
+			if (destination >= 10 && destination <= 99 && currentlocation != hallway_length) {
 				if (direction == 'west') {
 					destination=destination-10
 				} else {
@@ -411,11 +472,10 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 	// Convert objects to numbers
 	objectNameToId(object);
 	if (gameover == 0) {
-		objectlocation=currentlocation-10
 		if (!object) {
 			terminal.print('Use what?');
 // 		} else if (object == "computer") {
-// 			if (rooms1hascomputer[objectlocation] == 1) {
+// 			if (rooms1hascomputer[currentlocation] == 1) {
 // 				using_computer=true
 // 				if (logged_in == false) {
 // 					terminal.print('Please login using the "login" command.');
@@ -445,10 +505,10 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 // 			terminal.print('You grab the note and start reading...');
 // 			terminal.setWorking(true);
 // 			terminal.print('');
-// 			setTimeout("Terminal.print(note[objectlocation])", 2000);
+// 			setTimeout("Terminal.print(note[currentlocation])", 2000);
 // 			terminal.setWorking(false);
 		} else if (objectid != -1) {
-			if (roomcontainsitem[objectid].indexOf(objectlocation) != -1) {
+			if (roomcontainsitem[objectid].indexOf(currentlocation) != -1) {
 				terminal.print('You try to use the '+roomcontainsitemlongname[objectid]+', but nothing useful seems to happen.');
 			} else {
 				terminal.print('There is no '+roomcontainsitemname[objectid]+' here.');
@@ -464,18 +524,19 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
   	if (gameover == 0) {
 		objectNameToId(object)
-		objectlocation=currentlocation-10
 		if (!object) {
 			terminal.print('Take what?');
 		} else if (objectid != -1) {
-			if (roomcontainsitem[objectid].indexOf(objectlocation) != -1) {
+			if (roomcontainsitem[objectid].indexOf(currentlocation) != -1) {
 				if (gamemode == 1) { // Ghost
 					if (inventory.length >= 1) {
 						terminal.print('Your inventory is full!');
 					} else {
 						terminal.print(roomcontainsitemlongname[objectid]+' has been put in your inventory.');
 						inventory.push(object);
-						roomcontainsitem[objectid].splice(roomcontainsitem[objectid].indexOf(objectlocation), 1)
+						roomcontainsitem[objectid].splice(roomcontainsitem[objectid].indexOf(currentlocation), 1)
+						description[currentlocation].splice(description[currentlocation].indexOf(object), 1)
+						createDescription(currentlocation)
 					}
 				}
 			} else {
@@ -496,10 +557,10 @@ TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
 		} else {
 			objectNameToId(object)
 			if ($.inArray(object, inventory) != -1) {
-				objectlocation=currentlocation-10
 				objectininventory = inventory.indexOf(object)
 				inventory.splice(objectininventory, 1);
-				roomcontainsitem[objectid].push(currentlocation-10)
+				roomcontainsitem[objectid].push(currentlocation)
+				createDescription(currentlocation)
 				terminal.print('You dropped '+object+'.');
 			} else {
 				terminal.print('Could not find '+object+' in your inventory.');
@@ -533,7 +594,6 @@ TerminalShell.commands['inventory'] = function(terminal) {
 };
 TerminalShell.commands['inspect'] = function(terminal, object) {
 	if (gameover == 0) { 
-		objectlocation=currentlocation-10
 		if (!object) {
 			Terminal.print('Inspect what?');
 		} else {
@@ -547,13 +607,13 @@ TerminalShell.commands['inspect'] = function(terminal, object) {
 				}
 			} else {
 				if (object == "computer") {
-					if (rooms1hascomputer[objectlocation] == 1) {
+					if (rooms1hascomputer[currentlocation] == 1) {
 						Terminal.print('It is an old computer, probably from around the 70s. It seems to be running Unix.');
 					} else {
 						Terminal.print('You cannot inspect '+object+'.');
 					}
 				} else if (object == "clock") {
-					if (rooms1hasclock[objectlocation] == 1) {
+					if (rooms1hasclock[currentlocation] == 1) {
 						if (time_passes == false) {
 							Terminal.print('The hands of the clock don\'t move, but the clock doesn\'t look like it is broken.'+timeinfo);
 						} else {
@@ -563,7 +623,7 @@ TerminalShell.commands['inspect'] = function(terminal, object) {
 						Terminal.print('You cannot inspect '+object+'.');
 					}
 				} else if (object == "drawer") {
-					if (rooms1hasdrawer[objectlocation] == 1) {
+					if (rooms1hasdrawer[currentlocation] == 1) {
 						Terminal.print('The drawer is made of wood, and seems slightly damaged due to old age, from the looks of it. It appears to be openable.');
 					} else {
 						Terminal.print('You cannot inspect '+object+'.');
@@ -657,7 +717,7 @@ Adventure.gamemode = function(terminal) {
 			if (getRandomInt(1,2) == 1) {
 				ghostlocationroom=getRandomInt(0, hallway_length);
 			} else {
-				ghostlocationroom=getRandomInt(0, (hallway_length*2+11));
+				ghostlocationroom=getRandomInt(0, (hallway_length*3+51));
 			}
 			if (ghostlocationfloor == 1) {
 				ghostlocation=ghostlocationroom
@@ -687,7 +747,7 @@ Adventure.gamemode = function(terminal) {
 					if (getRandomInt(1,2) == 1) {
 						ghostlocationroom=getRandomInt(0, hallway_length);
 					} else {
-						ghostlocationroom=getRandomInt(0,(hallway_length*2+11))
+						ghostlocationroom=getRandomInt(0,(hallway_length*3+51))
 					}
 					if (ghostlocationfloor == 1) {
 						ghostlocation=ghostlocationroom
@@ -754,6 +814,14 @@ function shake(elems) {
 	for (var i = 0; i <= 100; i++) {
 		return window.setTimeout(function() {
 			elems.css({top:getRandomInt(-3, 3), left:getRandomInt(-3, 3)});
+		}, 100);
+	}
+}
+
+function flicker(elems) {
+	for (var i = 0; i <= 10000; i++) {
+		return window.setTimeout(function() {
+			body.style.visibility="hidden";
 		}, 100);
 	}
 }
