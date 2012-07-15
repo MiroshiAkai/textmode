@@ -548,8 +548,9 @@ TerminalShell.commands['2'] = function(terminal) {
 TerminalShell.commands['3'] = function(terminal) {
 	if (menu == 'wayofplaying') {
 		browser=navigator.appName
-		if ($.browser.name == 'msie') {
-			Terminal.print($('<p>').html('Ugh, Internet Explorer... Generating work-around. As you are waiting, may I refer you to <a href="http://www.abetterbrowser.org/>A Better Browser</a>?'));
+		if ($.browser.name = 'msie') {
+			Terminal.print($('<p>').html('Ugh, Internet Explorer... I will have to build a complete new system for you. While you are waiting, may I refer you to <a href="http://www.abetterbrowser.org/">A Better Browser</a>? You\'d do everyone a favor by using a standard-complient browser.'));
+			Terminal.print('If you still want to try anyway, type "continue". Otherwise, type "cancel".');
 			menu='offlineconfirm'
 		} else if ($.browser.name == 'firefox' && ($.os.name == 'win' || $.os.name == 'Windows')) {
 			Terminal.print('Firefox on Windows only works with a PDF Reader plugin. Please ensure you have one installed and type "continue" to continue.');
@@ -567,7 +568,16 @@ TerminalShell.commands['continue'] = function(terminal) {
 		createPDF();
 		menu='';
 	} else {
-		Terminal.print('Could not find a question to answer "ok" to.');
+		Terminal.print('Could not find anything to continue with.');
+	}
+}
+
+TerminalShell.commands['continue'] = function(terminal) {
+	if (!menu) {
+		Terminal.print('Could not find anything to cancel.');
+	  
+	} else {
+		menu='';
 	}
 }
 
