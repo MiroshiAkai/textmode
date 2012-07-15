@@ -572,7 +572,7 @@ TerminalShell.commands['continue'] = function(terminal) {
 	}
 }
 
-TerminalShell.commands['continue'] = function(terminal) {
+TerminalShell.commands['cancel'] = function(terminal) {
 	if (!menu) {
 		Terminal.print('Could not find anything to cancel.');
 	  
