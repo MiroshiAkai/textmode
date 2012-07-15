@@ -139,6 +139,8 @@ gameresult='playing'
 gameover=1
 objectid=-1
 mutator=1
+currentplayer=1
+movesdone=0
 
 // Execute gamemode-specific commands
 function initializeGamemode() {
@@ -168,6 +170,9 @@ function initializeGamemode() {
 		}
 		if (mutator == 2) {
 			// Realtime-specific code here
+		}
+		if (wayofplaying == 2) {
+			Terminal.print('Current player: Player '+currentplayer);
 		}
 		Terminal.print('=== Gamemode: GHOST ===');
 		if (mutator == 1) {
@@ -389,6 +394,7 @@ Adventure = {
 	},
 	
 	goTo: function(terminal, id) {
+		movesdone=movesdone+1
 		Adventure.location = Adventure.rooms[id];
 		if (Adventure.location.enter) {
 			Adventure.location.enter(terminal);
@@ -396,7 +402,8 @@ Adventure = {
 		Adventure.look(terminal);
 		silent_move=false
 		using_computer=false
-		if (mutator == 1) {
+		if (wayofplaying == 1) {
+			calledfrom='go'
 			Adventure.gamemode(terminal);
 		}
 	}
@@ -452,54 +459,58 @@ TerminalShell.commands['debug'] = function(terminal) {
 
 TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 	if (gameover == 0) {
-		if (Adventure.location.exits && direction in Adventure.location.exits) {
-			destination=Adventure.location.exits[direction]
-			if (time_passes == true) {
-				random_time_passing=getRandomInt(0,5)
-				if (random_time_passing==5) {
-					time=time+1
-				}
-			}
-			if (time >= 24) {
-				do
-				{
-				time=time-24
-				}
-				while (time >= 24);
-			}
-			if (time > 12) {
-				timeinfo='\nIt is now '+(time-12)+':00PM';
-			} else {
-				timeinfo='\nIt is now '+time+':00AM.';
-			}
-			if (currentlocation == hallway_length) {
-				if (direction == 'north') {
-					terminal.print('You cannot go '+direction+'.');
-				}
-			}
-			if (destination >= 10 && destination <= 99 && currentlocation != hallway_length) {
-				if (direction == 'west') {
-					destination=destination-10
-				} else {
-					if (direction == 'east') {
-						destination=destination-10
+		if (wayofplaying != 2 || movesdone == 0) {
+			if (Adventure.location.exits && direction in Adventure.location.exits) {
+				destination=Adventure.location.exits[direction]
+				if (time_passes == true) {
+					random_time_passing=getRandomInt(0,5)
+					if (random_time_passing==5) {
+						time=time+1
 					}
 				}
-				if (rooms1[destination] == 'locked') {
-					terminal.print('The door is locked!')
+				if (time >= 24) {
+					do
+					{
+					time=time-24
+					}
+					while (time >= 24);
+				}
+				if (time > 12) {
+					timeinfo='\nIt is now '+(time-12)+':00PM';
 				} else {
-					amountofroomsentered=amountofroomsentered+1
-					amountofmoves=amountofmoves+1				
+					timeinfo='\nIt is now '+time+':00AM.';
+				}
+				if (currentlocation == hallway_length) {
+					if (direction == 'north') {
+						terminal.print('You cannot go '+direction+'.');
+					}
+				}
+				if (destination >= 10 && destination <= 99 && currentlocation != hallway_length) {
+					if (direction == 'west') {
+						destination=destination-10
+					} else {
+						if (direction == 'east') {
+							destination=destination-10
+						}
+					}
+					if (rooms1[destination] == 'locked') {
+						terminal.print('The door is locked!')
+					} else {
+						amountofroomsentered=amountofroomsentered+1
+						amountofmoves=amountofmoves+1				
+						Adventure.goTo(terminal, Adventure.location.exits[direction]);
+					}
+				} else {
+					amountofmoves=amountofmoves+1
 					Adventure.goTo(terminal, Adventure.location.exits[direction]);
 				}
+			} else if (!direction) {
+				terminal.print('Go where?');
 			} else {
-				amountofmoves=amountofmoves+1
-				Adventure.goTo(terminal, Adventure.location.exits[direction]);
+				terminal.print('You cannot go '+direction+'.');
 			}
-		} else if (!direction) {
-			terminal.print('Go where?');
 		} else {
-			terminal.print('You cannot go '+direction+'.');
+			terminal.print('You are only allowed to move once per turn! Please end your turn by typing "end" if you are done exploring your current location.');
 		}
 	} else {
 		terminal.print('This action cannot be executed now.');
@@ -509,6 +520,12 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 TerminalShell.commands['yes'] = function(terminal) {
 	if (menu == 'newgame') {
 		location.reload(true);
+	} else if (menu == 'ghostplayer2teleport') {
+		ghostmove=1
+		Adventure.gamemode(terminal);
+		ghostmove=0
+		gameover=0
+		Terminal.runCommand('end');
 	} else {
 		Terminal.print('Could not find a question to answer "yes" to.');
 	}
@@ -517,6 +534,11 @@ TerminalShell.commands['yes'] = function(terminal) {
 TerminalShell.commands['no'] = function(terminal) {
 	if (menu == 'newgame') {
 		Terminal.print('No new game has been started, please refresh the page if you want to continue playing.');
+	} else if (menu == 'ghostplayer2teleport') {
+		ghostmove=0
+		Adventure.gamemode(terminal);
+		gameover=0
+		Terminal.runCommand('end');
 	} else {
 		Terminal.print('Could not find a question to answer "no" to.');
 	}
@@ -525,13 +547,18 @@ TerminalShell.commands['no'] = function(terminal) {
 TerminalShell.commands['1'] = function(terminal) {
 	if (menu == 'wayofplaying') {
 		Terminal.print('Singleplayer selected.');
+		wayofplaying=1
 		menu='gamemode'
 		Terminal.print('Please choose a gamemode:');
 		Terminal.print('1. Ghost');
 	} else if (menu == 'gamemode') {
 		gamemode=1 // Ghost Mode
+		if (wayofplaying == 2) {
+			amountofplayers=2
+		}
 		gameover=0
 		initializeGamemode();
+		Terminal.runCommand('look');
 	} else {
 		Terminal.print('Could not find a question to answer "1" to.');
 	}
@@ -539,7 +566,11 @@ TerminalShell.commands['1'] = function(terminal) {
 
 TerminalShell.commands['2'] = function(terminal) {
 	if (menu == 'wayofplaying') {
-		Terminal.print('No gamemodes are available yet for local multiplayer. Please choose another way of playing.');
+		Terminal.print('Local multiplayer selected.');
+		wayofplaying=2
+		menu='gamemode'
+		Terminal.print('Please choose a gamemode:');
+		Terminal.print('1. Ghost (up to 2 players)');
 	} else {
 		Terminal.print('Could not find a question to answer "2" to.');
 	}
@@ -549,7 +580,7 @@ TerminalShell.commands['3'] = function(terminal) {
 	if (menu == 'wayofplaying') {
 		browser=navigator.appName
 		if ($.browser.name == 'msie') {
-			Terminal.print($('<p>').html('Ugh, Internet Explorer... I will have to build a complete new system for you. While you are waiting, may I refer you to <a href="http://www.abetterbrowser.org/">A Better Browser</a>? You\'d do everyone a favor by using a standard-complient browser.'));
+			Terminal.print($('<p>').html('Ugh, Internet Explorer... I will have to build a complete new system for you. While you are waiting, may I refer you to <a href="http://www.abetterbrowser.org/">A Better Browser</a>? You\'d do everyone a favor by using a standard-compliant browser.'));
 			Terminal.print('If you still want to try anyway, type "continue". Otherwise, type "cancel".');
 			menu='offlineconfirm'
 		} else if ($.browser.name == 'firefox' && ($.os.name == 'win' || $.os.name == 'Windows')) {
@@ -828,10 +859,59 @@ TerminalShell.commands['login'] = function(terminal, username, passwd) {
 	}
 }
 
+// Code to end your turn
+TerminalShell.commands['end'] = function(terminal) {
+	if (gameover == 0 && wayofplaying == 2) {
+		terminal.clear();
+		movesdone=0
+		if (currentplayer >= amountofplayers) {
+			currentplayer = 1
+		} else {
+			currentplayer = currentplayer + 1
+		}
+		terminal.print('Current player: Player '+currentplayer);
+		if (gamemode == 1) {
+			ghostmove=0
+			Adventure.gamemode(terminal);
+			if (currentplayer == 1) {
+				gameover = 0
+				Terminal.runCommand('look');
+			}
+			if (currentplayer == 2) {
+				gameover = 1
+				if (ghostlocation >= 10) {
+					ghostlocationinfo='You are in a room.'
+					if (ghostlocation%2 == 0 && Adventure.location.exits['east'] == currentlocation) {
+						playerlocationinfo='Player 1 is in the hallway directly east of you.'
+					} else if (ghostlocation%2 != 1 && Adventure.location.exits['west'] == currentlocation) {
+						playerlocationinfo='Player 1 is in the hallway directly west of you.'
+					} else {
+						playerlocationinfo='Player 1 is not close to you.'
+					}
+				} else {
+					ghostlocationinfo='You are in the hallway.'
+					if (currentlocation <= 9) {
+						playerlocationinfo='Player 1 is in the hallway as well.'
+					} else {
+						playerlocationinfo='Player 1 is in a room.'
+					}
+				}
+				terminal.print('You are the ghost. '+ghostlocationinfo+' '+playerlocationinfo);
+				terminal.print('Do you want to teleport to a random location?');
+				menu='ghostplayer2teleport'
+			}
+		}
+	} else {
+		terminal.print('This action cannot be executed now.');
+	}
+}
+
 // Gamemode-specific code
 Adventure.gamemode = function(terminal) {
 	if (gamemode == 1) { // Ghost
-		ghostmove=getRandomInt(1,10) // Decides if the Ghost moves
+		if (wayofplaying == 1) {
+			ghostmove=getRandomInt(1,10) // Decides if the Ghost moves
+		}
 		if (ghostmove == 1) {
 			amountofghostmoves=amountofghostmoves+1
 			ghostlocationfloor=getRandomInt(1,1)
@@ -845,18 +925,32 @@ Adventure.gamemode = function(terminal) {
 		}
 		if (currentlocation == ghostlocation) {
 			if ($.inArray(ghostweakness, inventory) != -1) {
-				terminal.print('You use the '+ghostweakness+' in your inventory on the ghost.');
-				terminal.print('The ghost makes a terrible noise and disappears.');
-				terminal.print('You win!');
+				if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
+					terminal.print('You use the '+ghostweakness+' in your inventory on the ghost.');
+					terminal.print('The ghost makes a terrible noise and disappears.');
+					terminal.print('GAME OVER!');
+				} else {
+					terminal.print('Player one uses '+ghostweakness+' on you!');
+					terminal.print('You scream in agony as your body fades away.');
+					terminal.print('GAME OVER!');
+				}
 				gameresult='won'
 				gameover=1
 			} else {
 				if ((getRandomInt(0,1) == 1)) {
-					terminal.print('The ghost got you! GAME OVER!');
+					if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
+						terminal.print('The ghost got you! GAME OVER!');
+					} else {
+						terminal.print('You got player 1! GAME OVER!');
+					}
 					gameresult='lost'
 					gameover=1
 				} else {
-					terminal.print('BOO!');
+					if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
+						terminal.print('BOO!');
+					} else {
+						terminal.print('You find player 1, but are unable to do more than scare him until you get dragged away');
+					}
 					shake($('#screen'));
 					amountofscaressurvived=amountofscaressurvived+1
 					amountofghostmoves=amountofghostmoves+1
@@ -876,10 +970,10 @@ Adventure.gamemode = function(terminal) {
 			}
 		} else {
 			if (getRandomInt(1,20) == 1) {
-				terminal.print('You feel a cold shiver...');
+				if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
+					terminal.print('You feel a cold shiver...');
+				}
 			}
-			// Debug
-			// terminal.print('You are at '+currentlocation+'. The ghost is at '+ghostlocation+'.');
 		}
 	}
 	if ((gameresult=='won') || (gameresult=='lost')) {
@@ -906,14 +1000,23 @@ Adventure.gameresult = function(terminal) {
 		terminal.print('Playtime: '+playtime+' seconds.');
 		terminal.print('');
 		if (gameresult == 'lost') {
-			terminal.print('The game was LOST');
+			if (wayofplaying == 1) {
+				terminal.print('The game was LOST');
+			} else if (wayofplaying == 2) {
+				terminal.print('Player 2 WON');
+			}
 		} else if (gameresult == 'won') {
-			terminal.print('The game was WON');
+			if (wayofplaying == 1) {
+				terminal.print('The game was WON');
+			} else if (wayofplaying == 2) {
+				terminal.print('Player 1 WON');
+			}
 		} else {
 			terminal.print('The game ended with an undefined status (neither won nor lost)');
 		}
 	}
 	menu='newgame'
+	gameover=1
 	terminal.print('Do you want to start a new game? (yes/no)');
 };
 
@@ -922,7 +1025,9 @@ TerminalShell.commands['help'] = function(terminal) {
 	terminal.print('Type "yes" or "no" to answer questions given by the system.');
 	terminal.print('Type "go" to go to a direction. For example, "go west" to go west.');
 	terminal.print('Type "look" to look around the environment.');
-	terminal.print('Type "take" to add an item to your inventory. For example, "take crayon" to put a crayon in your inventory.');
+	terminal.print('Type "take" to add an item to your inventory. For example, "take crayons" to put a box of crayons in your inventory.');
+	terminal.print('Type "drop" to drop an item. For example, "drop crayons" to drop a box of crayons.');
+	terminal.print('Type "inventory" to check which items you have in your inventory.');
 	terminal.print('Type "use" to use an object in the room. For example, type "use computer" to use a computer in the room. The "use" command is used for all kinds of interaction, so if you want to read a book write "use book" to do so.');
 }; 
 
