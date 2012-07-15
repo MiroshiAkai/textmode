@@ -548,7 +548,7 @@ TerminalShell.commands['2'] = function(terminal) {
 TerminalShell.commands['3'] = function(terminal) {
 	if (menu == 'wayofplaying') {
 		browser=navigator.appName
-		if ($.browser.name = 'msie') {
+		if ($.browser.name == 'msie') {
 			Terminal.print($('<p>').html('Ugh, Internet Explorer... I will have to build a complete new system for you. While you are waiting, may I refer you to <a href="http://www.abetterbrowser.org/">A Better Browser</a>? You\'d do everyone a favor by using a standard-complient browser.'));
 			Terminal.print('If you still want to try anyway, type "continue". Otherwise, type "cancel".');
 			menu='offlineconfirm'
