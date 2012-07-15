@@ -136,42 +136,53 @@ password=getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRando
 currentfloor=1
 var inventory = [];
 gameresult='playing'
-gameover=0
+gameover=1
 objectid=-1
-
-// Choose random gamemode and mutator
-gamemode=getRandomInt(1,1) // 1=Ghost
-mutator=getRandomInt(1,1) // 1=Turn-based, 2=Realtime
+mutator=1
 
 // Execute gamemode-specific commands
-if (gamemode == 1) {
-	ghostfloor=1
-	randomInt=getRandomInt(1,3)
-	if (randomInt == 1) {
-		ghostweakness='crayons'
-	} else if (randomInt == 2) {
-		ghostweakness='screwdriver'
-	} else if (randomInt == 3) {
-		ghostweakness='flashlight'
-	}
-	amountofghostmoves=0
-	amountofscaressurvived=0
-	ghostlocationfloor=getRandomInt(1,1)
-	if (getRandomInt(1,2) == 1) {
-		ghostlocationroom=getRandomInt(0,(hallway_length));
-	} else {
-		ghostlocationroom=getRandomInt(0,(length));
-	}
-	if (ghostlocationfloor == 1) {
-		ghostlocation=ghostlocationroom
-		if ((ghostlocation > hallway_length) && (ghostlocation <=9)) {
-			ghostlocation = hallway_length
+function initializeGamemode() {
+	if (gamemode == 1) {
+		ghostfloor=1
+		randomInt=getRandomInt(1,3)
+		if (randomInt == 1) {
+			ghostweakness='crayons'
+		} else if (randomInt == 2) {
+			ghostweakness='screwdriver'
+		} else if (randomInt == 3) {
+			ghostweakness='flashlight'
 		}
+		amountofghostmoves=0
+		amountofscaressurvived=0
+		ghostlocationfloor=getRandomInt(1,1)
+		if (getRandomInt(1,2) == 1) {
+			ghostlocationroom=getRandomInt(0,(hallway_length));
+		} else {
+			ghostlocationroom=getRandomInt(0,(length));
+		}
+		if (ghostlocationfloor == 1) {
+			ghostlocation=ghostlocationroom
+			if ((ghostlocation > hallway_length) && (ghostlocation <=9)) {
+				ghostlocation = hallway_length
+			}
+		}
+		if (mutator == 2) {
+			// Realtime-specific code here
+		}
+		Terminal.print('=== Gamemode: GHOST ===');
+		if (mutator == 1) {
+			setTimeout("Terminal.print('=== Mutator: Turn-based ===');", 500);
+		} else if (mutator == 2) {
+			setTimeout("Terminal.print('=== Mutator: Realtime ===');", 500);
+		} else {
+			setTimeout("Terminal.print('ERROR REQUESTING MUTATOR STATUS');", 500);
+		}
+		setTimeout("Terminal.print('=== Winning condition: Meet the ghost while carrying the item which is his weakness ===');", 1000);
+		setTimeout("Terminal.print('=== Losing condition: Meet the ghost without carrying the required item ===');", 1500);
+		setTimeout("Terminal.print('=== Helpful object(s): Computer, Note ===');", 2000);
 	}
-	if (mutator == 2) {
-		// Realtime-specific code here
-	}
-};
+	timer();
+}
 
 //Generate rooms
 var rooms1 = new Array(length);
@@ -425,7 +436,7 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 			flicker($('#screen'));
 		}
 	} else {
-		terminal.print('This action cannot be executed when the match has ended.');
+		terminal.print('This action cannot be executed now.');
 	}
 };
 
@@ -491,23 +502,72 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 			terminal.print('You cannot go '+direction+'.');
 		}
 	} else {
-		terminal.print('This action cannot be executed when the match has ended.');
+		terminal.print('This action cannot be executed now.');
 	}
 };
 
 TerminalShell.commands['yes'] = function(terminal) {
-	if (!menu) {
-		Terminal.print('Could not find a question to answer "yes" to.');
-	} else if (menu='newgame') {
+	if (menu == 'newgame') {
 		location.reload(true);
+	} else {
+		Terminal.print('Could not find a question to answer "yes" to.');
 	}
 }
 
 TerminalShell.commands['no'] = function(terminal) {
-	if (!menu) {
-		Terminal.print('Could not find a question to answer "no" to.');
-	} else if (menu='newgame') {
+	if (menu == 'newgame') {
 		Terminal.print('No new game has been started, please refresh the page if you want to continue playing.');
+	} else {
+		Terminal.print('Could not find a question to answer "no" to.');
+	}
+}
+
+TerminalShell.commands['1'] = function(terminal) {
+	if (menu == 'wayofplaying') {
+		Terminal.print('Singleplayer selected.');
+		menu='gamemode'
+		Terminal.print('Please choose a gamemode:');
+		Terminal.print('1. Ghost');
+	} else if (menu == 'gamemode') {
+		gamemode=1 // Ghost Mode
+		gameover=0
+		initializeGamemode();
+	} else {
+		Terminal.print('Could not find a question to answer "1" to.');
+	}
+}
+
+TerminalShell.commands['2'] = function(terminal) {
+	if (menu == 'wayofplaying') {
+		Terminal.print('No gamemodes are available yet for local multiplayer. Please choose another way of playing.');
+	} else {
+		Terminal.print('Could not find a question to answer "2" to.');
+	}
+}
+
+TerminalShell.commands['3'] = function(terminal) {
+	if (menu == 'wayofplaying') {
+		browser=navigator.appName
+		if ($.browser.name == 'msie') {
+			Terminal.print($('<p>').html('Ugh, Internet Explorer... Generating work-around. As you are waiting, may I refer you to <a href="http://www.abetterbrowser.org/>A Better Browser</a>?'));
+			menu='offlineconfirm'
+		} else if ($.browser.name == 'firefox' && ($.os.name == 'win' || $.os.name == 'Windows')) {
+			Terminal.print('Firefox on Windows only works with a PDF Reader plugin. Please ensure you have one installed and type "continue" to continue.');
+			menu='offlineconfirm'
+		} else {
+			createPDF();
+		}
+	} else {
+		Terminal.print('Could not find a question to answer "3" to.');
+	}
+}
+
+TerminalShell.commands['continue'] = function(terminal) {
+	if (menu == 'offlineconfirm') {
+		createPDF();
+		menu='';
+	} else {
+		Terminal.print('Could not find a question to answer "ok" to.');
 	}
 }
 
@@ -563,7 +623,7 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 			terminal.print('There is no '+object+' here.');
 		}
 	} else {
-		terminal.print('This action cannot be executed when the match has ended.');
+		terminal.print('This action cannot be executed now.');
 	}
 };
 
@@ -594,7 +654,7 @@ TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
 			terminal.print('You cannot take '+object+'.');
 		}
 	} else {
-		terminal.print('This action cannot be executed when the match has ended.');
+		terminal.print('This action cannot be executed now.');
 	}
 };
 
@@ -618,7 +678,7 @@ TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
 			}
 		}
 	} else {
-		terminal.print('This action cannot be executed when the match has ended.');
+		terminal.print('This action cannot be executed now.');
 	}
 };
 
@@ -640,7 +700,7 @@ TerminalShell.commands['inventory'] = function(terminal) {
 			terminal.print(inventoryoutput);
 		}
 	} else {
-		terminal.print('This action cannot be executed when the match has ended.');
+		terminal.print('This action cannot be executed now.');
 	}
 };
 TerminalShell.commands['inspect'] = function(terminal, object) {
@@ -685,7 +745,7 @@ TerminalShell.commands['inspect'] = function(terminal, object) {
 			}
 		}
 	} else {
-		terminal.print('This action cannot be executed when the match has ended.');
+		terminal.print('This action cannot be executed now.');
 	}
 };
 
@@ -720,7 +780,7 @@ TerminalShell.commands['sleep'] = TerminalShell.commands['rest'] = function(term
 				terminal.print(timeinfo);
 		}, 2000);
 	} else {
-		terminal.print('This action cannot be executed when the match has ended.');
+		terminal.print('This action cannot be executed now.');
 	}
 };
 
@@ -754,7 +814,7 @@ TerminalShell.commands['login'] = function(terminal, username, passwd) {
 			}
 		}
 	} else {
-		terminal.print('This action cannot be executed when the match has ended.');
+		terminal.print('This action cannot be executed now.');
 	}
 }
 
@@ -874,7 +934,7 @@ function flicker(elems) {
 }
 
 // Offline PDF gameplay is cool
-TerminalShell.commands['offline'] = function createPDF() {
+function createPDF() {
 	Terminal.print('Creating PDF file for offline play...');
 	pages=1
 	output=0
@@ -916,6 +976,11 @@ TerminalShell.commands['offline'] = function createPDF() {
 	Terminal.print('Done!');
 }
 
+function timer() {
+	playtime=0
+	setInterval("playtime=playtime+1", 1000);
+}
+
 $(document).ready(function() {
 	Terminal.promptActive = false;
 	function noData() {
@@ -932,26 +997,11 @@ $(document).ready(function() {
 			Terminal.print('');
 			Terminal.print('Type "help" for instructions on how to play.');
 			Terminal.print('');
-			setTimeout("Terminal.print('=== Game Start ===');", 500);
-			if (gamemode == 1) {
-				setTimeout("Terminal.print('=== Gamemode: GHOST ===');", 1000);
-				if (mutator == 1) {
-					setTimeout("Terminal.print('=== Mutator: Turn-based ===');", 1500);
-				} else if (mutator == 2) {
-					setTimeout("Terminal.print('=== Mutator: Realtime ===');", 1500);
-				} else {
-					setTimeout("Terminal.print('ERROR REQUESTING MUTATOR STATUS');", 1500);
-				}
-				setTimeout("Terminal.print('=== Winning condition: Meet the ghost while carrying the item which is his weakness ===');", 2000);
-				setTimeout("Terminal.print('=== Losing condition: Meet the ghost without carrying the required item ===');", 2500);
-				setTimeout("Terminal.print('=== Helpful object(s): Computer, Note ===');", 3000);
-			} else {
-				setTimeout("Terminal.print('Critical error, please refresh the page...');", 1000);
-			}
-			setTimeout("Terminal.print('');", 3000);
-			setTimeout("Terminal.runCommand('look');", 3500);
-			// Initialize timer
-			playtime=0
-			setInterval("playtime=playtime+1", 1000);
+			menu='wayofplaying'
+			Terminal.print('Please choose a way of playing (answer by typing the number, followed by enter):');
+			Terminal.print('1. Singleplayer');
+			Terminal.print('2. Local multiplayer');
+			Terminal.print('3. Offline');
+			Terminal.promptActive = true;
 		}, noData);
 });
