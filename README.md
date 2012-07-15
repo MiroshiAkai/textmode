@@ -6,7 +6,7 @@ An interactive web textmode game using Javascript, making use of the base code o
 Credits
 -------
 
-* Game by [Ruben van Os](https://github.com/TheLastProject/textmode).
+* Game by [Ruben van Os](https://github.com/TheLastProject).
 
 * Many thanks to [Rod McFarland](http://thrind.xamai.ca/) for his original [CLI2](http://code.google.com/p/wordpress-cli/). The JavaScript CLI implementation in cli.js is a heavily modified version of the CLI2 client-side logic. CLI2 is Copyright © [Rod McFarland](http://thrind.xamai.ca/), 2006, 2007, 2008.
 
