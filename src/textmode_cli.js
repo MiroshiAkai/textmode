@@ -93,7 +93,28 @@ function createDescription(currentlocation) {
 
 // Early semi-randomization code
 lockedcount=0
-hallway_length=getRandomInt(1,9)
+hallway_length=getRandomInt(9,9)
+if (hallway_length == 1) {
+	length=13
+} else if (hallway_length == 2) {
+	length=15
+} else if (hallway_length == 3) {
+	length=17
+} else if (hallway_length == 4) {
+	length=19
+} else if (hallway_length == 5) {
+	length=21
+} else if (hallway_length == 6) {
+	length=23
+} else if (hallway_length == 7) {
+	length=25
+} else if (hallway_length == 8) {
+	length=27
+} else if (hallway_length == 9) {
+	length=29
+} else if (hallway_length == 10) {
+	length=31
+}
 amount_of_floors=getRandomInt(3,3)
 // Indexing variables like a gentleman
 amountofmoves=0
@@ -125,9 +146,9 @@ mutator=getRandomInt(1,1) // 1=Turn-based, 2=Realtime
 // Execute gamemode-specific commands
 if (gamemode == 1) {
 	ghostfloor=1
-	randomInt=getRandomInt(1,2)
+	randomInt=getRandomInt(1,3)
 	if (randomInt == 1) {
-		ghostweakness='crayon'
+		ghostweakness='crayons'
 	} else if (randomInt == 2) {
 		ghostweakness='screwdriver'
 	} else if (randomInt == 3) {
@@ -139,7 +160,7 @@ if (gamemode == 1) {
 	if (getRandomInt(1,2) == 1) {
 		ghostlocationroom=getRandomInt(0,(hallway_length));
 	} else {
-		ghostlocationroom=getRandomInt(0,(hallway_length*3+51));
+		ghostlocationroom=getRandomInt(0,(length));
 	}
 	if (ghostlocationfloor == 1) {
 		ghostlocation=ghostlocationroom
@@ -153,12 +174,12 @@ if (gamemode == 1) {
 };
 
 //Generate rooms
-var rooms1 = new Array(hallway_length*3+5);
-var roomdescription = new Array(hallway_length*3+5);
-var lightstatus = new Array(hallway_length*3+5);
+var rooms1 = new Array(length);
+var roomdescription = new Array(length);
+var lightstatus = new Array(length);
 var itemlocation = new Array(5);
 for (i = 0; i <= 5; i++) {
-	itemlocation[i] = getRandomInt(0, (hallway_length*3+5));
+	itemlocation[i] = getRandomInt(10, (length));
 }
 itemname = new Array(5);
 itemname[0]="computer"
@@ -166,7 +187,7 @@ itemname[1]="crayons"
 itemname[2]="flashlight"
 itemname[3]="note"
 itemname[4]="screwdriver"
-var note = new Array(hallway_length*3+5);
+var note = new Array(length);
 
 var roomcontainsitem = new Array(7)
 for (i = 0; i <=7; i++) {
@@ -191,11 +212,10 @@ roomcontainsitemlongname[6]="a drawer"
 
 var description = new Array()
 var descriptionbackup = new Array()
-for (var i = 0; i <= (hallway_length*3+5) ; i++){
+for (var i = 0; i <= (length) ; i++){
 	description[i] = new Array()
 	descriptionbackup[i] = new Array()
 	if (i >= 0 && i <= 9) { // Generate hallway
-		roomdescription[i] = 'You are in a hallway.'
 		lightstatus[i] = getRandomInt(1, 3)
 	} else { // Generate rooms
 		containsitem=0
@@ -222,7 +242,6 @@ for (var i = 0; i <= (hallway_length*3+5) ; i++){
 					}
 				}
 			}
-			roomdescription[i] = 'You are in a room.'
 		}
 	}
 	createDescription(i)
@@ -380,6 +399,8 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 			if (Adventure.location.exits) {
 				if (gamemode == 2) {
 					terminal.print(timeinfo);
+				} else {
+					terminal.print('');
 				}
 				if (currentlocation == 0) {
 					var possibleDirections = ['north', 'east', 'west'];
@@ -407,6 +428,16 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 		terminal.print('This action cannot be executed when the match has ended.');
 	}
 };
+
+TerminalShell.commands['debug'] = function(terminal) {
+	terminal.print('currentlocation = '+currentlocation);
+	terminal.print('ghostlocation = '+ghostlocation);
+	terminal.print('hallway_length = '+hallway_length);
+	terminal.print('length = '+length);
+	for (i = 0; i <= itemname.length ; i++) {
+		terminal.print(itemname[i]+' = '+itemlocation[i]);
+	}
+}
 
 TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 	if (gameover == 0) {
@@ -487,7 +518,7 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 		if (!object) {
 			terminal.print('Use what?');
 		} else if (objectid == 0) { // Computer
-			if (rooms1hascomputer[currentlocation] == 1) {
+			if (roomcontainsitem[0].indexOf(currentlocation) != -1) {
 				using_computer=true
 				if (logged_in == false) {
 					terminal.print('Please login using the "login" command.');
@@ -512,13 +543,16 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 			} else {
 				terminal.print('You cannot use '+object+'.');
 			}
-// 		} else if (object == "note") {
-// 			if (roomcontainsitemname
-// 			terminal.print('You grab the note and start reading...');
-// 			terminal.setWorking(true);
-// 			terminal.print('');
-// 			setTimeout("Terminal.print(note[currentlocation])", 2000);
-// 			terminal.setWorking(false);
+		} else if (objectid == 3) { // Note
+			if (roomcontainsitem[objectid].indexOf(currentlocation) != -1) {
+				terminal.print('You grab the note and start reading...');
+				terminal.setWorking(true);
+				terminal.print('');
+				setTimeout("Terminal.print('login: root '+password)", 2000);
+				terminal.setWorking(false);
+			} else {
+				terminal.print('There is no '+roomcontainsitemname[objectid]+' here.');
+			}
 		} else if (objectid != -1) {
 			if (roomcontainsitem[objectid].indexOf(currentlocation) != -1) {
 				terminal.print('You try to use the '+roomcontainsitemlongname[objectid]+', but nothing useful seems to happen.');
@@ -731,11 +765,7 @@ Adventure.gamemode = function(terminal) {
 		if (ghostmove == 1) {
 			amountofghostmoves=amountofghostmoves+1
 			ghostlocationfloor=getRandomInt(1,1)
-			if (getRandomInt(1,2) == 1) {
-				ghostlocationroom=getRandomInt(0, hallway_length);
-			} else {
-				ghostlocationroom=getRandomInt(0, (hallway_length*3+51));
-			}
+			ghostlocationroom=getRandomInt(0, (length));
 			if (ghostlocationfloor == 1) {
 				ghostlocation=ghostlocationroom
 				if ((ghostlocation > hallway_length) && (ghostlocation <=9)) {
@@ -764,7 +794,7 @@ Adventure.gamemode = function(terminal) {
 					if (getRandomInt(1,2) == 1) {
 						ghostlocationroom=getRandomInt(0, hallway_length);
 					} else {
-						ghostlocationroom=getRandomInt(0,(hallway_length*3+51))
+						ghostlocationroom=getRandomInt(0,(length))
 					}
 					if (ghostlocationfloor == 1) {
 						ghostlocation=ghostlocationroom
@@ -843,6 +873,49 @@ function flicker(elems) {
 	}
 }
 
+// Offline PDF gameplay is cool
+TerminalShell.commands['offline'] = function createPDF() {
+	Terminal.print('Creating PDF file for offline play...');
+	pages=1
+	output=0
+	distance=0
+	var doc = new jsPDF();
+	doc.setFontSize(12);
+	for (i = 0; i <= length; i++) {
+		if (i <= hallway_length || i >= 10) {
+			if (output >= 19*pages) {
+				doc.addPage();
+				pages++
+				distance=distance-19
+			}
+			Adventure.location = Adventure.rooms[i]
+			doc.text(20, 20+15*distance, i+'. '+roomdescription[i]);
+			if (i == 0) {
+				var possibleDirections = [];
+				possibleDirections.push('north: '+Adventure.location.exits['north']);
+				possibleDirections.push('east: '+Adventure.location.exits['east']);
+				possibleDirections.push('west: '+Adventure.location.exits['west']);
+			} else if (i >= hallway_length && i <= 9) {
+				var possibleDirections = [];
+				possibleDirections.push('east: '+Adventure.location.exits['east']);
+				possibleDirections.push('south: '+Adventure.location.exits['south']);
+				possibleDirections.push('west: '+Adventure.location.exits['west']);
+			} else {
+				var possibleDirections = [];
+				$.each(Adventure.location.exits, function(name, id) {
+				possibleDirections.push(name+': '+Adventure.location.exits[name]);
+				});
+			}
+			doc.text(20, 25+15*distance, '     Exits: '+possibleDirections.join(', '));
+			output++
+			distance++
+		}
+	}
+	// Output as Data URI
+	doc.output('datauri');
+	Terminal.print('Done!');
+}
+
 $(document).ready(function() {
 	Terminal.promptActive = false;
 	function noData() {
@@ -853,10 +926,9 @@ $(document).ready(function() {
 		$('#screen').one('cli-ready', function(e) {
 		});
 			currentlocation=0
-			Terminal.print('Welcome to Textmode');
-			Terminal.print($('<p>').html('Programmed and storyboard by <a href="https://github.com/TheLastProject">TheLastProject</a>'));
-			Terminal.print($('<p>').html('Based on the <a href="https://github.com/chromakode/xkcdfools">xkcdfools</a> codebase.'));
-			Terminal.print($('<p>').html('Source code is available on <a href="https://github.com/TheLastProject/textmode">github</a>.'));
+			Terminal.print('Textmode version 20120715, Copyright (c) 2012 Ruben van Os');
+			Terminal.print($('<p>').html('Textmode comes with ABSOLUTELY NO WARRANTY; for details <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a>.'));
+			Terminal.print($('<p>').html('This is free software, and you are welcome to redistribute it under certain conditions; <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a> for details or <a href="https://github.com/TheLastProject/textmode">click here</a> for the source code to this project.'));
 			Terminal.print('');
 			Terminal.print('Type "help" for instructions on how to play.');
 			Terminal.print('');
