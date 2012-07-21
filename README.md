@@ -1,7 +1,39 @@
-textmode
+Textmode
 =========
 
-An interactive web textmode game using Javascript, making use of the base code of [unixkcd](https://github.com/chromakode/xkcdfools), but removing most code which aren't needed for the game (and adding a lot of other code).
+An interactive web textmode game using Javascript, with experimental desktop client.
+Textmode supports all mayor browsers, with the exception of Internet Explorer.
+
+Compilation instructions
+-------
+
+NOTE: The game can be played without following the instructions below, but will take a performance hit. The play the game without optimising it, just enter the "src" directory in the "game" directory and open "index.html" in your preferred browser.
+
+Compilation requirements:
+python 2
+qmake
+make
+
+Step 1 (optimising the code)
+=========
+
+NOTE: Depending on your system, "python2" may be named "python" or something different. If "python2" does not work, try using "python" instead.
+
+Go to the base directory and execute the following commands:
+	cd game
+	python2 build.py
+The game has now been optimised. If you want to play it in your webbrowser, open the "build" directory in the "game" directory and open "index.html" if your preferred browser.
+
+Step 2 (compiling the experimental desktop client)
+=========
+
+NOTE: This is only necessary if you want to try the experimental desktop client.
+
+Execute the following commands
+	cd ..
+	qmake
+	make
+A client has now been compiled. This works on my Arch Linux system and, as soon as I have access to other systems, I will try it there as well.
 
 Credits
 -------
