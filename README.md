@@ -10,9 +10,11 @@ Compilation instructions
 NOTE: The game can be played without following the instructions below, but will take a performance hit. The play the game without optimising it, just enter the "src" directory in the "game" directory and open "index.html" in your preferred browser.
 
 Compilation requirements:
+```
 python 2
 qmake
 make
+```
 
 Step 1 (optimising the code)
 =========
