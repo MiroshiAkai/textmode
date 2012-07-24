@@ -1,3 +1,6 @@
+amountofplayers=1;
+initializeVariables();
+
 function pathFilename(path) {
 	var match = /\/([^\/]+)$/.exec(path);
 	if (match) {
@@ -16,21 +19,21 @@ function randomChoice(items) {
 
 function objectNameToId(object) {
 	if (object == "computer") {
-		objectid=0
-	} else if (object == "crayons") {
-		objectid=1
-	} else if (object == "flashlight") {
-		objectid=2
+		objectid=0;
 	} else if (object == "note") {
-		objectid=3
+		objectid=1;
+	} else if (object == "flashlight") {
+		objectid=2;
+	} else if (object == "crayons") {
+		objectid=3;
 	} else if (object == "screwdriver") {
-		objectid=4
+		objectid=4;
 	} else if (object == "clock") {
-		objectid=5
+		objectid=5;
 	} else if (object == "drawer") {
-		objectid=6
+		objectid=6;
 	} else {
-		objectid=-1
+		objectid=-1;
 	}
 }
 
@@ -102,6 +105,10 @@ function initializeVariables() {
 	window.currentplayer=1
 	window.movesdone=0
 	window.variablesInitialized=true
+	window.playerlocation = new Array();
+	for (i=1; i<=amountofplayers; i++) {
+		window.playerlocation[i]=getRandomInt(0, roomAmount);
+	}
 	clearInterval(variablesTimer);
 }
 	
@@ -111,17 +118,11 @@ function initializeGamemode() {
 	window.gamemodeTime=0
 	gamemodeTimer=setInterval("gamemodeTime++", 1);
 	if (gamemode == 1) {
-		randomInt=getRandomInt(1,3);
-		if (randomInt == 1) {
-			window.ghostweakness='crayons';
-		} else if (randomInt == 2) {
-			window.ghostweakness='screwdriver';
-		} else if (randomInt == 3) {
-			window.ghostweakness='flashlight';
-		}
+		randomInt=getRandomInt(2,4);
+		window.ghostweakness=itemname[randomInt];
 		window.amountofghostmoves=0;
 		window.amountofscaressurvived=0;
-		window.ghostlocation=getRandomInt(0,(roomAmount));
+		window.playerlocation[2]=getRandomInt(0,roomAmount);
 		if (mutator == 2) {
 			// Realtime-specific code here
 		}
@@ -163,9 +164,9 @@ function initializeRooms() {
 	}
 	window.itemname = new Array(5);
 	window.itemname[0]="computer"
-	window.itemname[1]="crayons"
+	window.itemname[1]="note"
 	window.itemname[2]="flashlight"
-	window.itemname[3]="note"
+	window.itemname[3]="crayons"
 	window.itemname[4]="screwdriver"
 	window.note = new Array(roomAmount);
 
@@ -177,12 +178,12 @@ function initializeRooms() {
 	window.roomcontainsitemlongname = new Array(7)
 	window.roomcontainsitemname[0]="computer"
 	window.roomcontainsitemlongname[0]="a computer"
-	window.roomcontainsitemname[1]="crayons"
-	window.roomcontainsitemlongname[1]="a box of crayons"
+	window.roomcontainsitemname[1]="note"
+	window.roomcontainsitemlongname[1]="a note"
 	window.roomcontainsitemname[2]="flashlight"
 	window.roomcontainsitemlongname[2]="a flashlight"
-	window.roomcontainsitemname[3]="note"
-	window.roomcontainsitemlongname[3]="a note"
+	window.roomcontainsitemname[3]="crayons"
+	window.roomcontainsitemlongname[3]="a box of crayons"
 	window.roomcontainsitemname[4]="screwdriver"
 	window.roomcontainsitemlongname[4]="a screwdriver"
 	window.roomcontainsitemname[5]="clock"
@@ -291,223 +292,223 @@ function createDescription() {
 Adventure = {
 	rooms: {
 		0:{exits:{north:1, east:11, west:10, up:30}, enter:function(terminal) {
-				currentlocation=0
+				playerlocation[currentplayer]=0
 		}},
 		1:{exits:{north:2, east:13, south:0, west:12}, enter:function(terminal) {
-				currentlocation=1
+				playerlocation[currentplayer]=1
 		}},
 		2:{exits:{north:3, east:15, south:1, west:14}, enter:function(terminal) {
-				currentlocation=2
+				playerlocation[currentplayer]=2
 		}},
 		3:{exits:{north:4, east:17, south:2, west:16}, enter:function(terminal) {
-				currentlocation=3
+				playerlocation[currentplayer]=3
 		}},
 		4:{exits:{north:5, east:19, south:3, west:18}, enter:function(terminal) {
-				currentlocation=4
+				playerlocation[currentplayer]=4
 		}},
 		5:{exits:{north:6, east:21, south:4, west:20}, enter:function(terminal) {
-				currentlocation=5
+				playerlocation[currentplayer]=5
 		}},	
 		6:{exits:{north:7, east:23, south:5, west:22}, enter:function(terminal) {
-				currentlocation=6
+				playerlocation[currentplayer]=6
 		}},
 		7:{exits:{north:8, east:25, south:6, west:24}, enter:function(terminal) {
-				currentlocation=7
+				playerlocation[currentplayer]=7
 		}},
 		8:{exits:{north:9, east:27, south:7, west:26}, enter:function(terminal) {
-				currentlocation=8
+				playerlocation[currentplayer]=8
 		}},
 		9:{exits:{east:29, south:8, west:28}, enter:function(terminal) {
-				currentlocation=9
+				playerlocation[currentplayer]=9
 		}},	
 		10:{exits:{east:0}, enter:function(terminal) {
-				currentlocation=10
+				playerlocation[currentplayer]=10
 				lasthallway=0
 		}},
 		11:{exits:{west:0}, enter:function(terminal) {
-				currentlocation=11
+				playerlocation[currentplayer]=11
 				lasthallway=0
 		}},
 		12:{exits:{east:1}, enter:function(terminal) {
-				currentlocation=12
+				playerlocation[currentplayer]=12
 				lasthallway=1
 		}},
 		13:{exits:{west:1}, enter:function(terminal) {
-				currentlocation=13
+				playerlocation[currentplayer]=13
 				lasthallway=1
 		}},
 		14:{exits:{east:2}, enter:function(terminal) {
-				currentlocation=14
+				playerlocation[currentplayer]=14
 				lasthallway=2
 		}},
 		15:{exits:{west:2}, enter:function(terminal) {
-				currentlocation=15
+				playerlocation[currentplayer]=15
 				lasthallway=2
 		}},
 		16:{exits:{east:3}, enter:function(terminal) {
-				currentlocation=16
+				playerlocation[currentplayer]=16
 				lasthallway=3
 		}},
 		17:{exits:{west:3}, enter:function(terminal) {
-				currentlocation=17
+				playerlocation[currentplayer]=17
 				lasthallway=3
 		}},
 		18:{exits:{east:4}, enter:function(terminal) {
-				currentlocation=18
+				playerlocation[currentplayer]=18
 				lasthallway=4
 		}},
 		19:{exits:{west:4}, enter:function(terminal) {
-				currentlocation=19
+				playerlocation[currentplayer]=19
 				lasthallway=4
 		}},
 		20:{exits:{east:5}, enter:function(terminal) {
-				currentlocation=20
+				playerlocation[currentplayer]=20
 				lasthallway=5
 		}},
 		21:{exits:{west:5}, enter:function(terminal) {
-				currentlocation=21
+				playerlocation[currentplayer]=21
 				lasthallway=5
 		}},
 		22:{exits:{east:6}, enter:function(terminal) {
-				currentlocation=22
+				playerlocation[currentplayer]=22
 				lasthallway=6
 		}},
 		23:{exits:{west:6}, enter:function(terminal) {
-				currentlocation=23
+				playerlocation[currentplayer]=23
 				lasthallway=6
 		}},
 		24:{exits:{east:7}, enter:function(terminal) {
-				currentlocation=24
+				playerlocation[currentplayer]=24
 				lasthallway=7
 		}},
 		25:{exits:{west:7}, enter:function(terminal) {
-				currentlocation=25
+				playerlocation[currentplayer]=25
 				lasthallway=7
 		}},
 		26:{exits:{east:8}, enter:function(terminal) {
-				currentlocation=26
+				playerlocation[currentplayer]=26
 				lasthallway=8
 		}},
 		27:{exits:{west:8}, enter:function(terminal) {
-				currentlocation=27
+				playerlocation[currentplayer]=27
 				lasthallway=8
 		}},
 		28:{exits:{east:9}, enter:function(terminal) {
-				currentlocation=28
+				playerlocation[currentplayer]=28
 				lasthallway=9
 		}},
 		29:{exits:{west:9}, enter:function(terminal) {
-				currentlocation=29
+				playerlocation[currentplayer]=29
 				lasthallway=9
 		}},
 		30:{exits:{north:31, east:41, west:40, down:0}, enter:function(terminal) {
-				currentlocation=30
+				playerlocation[currentplayer]=30
 		}},
 		31:{exits:{north:32, east:43, south:30, west:42}, enter:function(terminal) {
-				currentlocation=31
+				playerlocation[currentplayer]=31
 		}},
 		32:{exits:{north:33, east:45, south:31, west:44}, enter:function(terminal) {
-				currentlocation=32
+				playerlocation[currentplayer]=32
 		}},
 		33:{exits:{north:34, east:47, south:32, west:46}, enter:function(terminal) {
-				currentlocation=33
+				playerlocation[currentplayer]=33
 		}},
 		34:{exits:{north:35, east:49, south:33, west:48}, enter:function(terminal) {
-				currentlocation=34
+				playerlocation[currentplayer]=34
 		}},
 		35:{exits:{north:36, east:51, south:34, west:50}, enter:function(terminal) {
-				currentlocation=35
+				playerlocation[currentplayer]=35
 		}},	
 		36:{exits:{north:37, east:53, south:35, west:52}, enter:function(terminal) {
-				currentlocation=36
+				playerlocation[currentplayer]=36
 		}},
 		37:{exits:{north:38, east:55, south:36, west:54}, enter:function(terminal) {
-				currentlocation=37
+				playerlocation[currentplayer]=37
 		}},
 		38:{exits:{north:39, east:57, south:37, west:56}, enter:function(terminal) {
-				currentlocation=38
+				playerlocation[currentplayer]=38
 		}},
 		39:{exits:{east:59, south:38, west:58}, enter:function(terminal) {
-				currentlocation=39
+				playerlocation[currentplayer]=39
 		}},	
 		40:{exits:{east:30}, enter:function(terminal) {
-				currentlocation=40
+				playerlocation[currentplayer]=40
 				lasthallway=30
 		}},
 		41:{exits:{west:30}, enter:function(terminal) {
-				currentlocation=40
+				playerlocation[currentplayer]=40
 				lasthallway=30
 		}},
 		42:{exits:{east:31}, enter:function(terminal) {
-				currentlocation=42
+				playerlocation[currentplayer]=42
 				lasthallway=31
 		}},
 		43:{exits:{west:31}, enter:function(terminal) {
-				currentlocation=43
+				playerlocation[currentplayer]=43
 				lasthallway=31
 		}},
 		44:{exits:{east:32}, enter:function(terminal) {
-				currentlocation=44
+				playerlocation[currentplayer]=44
 				lasthallway=32
 		}},
 		45:{exits:{west:32}, enter:function(terminal) {
-				currentlocation=45
+				playerlocation[currentplayer]=45
 				lasthallway=32
 		}},
 		46:{exits:{east:33}, enter:function(terminal) {
-				currentlocation=46
+				playerlocation[currentplayer]=46
 				lasthallway=33
 		}},
 		47:{exits:{west:33}, enter:function(terminal) {
-				currentlocation=47
+				playerlocation[currentplayer]=47
 				lasthallway=33
 		}},
 		48:{exits:{east:34}, enter:function(terminal) {
-				currentlocation=48
+				playerlocation[currentplayer]=48
 				lasthallway=34
 		}},
 		49:{exits:{west:34}, enter:function(terminal) {
-				currentlocation=49
+				playerlocation[currentplayer]=49
 				lasthallway=34
 		}},
 		50:{exits:{east:35}, enter:function(terminal) {
-				currentlocation=50
+				playerlocation[currentplayer]=50
 				lasthallway=35
 		}},
 		51:{exits:{west:35}, enter:function(terminal) {
-				currentlocation=51
+				playerlocation[currentplayer]=51
 				lasthallway=35
 		}},
 		52:{exits:{east:36}, enter:function(terminal) {
-				currentlocation=52
+				playerlocation[currentplayer]=52
 				lasthallway=36
 		}},
 		53:{exits:{west:36}, enter:function(terminal) {
-				currentlocation=53
+				playerlocation[currentplayer]=53
 				lasthallway=36
 		}},
 		54:{exits:{east:37}, enter:function(terminal) {
-				currentlocation=54
+				playerlocation[currentplayer]=54
 				lasthallway=37
 		}},
 		55:{exits:{west:37}, enter:function(terminal) {
-				currentlocation=55
+				playerlocation[currentplayer]=55
 				lasthallway=37
 		}},
 		56:{exits:{east:38}, enter:function(terminal) {
-				currentlocation=56
+				playerlocation[currentplayer]=56
 				lasthallway=38
 		}},
 		57:{exits:{west:38}, enter:function(terminal) {
-				currentlocation=57
+				playerlocation[currentplayer]=57
 				lasthallway=38
 		}},
 		58:{exits:{east:39}, enter:function(terminal) {
-				currentlocation=58
+				playerlocation[currentplayer]=58
 				lasthallway=39
 		}},
 		59:{exits:{west:39}, enter:function(terminal) {
-				currentlocation=59
+				playerlocation[currentplayer]=59
 				lasthallway=39
 		}},
 	},
@@ -530,27 +531,28 @@ Adventure = {
 		}
 	}
 };
-currentlocation = Adventure.location = Adventure.rooms[0];
+
+playerlocation[currentplayer] = Adventure.location = Adventure.rooms[0];
 
 TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 	if (gameover == 0) {
 		if (silent_move == false) {
-			terminal.print(roomdescription[currentlocation]);	
+			terminal.print(roomdescription[playerlocation[currentplayer]]);	
 			if (Adventure.location.exits) {
 				if (gamemode == 2) {
 					terminal.print(timeinfo);
 				} else {
 					terminal.print('');
 				}
-				if (currentlocation == 0) {
+				if (playerlocation[currentplayer] == 0) {
 					if (amount_of_floors == 1) {
 						var possibleDirections = ['north', 'east', 'west'];
 					} else {
 						var possibleDirections = ['north', 'east', 'west', 'up'];
 					}
-				} else if (currentlocation == 30) {
+				} else if (playerlocation[currentplayer] == 30) {
 					var possibleDirections = ['north', 'east', 'west', 'down'];
-				} else if ((currentlocation == hallway_length) || (currentlocation == hallway_length+30)) {
+				} else if ((playerlocation[currentplayer] == hallway_length) || (playerlocation[currentplayer] == hallway_length+30)) {
 					var possibleDirections = ['east', 'south', 'west'];
 				} else {
 					var possibleDirections = [];
@@ -567,7 +569,7 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 				}
 			}
 		}
-		if (lightstatus[currentlocation] == 1) {
+		if (lightstatus[playerlocation[currentplayer]] == 1) {
 			flicker($('#screen'));
 		}
 	} else {
@@ -576,9 +578,9 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 };
 
 TerminalShell.commands['debug'] = function(terminal) {
-	terminal.print('currentlocation = '+currentlocation);
-	if (gamemode == 1) {
-		terminal.print('ghostlocation = '+ghostlocation);
+	terminal.print('currentplayer = '+currentplayer);
+	for (i=1; i<=amountofplayers; i++) {
+		terminal.print('playerlocation['+i+'] = '+playerlocation[i]);
 	}
 	terminal.print('hallway_length = '+hallway_length);
 	terminal.print('amount_of_floors = '+amount_of_floors);
@@ -611,12 +613,12 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 				} else {
 					timeinfo='\nIt is now '+time+':00AM.';
 				}
-				if (currentlocation == hallway_length) {
+				if (playerlocation[currentplayer] == hallway_length) {
 					if (direction == 'north') {
 						terminal.print('You cannot go '+direction+'.');
 					}
 				}
-				if (destination >= 10 && destination <= 99 && currentlocation != hallway_length) {
+				if (destination >= 10 && destination <= 99 && playerlocation[currentplayer] != hallway_length) {
 					if (direction == 'west') {
 						destination=destination-10
 					} else {
@@ -656,10 +658,10 @@ TerminalShell.commands['yes'] = function(terminal) {
 		Terminal.print('2. Local multiplayer');
 		Terminal.print('3. Offline');
 	} else if (menu == 'ghostplayer2teleport') {
-		ghostmove=1
+		ghostmove=1;
 		Adventure.gamemode(terminal);
-		ghostmove=0
-		gameover=0
+		ghostmove=0;
+		gameover=0;
 		Terminal.runCommand('end');
 	} else {
 		Terminal.print('Could not find a question to answer "yes" to.');
@@ -682,16 +684,14 @@ TerminalShell.commands['no'] = function(terminal) {
 TerminalShell.commands['1'] = function(terminal) {
 	if (menu == 'wayofplaying') {
 		Terminal.print('Singleplayer selected.');
-		wayofplaying=1
-		menu='gamemode'
+		wayofplaying=1;
+		menu='gamemode';
 		Terminal.print('Please choose a gamemode:');
 		Terminal.print('1. Ghost');
 	} else if (menu == 'gamemode') {
 		gamemode=1 // Ghost Mode
-		if (wayofplaying == 2) {
-			amountofplayers=2
-		}
-		gameover=0
+		amountofplayers=2; // NPCs are players too, to make singleplayer and multiplayer work together more easily
+		gameover=0;
 		initializeEverything();
 		timer();
 		setTimeout("Terminal.runCommand('look');", 3000);
@@ -703,8 +703,8 @@ TerminalShell.commands['1'] = function(terminal) {
 TerminalShell.commands['2'] = function(terminal) {
 	if (menu == 'wayofplaying') {
 		Terminal.print('Local multiplayer selected.');
-		wayofplaying=2
-		menu='gamemode'
+		wayofplaying=2;
+		menu='gamemode';
 		Terminal.print('Please choose a gamemode:');
 		Terminal.print('1. Ghost (up to 2 players)');
 	} else {
@@ -772,7 +772,7 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 		if (!object) {
 			terminal.print('Use what?');
 		} else if (objectid == 0) { // Computer
-			if (roomcontainsitem[0].indexOf(currentlocation) != -1) {
+			if (roomcontainsitem[0].indexOf(playerlocation[currentplayer]) != -1) {
 				using_computer=true
 				if (logged_in == false) {
 					terminal.print('Please login using the "login" command.');
@@ -782,9 +782,9 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 						terminal.print('Searching for the ghost...');
 						setTimeout("Terminal.print('You are at: Floor '+currentfloor+'.');", 2000);
 						setTimeout("Terminal.print('The ghost is at: Floor '+ghostfloor+'.');", 2500);
-						if (ghostlocation >= 0 && ghostlocation <= 9) {
+						if (playerlocation[2] >= 0 && playerlocation[2] <= 9) {
 							setTimeout("Terminal.print('The ghost is in the hallway.');", 3000);
-						} else if (ghostlocation >= 10 && ghostlocation <= 99) {
+						} else if (playerlocation[2] >= 10 && playerlocation[2] <= 99) {
 							setTimeout("Terminal.print('The ghost is in a room.');", 3000);
 						}
 						setTimeout("Terminal.print('Searching for weakness...');", 3500);
@@ -798,7 +798,7 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 				terminal.print('You cannot use '+object+'.');
 			}
 		} else if (objectid == 3) { // Note
-			if (roomcontainsitem[objectid].indexOf(currentlocation) != -1) {
+			if (roomcontainsitem[objectid].indexOf(playerlocation[currentplayer]) != -1) {
 				terminal.print('You grab the note and start reading...');
 				terminal.setWorking(true);
 				terminal.print('');
@@ -808,7 +808,7 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 				terminal.print('There is no '+roomcontainsitemname[objectid]+' here.');
 			}
 		} else if (objectid != -1) {
-			if (roomcontainsitem[objectid].indexOf(currentlocation) != -1) {
+			if (roomcontainsitem[objectid].indexOf(playerlocation[currentplayer]) != -1) {
 				terminal.print('You try to use the '+roomcontainsitemlongname[objectid]+', but nothing useful seems to happen.');
 			} else {
 				terminal.print('There is no '+roomcontainsitemname[objectid]+' here.');
@@ -827,18 +827,18 @@ TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
 		if (!object) {
 			terminal.print('Take what?');
 		} else if (objectid != -1) {
-			if (roomcontainsitem[objectid].indexOf(currentlocation) != -1) {
+			if (roomcontainsitem[objectid].indexOf(playerlocation[currentplayer]) != -1) {
 				if (gamemode == 1) { // Ghost
 					if (inventory.length >= 1) {
 						terminal.print('Your inventory is full!');
 					} else {
 						terminal.print(roomcontainsitemlongname[objectid]+' has been put in your inventory.');
 						inventory.push(object);
-						roomcontainsitem[objectid].splice(roomcontainsitem[objectid].indexOf(currentlocation), 1)
-						description[currentlocation] = descriptionbackup[currentlocation]
-						description[currentlocation].splice(description[currentlocation].indexOf(roomcontainsitemlongname[objectid]), 1)
-						i = currentlocation
-						createDescription(currentlocation);
+						roomcontainsitem[objectid].splice(roomcontainsitem[objectid].indexOf(playerlocation[currentplayer]), 1)
+						description[playerlocation[currentplayer]] = descriptionbackup[playerlocation[currentplayer]]
+						description[playerlocation[currentplayer]].splice(description[playerlocation[currentplayer]].indexOf(roomcontainsitemlongname[objectid]), 1)
+						i = playerlocation[currentplayer]
+						createDescription(playerlocation[currentplayer]);
 					}
 				}
 			} else {
@@ -861,11 +861,11 @@ TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
 			if ($.inArray(object, inventory) != -1) {
 				objectininventory = inventory.indexOf(object)
 				inventory.splice(objectininventory, 1);
-				roomcontainsitem[objectid].push(currentlocation)
-				description[currentlocation] = descriptionbackup[currentlocation]
-				description[currentlocation].push(roomcontainsitemlongname[objectid])
-				i = currentlocation
-				createDescription(currentlocation)
+				roomcontainsitem[objectid].push(playerlocation[currentplayer])
+				description[playerlocation[currentplayer]] = descriptionbackup[playerlocation[currentplayer]]
+				description[playerlocation[currentplayer]].push(roomcontainsitemlongname[objectid])
+				i = playerlocation[currentplayer]
+				createDescription(playerlocation[currentplayer])
 				terminal.print('You dropped '+object+'.');
 			} else {
 				terminal.print('Could not find '+object+' in your inventory.');
@@ -897,52 +897,6 @@ TerminalShell.commands['inventory'] = function(terminal) {
 		terminal.print('This action cannot be executed now.');
 	}
 };
-
-// TerminalShell.commands['inspect'] = function(terminal, object) {
-// 	if (gameover == 0) { 
-// 		if (!object) {
-// 			Terminal.print('Inspect what?');
-// 		} else {
-// 			if (currentlocation >= 0 && currentlocation <= 9) {
-// 				if (object == "door") {
-// 					Terminal.print('This door leads to the laboratory');
-// 				} else if (object == "wall") {
-// 					Terminal.print('It looks like a pretty normal concrete wall.');
-// 				} else {
-// 					Terminal.print('You cannot inspect '+object+'.');
-// 				}
-// 			} else {
-// 				if (object == "computer") {
-// 					if (roomshascomputer[currentlocation] == 1) {
-// 						Terminal.print('It is an old computer, probably from around the 70s. It seems to be running Unix.');
-// 					} else {
-// 						Terminal.print('You cannot inspect '+object+'.');
-// 					}
-// 				} else if (object == "clock") {
-// 					if (roomshasclock[currentlocation] == 1) {
-// 						if (time_passes == false) {
-// 							Terminal.print('The hands of the clock don\'t move, but the clock doesn\'t look like it is broken.'+timeinfo);
-// 						} else {
-// 							Terminal.print('You look at the clock.'+timeinfo);
-// 						}
-// 					} else {
-// 						Terminal.print('You cannot inspect '+object+'.');
-// 					}
-// 				} else if (object == "drawer") {
-// 					if (roomshasdrawer[currentlocation] == 1) {
-// 						Terminal.print('The drawer is made of wood, and seems slightly damaged due to old age, from the looks of it. It appears to be openable.');
-// 					} else {
-// 						Terminal.print('You cannot inspect '+object+'.');
-// 					}
-// 				} else {
-// 					Terminal.print('You cannot inspect '+object+'.');
-// 				}
-// 			}
-// 		}
-// 	} else {
-// 		terminal.print('This action cannot be executed now.');
-// 	}
-// };
 
 TerminalShell.commands['sleep'] = TerminalShell.commands['rest'] = function(terminal, duration) {
 	if (gameover == 0) { 
@@ -1033,18 +987,18 @@ TerminalShell.commands['end'] = function(terminal) {
 			}
 			if (currentplayer == 2) {
 				gameover = 1
-				if (ghostlocation >= 10) {
+				if (playerlocation[2] >= 10) {
 					ghostlocationinfo='You are in a room.'
-					if (ghostlocation%2 == 0 && Adventure.location.exits['east'] == currentlocation) {
+					if (playerlocation[2]%2 == 0 && Adventure.location.exits['east'] == playerlocation[1]) {
 						playerlocationinfo='Player 1 is in the hallway directly east of you.'
-					} else if (ghostlocation%2 != 1 && Adventure.location.exits['west'] == currentlocation) {
+					} else if (playerlocation[2]%2 != 1 && Adventure.location.exits['west'] == playerlocation[1]) {
 						playerlocationinfo='Player 1 is in the hallway directly west of you.'
 					} else {
 						playerlocationinfo='Player 1 is not close to you.'
 					}
 				} else {
 					ghostlocationinfo='You are in the hallway.'
-					if (currentlocation <= 9) {
+					if (playerlocation[1] <= 9) {
 						playerlocationinfo='Player 1 is in the hallway as well.'
 					} else {
 						playerlocationinfo='Player 1 is in a room.'
@@ -1068,9 +1022,9 @@ Adventure.gamemode = function(terminal) {
 		}
 		if (ghostmove == 1) {
 			amountofghostmoves=amountofghostmoves+1
-			ghostlocation=getRandomInt(0, (roomAmount));
+			playerlocation[2]=getRandomInt(0, (roomAmount));
 		}
-		if (currentlocation == ghostlocation) {
+		if (playerlocation[1] == playerlocation[2]) {
 			if ($.inArray(ghostweakness, inventory) != -1) {
 				if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
 					terminal.print('You use the '+ghostweakness+' in your inventory on the ghost.');
@@ -1096,7 +1050,7 @@ Adventure.gamemode = function(terminal) {
 					if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
 						terminal.print('BOO!');
 					} else {
-						terminal.print('You find player 1, but are unable to do more than scare him until you get dragged away');
+						terminal.print('You find player 1, but are unable to do more than scare him.');
 					}
 					shake($('#screen'));
 					amountofscaressurvived=amountofscaressurvived+1
@@ -1108,9 +1062,9 @@ Adventure.gamemode = function(terminal) {
 						ghostlocationroom=getRandomInt(0,(roomAmount))
 					}
 					if (ghostlocationfloor == 1) {
-						ghostlocation=ghostlocationroom
-						if ((ghostlocation > hallway_length) && (ghostlocation <=9)) {
-							ghostlocation = hallway_length
+						playerlocation[2]=ghostlocationroom
+						if ((playerlocation[2] > hallway_length) && (playerlocation[2] <=9)) {
+							playerlocation[2] = hallway_length
 						}
 					}
 				}
@@ -1259,7 +1213,6 @@ $(document).ready(function() {
 	$('#screen').bind('cli-load', function(e) {
 		$('#screen').one('cli-ready', function(e) {
 		});
-			currentlocation=0
 			Terminal.print($('<p>').html('Textmode version 20120721, Copyright (c) 2012 <a href="https://github.com/TheLastProject">Ruben van Os</a>'));
 			Terminal.print($('<p>').html('Textmode comes with ABSOLUTELY NO WARRANTY; for details <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a>.'));
 			Terminal.print($('<p>').html('This is free software, and you are welcome to redistribute it under certain conditions; <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a> for details or <a href="https://github.com/TheLastProject/textmode">click here</a> for the source code to this project.'));
