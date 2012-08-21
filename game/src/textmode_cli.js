@@ -1184,12 +1184,3 @@ $(document).ready(function() {
 			Terminal.promptActive = true;
 		}, noData);
 });
-
-// Activate focus
-if (jQuery('.errors').size() > 0) {
-    jQuery('input.errors:first').focus();
-    jQuery('.errors input:visible:first').focus();
-  }
-else {
-  jQuery('input:text:visible:first').focus();
-}
