@@ -54,6 +54,9 @@ Credits
 
 * The bundled version of [jsPDF](https://github.com/MrRio/jsPDF) is Copyright (c) 2010 [James Hall](https://github.com/MrRio).
 
+* The bundled [Qt Libraries](https://qt.nokia.com/) are Copyright (c) 2008-2012 [Nokia Corporation](http://www.nokia.com).
+
+* The bundled version of [Apache Cordova](http://cordova.io) is Copyright (c) 2012 [The Apache Foundation](http://www.apache.org/).
 
 License
 -------
@@ -63,3 +66,7 @@ License
 * YUI Compressor is distributed under a [BSD license](http://developer.yahoo.com/yui/license.html), with [Rhino](http://www.mozilla.org/rhino/) components licensed under [MPL](http://www.mozilla.org/MPL/).
 
 * jsPDF is distributed under a [MIT license](https://raw.github.com/MrRio/jsPDF/master/MIT-LICENSE.txt).
+
+* Qt is distributed under the [GNU LGPLv2.1](http://www.gnu.org/licenses/lgpl-2.1.html).
+
+* Cordova is distributed under the [Apache License v2.0](https://www.apache.org/licenses/LICENSE-2.0).

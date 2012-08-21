@@ -547,24 +547,35 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 				if (playerlocation[currentplayer] == 0) {
 					if (amount_of_floors == 1) {
 						var possibleDirections = ['north', 'east', 'west'];
+						var possibleDirections2 = ['north', 'east', 'west'];
 					} else {
 						var possibleDirections = ['north', 'east', 'west', 'up'];
+						var possibleDirections2 = ['north', 'east', 'west', 'up'];
 					}
 				} else if (playerlocation[currentplayer] == 30) {
 					var possibleDirections = ['north', 'east', 'west', 'down'];
+					var possibleDirections2 = ['north', 'east', 'west', 'down'];
 				} else if ((playerlocation[currentplayer] == hallway_length) || (playerlocation[currentplayer] == hallway_length+30)) {
 					var possibleDirections = ['east', 'south', 'west'];
+					var possibleDirections2 = ['east', 'south', 'west'];
 				} else {
 					var possibleDirections = [];
+					var possibleDirections2 = [];
 					$.each(Adventure.location.exits, function(name, id) {
 					possibleDirections.push(name);
+					possibleDirections2.push(name);
 					});
 				}
-				terminal.print('Exits: '+possibleDirections.join(', '));
+				Terminal.print('Exits:');
+				while (possibleDirections2.length > 0) {
+					direction = possibleDirections2.splice(0,1);
+					Terminal.print($('<p>').html('<a href="javascript:clicked(\'go '+direction+'\');">'+direction+'</a>'));
+				}
 				if (menu != false) {
 					terminal.print('');
 					if (menu == "newgame") {
 						terminal.print('Would you like to start a new game?');
+						Terminal.print($('<p>').html('<a href="javascript:clicked(\'yes\');">Yes</a> or <a href="javascript:clicked(\'no\');">No</a>'));
 					}
 				}
 			}
@@ -684,7 +695,7 @@ TerminalShell.commands['1'] = function(terminal) {
 		wayofplaying=1;
 		menu='gamemode';
 		Terminal.print('Please choose a gamemode:');
-		Terminal.print('1. Ghost');
+		Terminal.print($('<p>').html('<a href="javascript:clicked(1);">1. Ghost</a>'));
 	} else if (menu == 'gamemode') {
 		gamemode=1 // Ghost Mode
 		amountofplayers=2; // NPCs are players too, to make singleplayer and multiplayer work together more easily
@@ -703,7 +714,7 @@ TerminalShell.commands['2'] = function(terminal) {
 		wayofplaying=2;
 		menu='gamemode';
 		Terminal.print('Please choose a gamemode:');
-		Terminal.print('1. Ghost (up to 2 players)');
+		Terminal.print($('<p>').html('<a href="javascript:clicked(1);">1. Ghost (up to 2 players)</a>'));
 	} else {
 		Terminal.print('Could not find a question to answer "2" to.');
 	}
@@ -1076,7 +1087,8 @@ Adventure.gameresult = function(terminal) {
 	}
 	menu='newgame'
 	gameover=1
-	terminal.print('Do you want to start a new game? (yes/no)');
+	terminal.print('Do you want to start a new game?');
+	Terminal.print($('<p>').html('<a href="javascript:clicked(\'yes\');">Yes</a> or <a href="javascript:clicked(\'no\');">No</a>'));
 };
 
 TerminalShell.commands['help'] = function(terminal) {
@@ -1157,11 +1169,21 @@ function timer() {
 function printgamemodemenu() {
 	browser=navigator.appName
 	Terminal.print('Please choose a way of playing (answer by typing the number, followed by enter):');
-	Terminal.print('1. Singleplayer');
-	Terminal.print('2. Local multiplayer');
+	Terminal.print($('<p>').html('<a href="javascript:clicked(1);">1. Singleplayer</a>'));
+	Terminal.print($('<p>').html('<a href="javascript:clicked(2);">2. Local multiplayer</a>'));
 	if ($.browser.name != 'msie' && $.browser.name != 'safari') {
-		Terminal.print('3. Offline');
+		Terminal.print($('<p>').html('<a href="javascript:clicked(3);">3. Offline</a>'));
 	}
+}
+
+function clicked(what) {
+	Terminal.runCommand(''+what+'');
+}
+
+TerminalShell.commands['suicide'] = function(terminal) {
+	gameover=1;
+	gameresult='lost';
+	Adventure.gameresult(terminal);
 }
 
 $(document).ready(function() {
