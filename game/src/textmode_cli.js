@@ -207,7 +207,7 @@ function initializeRooms() {
 			}
 			if (getRandomInt(0,1) == 1 && containsitem != 0) {
 				rooms[i]='locked'
-				lockedcount=lockedcount+1
+				lockedcount++
 				window.roomdescription[i]='The room is locked'
 			} else {
 				for (j = 0; j <= roomcontainsitem.length; j++) {
@@ -517,7 +517,7 @@ Adventure = {
 	},
 	
 	goTo: function(terminal, id) {
-		movesdone=movesdone+1
+		movesdone++
 		Adventure.location = Adventure.rooms[id];
 		if (Adventure.location.enter) {
 			Adventure.location.enter(terminal);
@@ -598,7 +598,7 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 				if (time_passes == true) {
 					random_time_passing=getRandomInt(0,5)
 					if (random_time_passing==5) {
-						time=time+1
+						time++
 					}
 				}
 				if (time >= 24) {
@@ -629,12 +629,12 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 					if (rooms[destination] == 'locked') {
 						terminal.print('The door is locked!')
 					} else {
-						amountofroomsentered=amountofroomsentered+1
-						amountofmoves=amountofmoves+1				
+						amountofroomsentered++
+						amountofmoves++			
 						Adventure.goTo(terminal, Adventure.location.exits[direction]);
 					}
 				} else {
-					amountofmoves=amountofmoves+1
+					amountofmoves++
 					Adventure.goTo(terminal, Adventure.location.exits[direction]);
 				}
 			} else if (!direction) {
@@ -653,10 +653,7 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 TerminalShell.commands['yes'] = function(terminal) {
 	if (menu == 'newgame') {
 		menu='wayofplaying';
-		Terminal.print('Please choose a way of playing (answer by typing the number, followed by enter):');
-		Terminal.print('1. Singleplayer');
-		Terminal.print('2. Local multiplayer');
-		Terminal.print('3. Offline');
+		printgamemodemenu();
 	} else if (menu == 'ghostplayer2teleport') {
 		ghostmove=1;
 		Adventure.gamemode(terminal);
@@ -713,55 +710,15 @@ TerminalShell.commands['2'] = function(terminal) {
 }
 
 TerminalShell.commands['3'] = function(terminal) {
-	if (menu == 'wayofplaying') {
-		browser=navigator.appName
-		if ($.browser.name == 'msie') {
-			Terminal.print($('<p>').html('Ugh, Internet Explorer... I will have to build a complete new system for you. While you are waiting, may I refer you to <a href="http://www.abetterbrowser.org/">A Better Browser</a>? You\'d do everyone a favor by using a standard-compliant browser.'));
-			Terminal.print('If you still want to try anyway, type "continue". Otherwise, type "cancel".');
-			menu='offlineconfirm';
-		} else if ($.browser.name == 'firefox' && ($.os.name == 'win' || $.os.name == 'Windows')) {
-			Terminal.print('Firefox on Windows only works with a PDF Reader plugin. Please ensure you have one installed and type "continue" to continue.');
-			menu='offlineconfirm';
-		} else {
-			gamemode=0;
-			initializeEverything();
-			createPDF();
-			menu='wayofplaying';
-			Terminal.print('Please choose a way of playing (answer by typing the number, followed by enter):');
-			Terminal.print('1. Singleplayer');
-			Terminal.print('2. Local multiplayer');
-			Terminal.print('3. Offline');
-		}
-	} else {
-		Terminal.print('Could not find a question to answer "3" to.');
-	}
-}
-
-TerminalShell.commands['continue'] = function(terminal) {
-	if (menu == 'offlineconfirm') {
+	browser=navigator.appName
+	if ((menu == 'wayofplaying') && ($.browser.name != 'msie' && $.browser.name != 'safari')) {
 		gamemode=0;
 		initializeEverything();
 		createPDF();
 		menu='wayofplaying';
-		Terminal.print('Please choose a way of playing (answer by typing the number, followed by enter):');
-		Terminal.print('1. Singleplayer');
-		Terminal.print('2. Local multiplayer');
-		Terminal.print('3. Offline');
+		printgamemodemenu();
 	} else {
-		Terminal.print('Could not find anything to continue with.');
-	}
-}
-
-TerminalShell.commands['cancel'] = function(terminal) {
-	if (!menu) {
-		Terminal.print('Could not find anything to cancel.');
-	  
-	} else {
-		menu='wayofplaying';
-		Terminal.print('Please choose a way of playing (answer by typing the number, followed by enter):');
-		Terminal.print('1. Singleplayer');
-		Terminal.print('2. Local multiplayer');
-		Terminal.print('3. Offline');
+		Terminal.print('Could not find a question to answer "3" to.');
 	}
 }
 
@@ -1021,7 +978,7 @@ Adventure.gamemode = function(terminal) {
 			ghostmove=getRandomInt(1,10) // Decides if the Ghost moves
 		}
 		if (ghostmove == 1) {
-			amountofghostmoves=amountofghostmoves+1
+			amountofghostmoves++
 			playerlocation[2]=getRandomInt(0, (roomAmount));
 		}
 		if (playerlocation[1] == playerlocation[2]) {
@@ -1053,8 +1010,8 @@ Adventure.gamemode = function(terminal) {
 						terminal.print('You find player 1, but are unable to do more than scare him.');
 					}
 					shake($('#screen'));
-					amountofscaressurvived=amountofscaressurvived+1
-					amountofghostmoves=amountofghostmoves+1
+					amountofscaressurvived++
+					amountofghostmoves++
 					ghostlocationfloor=getRandomInt(1,1)
 					if (getRandomInt(1,2) == 1) {
 						ghostlocationroom=getRandomInt(0, hallway_length);
@@ -1122,7 +1079,6 @@ Adventure.gameresult = function(terminal) {
 	terminal.print('Do you want to start a new game? (yes/no)');
 };
 
-// No peeking!
 TerminalShell.commands['help'] = function(terminal) {
 	terminal.print('Type "yes" or "no" to answer questions given by the system.');
 	terminal.print('Type "go" to go to a direction. For example, "go west" to go west.');
@@ -1132,12 +1088,6 @@ TerminalShell.commands['help'] = function(terminal) {
 	terminal.print('Type "inventory" to check which items you have in your inventory.');
 	terminal.print('Type "use" to use an object in the room. For example, type "use computer" to use a computer in the room. The "use" command is used for all kinds of interaction, so if you want to read a book write "use book" to do so.');
 }; 
-
-TerminalShell.commands['die'] = function(terminal) {
-	gameover=1;
-	gameresult='lost';
-	Adventure.gameresult(terminal);
-}
 
 function shake(elems) {
 	elems.css('position', 'relative');
@@ -1204,6 +1154,16 @@ function timer() {
 	window.playTimeTimer=setInterval("playTime++", 1000);
 }
 
+function printgamemodemenu() {
+	browser=navigator.appName
+	Terminal.print('Please choose a way of playing (answer by typing the number, followed by enter):');
+	Terminal.print('1. Singleplayer');
+	Terminal.print('2. Local multiplayer');
+	if ($.browser.name != 'msie' && $.browser.name != 'safari') {
+		Terminal.print('3. Offline');
+	}
+}
+
 $(document).ready(function() {
 	Terminal.promptActive = false;
 	function noData() {
@@ -1220,10 +1180,16 @@ $(document).ready(function() {
 			Terminal.print('Type "help" for instructions on how to play.');
 			Terminal.print('');
 			menu='wayofplaying'
-			Terminal.print('Please choose a way of playing (answer by typing the number, followed by enter):');
-			Terminal.print('1. Singleplayer');
-			Terminal.print('2. Local multiplayer');
-			Terminal.print('3. Offline');
+			printgamemodemenu();
 			Terminal.promptActive = true;
 		}, noData);
 });
+
+// Activate focus
+if (jQuery('.errors').size() > 0) {
+    jQuery('input.errors:first').focus();
+    jQuery('.errors input:visible:first').focus();
+  }
+else {
+  jQuery('input:text:visible:first').focus();
+}
