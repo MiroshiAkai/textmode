@@ -37,6 +37,15 @@ function objectNameToId(object) {
 	}
 }
 
+function getInfoForClickableItems() {
+	var item = description[i].slice(0,1);
+	for (k = 0; k < window.roomcontainsitem.length; k++) {
+		if (item == window.roomcontainsitemlongname[k]) {
+			window.itemnumber = k;
+		}
+	}
+}
+
 // Initialize... EVERYTHING
 function initializeEverything() {
 	initializeVariables();
@@ -176,20 +185,28 @@ function initializeRooms() {
 	}
 	window.roomcontainsitemname = new Array(7)
 	window.roomcontainsitemlongname = new Array(7)
+	window.itemaction = new Array(7)
 	window.roomcontainsitemname[0]="computer"
 	window.roomcontainsitemlongname[0]="a computer"
+	window.itemaction[0]="use"
 	window.roomcontainsitemname[1]="note"
 	window.roomcontainsitemlongname[1]="a note"
+	window.itemaction[1]="use"
 	window.roomcontainsitemname[2]="flashlight"
 	window.roomcontainsitemlongname[2]="a flashlight"
+	window.itemaction[2]="take"
 	window.roomcontainsitemname[3]="crayons"
 	window.roomcontainsitemlongname[3]="a box of crayons"
+	window.itemaction[3]="take"
 	window.roomcontainsitemname[4]="screwdriver"
 	window.roomcontainsitemlongname[4]="a screwdriver"
+	window.itemaction[4]="take"
 	window.roomcontainsitemname[5]="clock"
 	window.roomcontainsitemlongname[5]="a clock"
+	window.itemaction[5]="none"
 	window.roomcontainsitemname[6]="drawer"
 	window.roomcontainsitemlongname[6]="a drawer"
+	window.itemaction[6]="none"
 
 	window.description = new Array();
 	window.descriptionbackup = new Array();
@@ -246,44 +263,114 @@ function createDescription() {
 	}
 	for (j = 0; j <= description[i].length; j++) {
 		if (j == 0 && description[i].length >= 2) {
-			roomdescription[i] = roomdescription[i] + ' The room contains '+description[i].shift()
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ' The room contains <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>';
+			} else {
+				roomdescription[i] = roomdescription[i] + ' The room contains '+description[i].shift();
+			}
 		} else if (j == 0 && description[i].length >= 1) {
-			roomdescription[i] = roomdescription[i] + ' It only contains '+description[i].shift()+'.'
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + 'It only contains <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
+			} else {
+				roomdescription[i] = roomdescription[i] + ' It only contains '+description[i].shift()+'.'
+			}
 		} else if (j == 0 && ((i >= 10 && i >= 29) || (i >=40 && i <= 59))) {
 			roomdescription[i] = roomdescription[i] + ' It is empty.'
 		}
 		if (j == 1 && description[i].length >= 3) {
-			roomdescription[i] = roomdescription[i] + ', '+description[i].shift()
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ', <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>';
+			} else {
+				roomdescription[i] = roomdescription[i] + ', '+description[i].shift()
+			}
 		} else if (j == 1) {
-			roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ' and <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
+			} else {
+				roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+			}
 		}
 		if (j == 2) {
-			roomdescription[i] = roomdescription[i] + ', and '+description[i].shift()+'.'
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ', and <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
+			} else {				
+				roomdescription[i] = roomdescription[i] + ', and '+description[i].shift()+'.'
+			}
 		}
 		if (j == 3 && description[i].length >= 5) {
-			roomdescription[i] = roomdescription[i] + ' It also contains '+description[i].shift()
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ' It also contains <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>';
+			} else {
+				roomdescription[i] = roomdescription[i] + ' It also contains '+description[i].shift()
+			}
 		} else if (j == 3) {
-			roomdescription[i] = roomdescription[i] + ' It also contains '+description[i].shift()+'.'
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ' It also contains <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
+			} else {
+				roomdescription[i] = roomdescription[i] + ' It also contains '+description[i].shift()+'.'
+			}
 		}
 		if (j == 4 && description[i].length >= 6) {
-			roomdescription[i] = roomdescription[i] + ', '+description[i].shift()
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ', <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>';
+			} else {			
+				roomdescription[i] = roomdescription[i] + ', '+description[i].shift()
+			}
 		} else if (j == 4) {
-			roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ' and <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
+			} else {
+				roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+			}
 		}
 		if (j == 5) {
-			roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ' and <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
+			} else {
+				roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+			}
 		}
 		if (j == 6 && description[i].length == 7) {
-			roomdescription[i] = roomdescription[i] + ' You can also see '+description[i].shift()+'.'
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ' You can also see <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
+			} else {			  
+				roomdescription[i] = roomdescription[i] + ' You can also see '+description[i].shift()+'.'
+			}
 		} else if (j == 6 && description[i].length >= 8) {
-			roomdescription[i] = roomdescription[i] + ' You can also see '+description[i].shift()
+			getInfoForClickableItems();
+			if (window.itemaction[itemnumber] != "none") {
+				roomdescription[i] = roomdescription[i] + ' You can also see <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>';
+			} else {		  
+				roomdescription[i] = roomdescription[i] + ' You can also see '+description[i].shift()
+			}
 		}
 		if (j == 7) {
 			for (j = 7; j <= description[i].length-1; j++) {
-				roomdescription[i] = roomdescription[i] + ', '+description[i].shift()
+			getInfoForClickableItems();
+				if (window.itemaction[itemnumber] != "none") {
+					roomdescription[i] = roomdescription[i] + ', <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>';
+				} else {			  
+					roomdescription[i] = roomdescription[i] + ', '+description[i].shift()
+				}
 			}
 			if (j == description[i].length) {
-				roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+				getInfoForClickableItems();
+				if (window.itemaction[itemnumber] != "none") {
+					roomdescription[i] = roomdescription[i] + ' and <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
+				} else {			  
+					roomdescription[i] = roomdescription[i] + ' and '+description[i].shift()+'.'
+				}
 			}
 		}
 	}
@@ -537,7 +624,7 @@ playerlocation[currentplayer] = Adventure.location = Adventure.rooms[0];
 TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 	if (gameover == 0) {
 		if (silent_move == false) {
-			terminal.print(roomdescription[playerlocation[currentplayer]]);	
+			Terminal.print($('<p>').html(roomdescription[playerlocation[currentplayer]]));	
 			if (Adventure.location.exits) {
 				if (gamemode == 2) {
 					terminal.print(timeinfo);
@@ -1177,6 +1264,7 @@ function printgamemodemenu() {
 }
 
 function clicked(what) {
+	Terminal.print(what);
 	Terminal.runCommand(''+what+'');
 }
 
@@ -1195,7 +1283,7 @@ $(document).ready(function() {
 	$('#screen').bind('cli-load', function(e) {
 		$('#screen').one('cli-ready', function(e) {
 		});
-			Terminal.print($('<p>').html('Textmode version 20120721, Copyright (c) 2012 <a href="https://github.com/TheLastProject">Ruben van Os</a>'));
+			Terminal.print($('<p>').html('Textmode version 20120822, Copyright (c) 2012 <a href="https://github.com/TheLastProject">Ruben van Os</a>'));
 			Terminal.print($('<p>').html('Textmode comes with ABSOLUTELY NO WARRANTY; for details <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a>.'));
 			Terminal.print($('<p>').html('This is free software, and you are welcome to redistribute it under certain conditions; <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a> for details or <a href="https://github.com/TheLastProject/textmode">click here</a> for the source code to this project.'));
 			Terminal.print('');

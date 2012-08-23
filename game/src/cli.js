@@ -112,7 +112,7 @@ var Terminal = {
 		prompt:				'> ',
 		spinnerCharacters:	['[   ]','[.  ]','[.. ]','[...]'],
 		spinnerSpeed:		250,
-		typingSpeed:		50
+		typingSpeed:		0
 	},
 	
 	sticky: {
