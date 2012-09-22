@@ -89,31 +89,32 @@ function initializeVariables() {
 		window.roomAmount=29+(30*(amount_of_floors-1));
 	}
 	// Indexing variables like a gentleman
-	window.amountofmoves=0
-	window.amountofroomsentered=0
-	window.time=getRandomInt(0,24)
+	window.amountofmoves=0;
+	window.amountofroomsentered=0;
+	window.time=getRandomInt(0,24);
 	if (time > 12) {
 		window.timeinfo='\nIt is now '+(time-12)+':00PM';
 	} else {
 		window.timeinfo='\nIt is now '+time+':00AM.';
 	}
-	window.destination=0
-	window.lasthallway=0
-	window.time_passes=true
-	window.logged_in=false
-	window.using_computer=false
-	window.menu=false
-	window.silent_move=false
-	window.password=getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)
-	window.currentfloor=1
+	window.destination=0;
+	window.lasthallway=0;
+	window.time_passes=true;
+	window.logged_in=false;
+	window.using_computer=false;
+	window.menu=false;
+	window.silent_move=false;
+	window.password=getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9)+''+getRandomInt(0,9);
+	window.currentfloor=1;
 	window.inventory = [];
-	window.gameresult='playing'
-	window.gameover=0
-	window.objectid=-1
-	window.mutator=1
-	window.currentplayer=1
-	window.movesdone=0
-	window.variablesInitialized=true
+	window.gameresult='start';
+	window.gameover=0;
+	window.objectid=-1;
+	window.mutator=1;
+	window.currentplayer=1;
+	window.movesdone=0;
+	window.gotlogininfo=false;
+	window.variablesInitialized=true;
 	window.playerlocation = new Array();
 	for (i=1; i<=amountofplayers; i++) {
 		window.playerlocation[i]=getRandomInt(0, roomAmount);
@@ -164,7 +165,7 @@ function initializeRooms() {
 	window.lightstatus = new Array(roomAmount);
 	window.itemlocation = new Array(5);
 	for (i = 0; i <= 5; i++) {
-		randomInt=getRandomInt(1,2)
+		randomInt=getRandomInt(1, amount_of_floors)
 		if (randomInt == 1) {
 			itemlocation[i] = getRandomInt(10, (10+(hallway_length*2-1)));
 		} else {
@@ -624,6 +625,12 @@ playerlocation[currentplayer] = Adventure.location = Adventure.rooms[0];
 TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 	if (gameover == 0) {
 		if (silent_move == false) {
+			if (inventory.length > 0) {
+				Terminal.print('Inventory:');
+				for (i = 0; i < inventory.length; i++) {
+					Terminal.print($('<p>').html('<a href="javascript:clicked(\'drop '+inventory[i]+'\');">'+inventory[i]+'</a>.'));
+				}
+			}
 			Terminal.print($('<p>').html(roomdescription[playerlocation[currentplayer]]));	
 			if (Adventure.location.exits) {
 				if (gamemode == 2) {
@@ -789,7 +796,6 @@ TerminalShell.commands['1'] = function(terminal) {
 		gameover=0;
 		initializeEverything();
 		timer();
-		setTimeout("Terminal.runCommand('look');", 3000);
 	} else {
 		Terminal.print('Could not find a question to answer "1" to.');
 	}
@@ -830,7 +836,13 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 			if (roomcontainsitem[0].indexOf(playerlocation[currentplayer]) != -1) {
 				using_computer=true
 				if (logged_in == false) {
-					terminal.print('Please login using the "login" command.');
+					if (gotlogininfo == true) {
+						logged_in=true
+						terminal.print('You have logged in succesfully.');
+						Terminal.runCommand('use computer');					  
+					} else {
+						terminal.print('The computer prompts you for login information, but you don\'t know what to type in...');
+					}
 				} else {
 					if (gamemode == 1) {
 						Terminal.setWorking(true);
@@ -858,6 +870,7 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 				terminal.setWorking(true);
 				terminal.print('');
 				setTimeout("Terminal.print('login: root '+password)", 2000);
+				gotlogininfo=true;
 				terminal.setWorking(false);
 			} else {
 				terminal.print('There is no '+roomcontainsitemname[objectid]+' here.');
@@ -987,40 +1000,6 @@ TerminalShell.commands['sleep'] = TerminalShell.commands['rest'] = function(term
 		terminal.print('This action cannot be executed now.');
 	}
 };
-
-TerminalShell.commands['login'] = function(terminal, username, passwd) {
-	if (gameover == 0) { 
-		if (!using_computer) {
-			terminal.print('Unrecognized command. Type "help" for assistance.');
-		} else {
-			if (logged_in == true) {
-				terminal.print('You are already logged in!')
-			} else {
-				if (!username) {
-					terminal.print('Usage: login username password');
-				} else {
-					if (username == 'root') {
-						if (!passwd) {
-							terminal.print('You must enter a password!');
-						} else {
-							if (passwd == password) {
-								logged_in=true
-								terminal.print('You have logged in succesfully.');
-								Terminal.runCommand('use computer');
-							} else {
-								terminal.print('Incorrect password.');
-							}
-						}
-					} else {
-						terminal.print('Incorrect user credentials');
-					}
-				}
-			}
-		}
-	} else {
-		terminal.print('This action cannot be executed now.');
-	}
-}
 
 // Code to end your turn
 TerminalShell.commands['end'] = function(terminal) {
@@ -1255,7 +1234,7 @@ function timer() {
 
 function printgamemodemenu() {
 	browser=navigator.appName
-	Terminal.print('Please choose a way of playing (answer by typing the number, followed by enter):');
+	Terminal.print('Please choose a way of playing:');
 	Terminal.print($('<p>').html('<a href="javascript:clicked(1);">1. Singleplayer</a>'));
 	Terminal.print($('<p>').html('<a href="javascript:clicked(2);">2. Local multiplayer</a>'));
 	if ($.browser.name != 'msie' && $.browser.name != 'safari') {
@@ -1263,9 +1242,18 @@ function printgamemodemenu() {
 	}
 }
 
+// Make stuff clickable for mobile devices
 function clicked(what) {
-	Terminal.print(what);
 	Terminal.runCommand(''+what+'');
+	if ((what != 'look' || what != 'yes') && menu != '' && gameresult != 'start' ) {
+		setTimeout("Terminal.runCommand('look');", 5000);
+	}
+	gameresult = 'playing';
+}
+
+// Print the inventory list when "Inventory" is chosen in the menu
+function onOptionsItemSelected() {
+	Terminal.runCommand('inventory');
 }
 
 TerminalShell.commands['suicide'] = function(terminal) {
@@ -1283,7 +1271,7 @@ $(document).ready(function() {
 	$('#screen').bind('cli-load', function(e) {
 		$('#screen').one('cli-ready', function(e) {
 		});
-			Terminal.print($('<p>').html('Textmode version 20120822, Copyright (c) 2012 <a href="https://github.com/TheLastProject">Ruben van Os</a>'));
+			Terminal.print($('<p>').html('Textmode version 20120922, Copyright (c) 2012 <a href="https://github.com/TheLastProject">Ruben van Os</a>'));
 			Terminal.print($('<p>').html('Textmode comes with ABSOLUTELY NO WARRANTY; for details <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a>.'));
 			Terminal.print($('<p>').html('This is free software, and you are welcome to redistribute it under certain conditions; <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a> for details or <a href="https://github.com/TheLastProject/textmode">click here</a> for the source code to this project.'));
 			Terminal.print('');
