@@ -625,11 +625,15 @@ playerlocation[currentplayer] = Adventure.location = Adventure.rooms[0];
 TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 	if (gameover == 0) {
 		if (silent_move == false) {
+			if (wayofplaying == 2) {
+				Terminal.print($('<p>').html('<a href="javascript:clicked(\'end\');">End turn</a>'));
+			}
 			if (inventory.length > 0) {
-				Terminal.print('Inventory:');
+				inventorylist = 'Inventory: ';
 				for (i = 0; i < inventory.length; i++) {
-					Terminal.print($('<p>').html('<a href="javascript:clicked(\'drop '+inventory[i]+'\');">'+inventory[i]+'</a>.'));
+					inventorylist = inventorylist + '<a href="javascript:clicked(\'drop '+inventory[i]+'\');">'+inventory[i]+'</a>.';
 				}
+				Terminal.print($('<p>').html(inventorylist));
 			}
 			Terminal.print($('<p>').html(roomdescription[playerlocation[currentplayer]]));	
 			if (Adventure.location.exits) {
@@ -660,11 +664,12 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 					possibleDirections2.push(name);
 					});
 				}
-				Terminal.print('Exits:');
+				exitslist = 'Exits: '
 				while (possibleDirections2.length > 0) {
 					direction = possibleDirections2.splice(0,1);
-					Terminal.print($('<p>').html('<a href="javascript:clicked(\'go '+direction+'\');">'+direction+'</a>'));
+					exitslist = exitslist + '<a href="javascript:clicked(\'go '+direction+'\');">'+direction+'</a>' + '          ';
 				}
+				Terminal.print($('<p>').html(exitslist));
 				if (menu != false) {
 					terminal.print('');
 					if (menu == "newgame") {
@@ -748,7 +753,7 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 				terminal.print('You cannot go '+direction+'.');
 			}
 		} else {
-			terminal.print('You are only allowed to move once per turn! Please end your turn by typing "end" if you are done exploring your current location.');
+			terminal.print('You are only allowed to move once per turn! Please end your turn if you are done.');
 		}
 	} else {
 		terminal.print('This action cannot be executed now.');
@@ -1017,7 +1022,6 @@ TerminalShell.commands['end'] = function(terminal) {
 			Adventure.gamemode(terminal);
 			if (currentplayer == 1) {
 				gameover = 0
-				Terminal.runCommand('look');
 			}
 			if (currentplayer == 2) {
 				gameover = 1
@@ -1040,6 +1044,7 @@ TerminalShell.commands['end'] = function(terminal) {
 				}
 				terminal.print('You are the ghost. '+ghostlocationinfo+' '+playerlocationinfo);
 				terminal.print('Do you want to teleport to a random location?');
+				Terminal.print($('<p>').html('<a href="javascript:clicked(\'yes\');">Yes</a> or <a href="javascript:clicked(\'no\');">No</a>'));
 				menu='ghostplayer2teleport'
 			}
 		}
@@ -1158,6 +1163,8 @@ Adventure.gameresult = function(terminal) {
 };
 
 TerminalShell.commands['help'] = function(terminal) {
+	terminal.print('There are two ways of navigation in the game. You either type commands (impossible on smartphones and tablets) or click on "links" to execute actions.');
+	terminal.print('If you choose to play by clicking, the information below here is unnecessary and you already know everything needed to play. If you choose to play by typing commands, here are the most important commands:');
 	terminal.print('Type "yes" or "no" to answer questions given by the system.');
 	terminal.print('Type "go" to go to a direction. For example, "go west" to go west.');
 	terminal.print('Type "look" to look around the environment.');
@@ -1246,7 +1253,7 @@ function printgamemodemenu() {
 function clicked(what) {
 	Terminal.runCommand(''+what+'');
 	if ((what != 'look' || what != 'yes') && menu != '' && gameresult != 'start' ) {
-		setTimeout("Terminal.runCommand('look');", 5000);
+		setTimeout("Terminal.runCommand('look');", 2000);
 	}
 	gameresult = 'playing';
 }
@@ -1275,7 +1282,7 @@ $(document).ready(function() {
 			Terminal.print($('<p>').html('Textmode comes with ABSOLUTELY NO WARRANTY; for details <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a>.'));
 			Terminal.print($('<p>').html('This is free software, and you are welcome to redistribute it under certain conditions; <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a> for details or <a href="https://github.com/TheLastProject/textmode">click here</a> for the source code to this project.'));
 			Terminal.print('');
-			Terminal.print('Type "help" for instructions on how to play.');
+			Terminal.print($('<p>').html('<a href="javascript:clicked(\'help\');">Click here or type "help" for instructions on how to play.</a>'));
 			Terminal.print('');
 			menu='wayofplaying'
 			printgamemodemenu();
