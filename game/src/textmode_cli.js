@@ -758,7 +758,7 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 					// The player has everything needed to beat the ghost and checked the computer. Time to severely increase the chance of running into the ghost.
 					if (logged_in == true && ($.inArray(ghostweakness, inventory) != -1) && gamemode == 1) {
 						if (getRandomInt(0,2) == 1) {
-			                        	if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
+							if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
 								terminal.print('You use the '+ghostweakness+' in your inventory on the ghost.');
 								terminal.print('The ghost makes a terrible noise and disappears.');
 								terminal.print('GAME OVER!');
@@ -1165,7 +1165,23 @@ Adventure.gameresult = function(terminal) {
 		terminal.print('Amount of ghost moves: '+amountofghostmoves+'.');
 		terminal.print('Amount of scares survived: '+amountofscaressurvived+'.');
 		terminal.print('Amount of rooms entered: '+amountofroomsentered+'.');
-		terminal.print('Playtime: '+playTime+' seconds.');
+		var minutesPlayTime = Math.floor(playTime/60);
+		var secondsPlayTime = playTime % 60;
+		if (minutesPlayTime == 1 && secondsPlayTime == 0) {
+			terminal.print('Playtime: '+minutesPlayTime+' minute.);
+		} else if (minutesPlayTime == 1 && secondsPlaytime == 1) {
+			terminal.print('Playtime: '+minutesPlayTime+' minute and '+secondsPlayTime+' second.');
+		} else if (minutesPlayTime == 1 && secondsPlayTime > 1) {
+			terminal.print('Playtime: '+minutesPlayTime+' minute and '+secondsPlayTime+' seconds.');
+		} else if (minutesPlayTime > 1 && secondsPlayTime == 0) {
+			terminal.print('Playtime: '+minutesPlayTime+' minutes.');
+		} else if (minutesplayTime > 1 && secondsPlayTime == 1) {
+			terminal.print('Playtime: '+minutesPlayTime+' minutes and '+secondsPlayTime+' second.');
+		} else if (minutesPlayTime > 1 && secondsPlayTime > 1) {
+			terminal.print('Playtime: '+minutesPlayTime+' minutes and '+secondsPlayTime+' seconds.');
+		} else {
+			terminal.print('Playtime: '+playTime+' seconds.');
+		}
 		terminal.print('');
 		if (gameresult == 'lost') {
 			if (wayofplaying == 1) {
