@@ -1168,7 +1168,7 @@ Adventure.gameresult = function(terminal) {
 		var minutesPlayTime = Math.floor(playTime/60);
 		var secondsPlayTime = playTime % 60;
 		if (minutesPlayTime == 1 && secondsPlayTime == 0) {
-			terminal.print('Playtime: '+minutesPlayTime+' minute.);
+			terminal.print('Playtime: '+minutesPlayTime+' minute.');
 		} else if (minutesPlayTime == 1 && secondsPlaytime == 1) {
 			terminal.print('Playtime: '+minutesPlayTime+' minute and '+secondsPlayTime+' second.');
 		} else if (minutesPlayTime == 1 && secondsPlayTime > 1) {
