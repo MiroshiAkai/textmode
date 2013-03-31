@@ -755,6 +755,22 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 				} else {
 					amountofmoves++
 					Adventure.goTo(terminal, Adventure.location.exits[direction]);
+					// The player has everything needed to beat the ghost and checked the computer. Time to severely increase the chance of running into the ghost.
+					if (logged_in == true && ($.inArray(ghostweakness, inventory) != -1) && gamemode == 1) {
+						if (getRandomInt(0,2) == 1) {
+			                                if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
+			                                        terminal.print('You use the '+ghostweakness+' in your inventory on the ghost.');
+			                                        terminal.print('The ghost makes a terrible noise and disappears.');
+			                                        terminal.print('GAME OVER!');
+			                                } else {
+			                                        terminal.print('Player one uses '+ghostweakness+' on you!');
+			                                        terminal.print('You scream in agony as your body fades away.');
+			                                        terminal.print('GAME OVER!');
+			                                }
+			                                gameresult='won'
+			                                gameover=1
+						}
+					}
 				}
 			} else if (!direction) {
 				terminal.print('Go where?');
