@@ -1,6 +1,15 @@
 amountofplayers=1;
 initializeVariables();
 
+// Ignore enter. This prevents "clicked" events being resent when the player types a command
+$('html').bind('keypress', function(e)
+{
+   if(e.keyCode == 13)
+   {
+      return false;
+   }
+});
+
 function pathFilename(path) {
 	var match = /\/([^\/]+)$/.exec(path);
 	if (match) {
@@ -1253,12 +1262,14 @@ function printgamemodemenu() {
 
 // Make stuff clickable for mobile devices
 function clicked(what) {
+	Terminal.promptActive = false;
 	Terminal.runCommand(''+what+'');
 	if ((what != 'look' || what != 'yes') && menu != '' && gameresult != 'start' ) {
 		setTimeout("Terminal.runCommand('look');", 2000);
 	}
-	gameresult = 'playing';
+	Terminal.promptActive = true;
 }
+
 
 // Print the inventory list when "Inventory" is chosen in the menu
 function onOptionsItemSelected() {
