@@ -74,7 +74,7 @@ TerminalShell.commands['debug'] = function(terminal) {
 	for (i = 0; i <= itemname.length ; i++) {
 		terminal.print(itemname[i]+' = '+itemlocation[i]);
 	}
-}
+};
 
 TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 	if (gameover == 0) {
@@ -153,7 +153,7 @@ TerminalShell.commands['yes'] = function(terminal) {
 	} else {
 		Terminal.print('Could not find a question to answer "yes" to.');
 	}
-}
+};
 
 TerminalShell.commands['no'] = function(terminal) {
 	if (menu == 'newgame') {
@@ -166,7 +166,7 @@ TerminalShell.commands['no'] = function(terminal) {
 	} else {
 		Terminal.print('Could not find a question to answer "no" to.');
 	}
-}
+};
 
 TerminalShell.commands['1'] = function(terminal) {
 	if (menu == 'wayofplaying') {
@@ -190,7 +190,7 @@ TerminalShell.commands['1'] = function(terminal) {
 	} else {
 		Terminal.print('Could not find a question to answer "1" to.');
 	}
-}
+};
 
 TerminalShell.commands['2'] = function(terminal) {
 	if (menu == 'wayofplaying') {
@@ -204,7 +204,7 @@ TerminalShell.commands['2'] = function(terminal) {
 	} else {
 		Terminal.print('Could not find a question to answer "2" to.');
 	}
-}
+};
 
 TerminalShell.commands['3'] = function(terminal) {
 	browser=navigator.appName
@@ -217,7 +217,7 @@ TerminalShell.commands['3'] = function(terminal) {
 	} else {
 		Terminal.print('Could not find a question to answer "3" to.');
 	}
-}
+};
 
 TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 	// Convert objects to numbers
