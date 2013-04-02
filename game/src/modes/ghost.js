@@ -1,7 +1,4 @@
-singleplayermodes.push("ghost");
-multiplayermodes.push("ghost");
-
-function ghostInit() {
+function gamemodeInit() {
 	window.inventorylimit = 1;
 	window.gamemodeInitialized = false;
 	window.gamemodeTime = 0;
@@ -32,7 +29,7 @@ function ghostInit() {
 	clearInterval(gamemodeTimer);
 };
 
-function ghost() {
+function gamemodeMain() {
 	if (gamemode == "ghost") { // Ghost
 		if (wayofplaying == 1) {
 			ghostmove=getRandomInt(1,5) // Decides if the Ghost moves
@@ -99,7 +96,7 @@ function ghost() {
 	}
 };
 
-function ghostEndTurn() {
+function gamemodeEndTurn() {
 	ghostmove=0
 	Adventure.gamemode(terminal);
 	if (currentplayer == 1) {
@@ -131,7 +128,7 @@ function ghostEndTurn() {
 	}
 }
 
-function ghostUseComputer() {
+function gamemodeUseComputer() {
 	Terminal.setWorking(true);
 	Terminal.print('Searching for the ghost...');
 	setTimeout("Terminal.print('You are at: Floor '+currentfloor+'.');", 2000);
@@ -146,7 +143,7 @@ function ghostUseComputer() {
 	setTimeout("Terminal.print('Connection lost...');", 5000);
 	Terminal.setWorking(false);
 }
-function ghostIncreaseChance() {
+function gamemodeIncreaseChance() {
 	if (logged_in == true && ($.inArray(ghostweakness, inventory) != -1) && gamemode == 1) {
 		if (getRandomInt(0,2) == 1) {
 			if (wayofplaying == 1 || (wayofplaying == 2 && currentplayer == 1)) {
@@ -164,7 +161,10 @@ function ghostIncreaseChance() {
 	}
 };
 
-function ghostResult() {
+function gamemodeResult() {
 	Terminal.print('Amount of ghost moves: '+amountofghostmoves+'.');
 	Terminal.print('Amount of scares survived: '+amountofscaressurvived+'.');
 };
+
+initializeEverything(); //Done loading, time to init!
+timer(); // Oh yeah, and start running a timer. We want to tell players how long they've been playing for at the end.

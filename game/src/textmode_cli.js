@@ -46,9 +46,7 @@ function initializeEverything() {
 
 // Ask the gamemode in question to initialize itself. Preferrably, this will automatically do "gamemodeInit()" stuff. [FIXME] when you have time.
 function initializeGamemode() {
-	if (gamemode == "ghost") {
-		ghostInit();
-	}
+	gamemodeInit();
 };
 
 // Early semi-randomization code
@@ -572,7 +570,7 @@ Adventure = {
 		using_computer=false
 		if (wayofplaying == 1) {
 			calledfrom='go'
-			ghost();
+			gamemodeMain();
 		}
 	}
 };

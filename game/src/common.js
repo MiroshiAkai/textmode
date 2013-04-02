@@ -1,7 +1,7 @@
+singleplayermodes = ["ghost"];
+multiplayermodes = ["ghost"];
+
 amountofplayers=1;
-playerlocation=1;
-singleplayermodes = new Array();
-multiplayermodes = new Array();
 
 // Ignore enter. This prevents "clicked" events being resent when the player types a command
 $('html').bind('keypress', function(e)
@@ -15,6 +15,13 @@ $('html').bind('keypress', function(e)
 function capitaliseFirstLetter(string) {
 	// via http://stackoverflow.com/a/1026087
 	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function loadGamemode() {
+	var fileref=document.createElement('script');
+	fileref.setAttribute("type","text/javascript");
+	fileref.setAttribute("src", "modes/"+gamemode+".js");
+	document.getElementsByTagName("head")[0].appendChild(fileref);
 }
 
 function pathFilename(path) {
@@ -42,7 +49,7 @@ function showGameResult() {
 	clearInterval(window.playTimeTimer);
 	Terminal.print('');
 	Terminal.print('=== Game Statistics ===');
-	Terminal.print('Gamemode: '+gamemode);
+	Terminal.print('Gamemode: '+capitaliseFirstLetter(gamemode));
 	if (mutator == 1) {
 		Terminal.print('Mutator: Turn-based');
 	} else if (mutator == 2) {
@@ -52,9 +59,7 @@ function showGameResult() {
 	}
 	Terminal.print('Amount of moves: '+amountofmoves+'.');
 	Terminal.print('Amount of rooms entered: '+amountofroomsentered+'.');
-	if (gamemode == "ghost") {
-		ghostResult();
-	}
+	gamemodeResult(); // Execute game-mode specific result code
 	var minutesPlayTime = Math.floor(playTime/60);
 	var secondsPlayTime = playTime % 60;
 	if (minutesPlayTime == 1 && secondsPlayTime == 0) {

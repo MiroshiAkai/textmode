@@ -124,7 +124,7 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 					Adventure.goTo(terminal, Adventure.location.exits[direction]);
 					// The player has everything needed to beat the ghost and checked the computer. Time to severely increase the chance of running into the ghost.
 					if (gamemode == "ghost") {
-						ghostIncreaseChance();
+						gamemodeIncreaseChance();
 					}
 				}
 			} else if (!direction) {
@@ -180,13 +180,13 @@ TerminalShell.commands['1'] = function(terminal) {
 	} else if (menu == 'gamemode') {
 		if (wayofplaying == 1) {
 			gamemode = singleplayermodes[0]; // First singleplayer mode
+			loadGamemode();
 		} else {
 			gamemode = multiplayermodes[0]; // First multiplayer mode
+			loadGamemode();
 		}
 		amountofplayers = 2; // NPCs are players too, to make singleplayer and multiplayer work together more easily
 		gameover = 0;
-		initializeEverything();
-		timer();
 	} else {
 		Terminal.print('Could not find a question to answer "1" to.');
 	}
@@ -238,7 +238,7 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 					}
 				} else {
 					if (gamemode == "ghost") {
-						ghostUseComputer();
+						gamemodeUseComputer();
 					} else {
 						Terminal.print('You see no use for the computer');
 					}
@@ -396,7 +396,7 @@ TerminalShell.commands['end'] = function(terminal) {
 		}
 		terminal.print('Current player: Player '+currentplayer);
 		if (gamemode == "ghost") {
-			ghostEndTurn();
+			gamemodeEndTurn();
 		}
 	} else {
 		terminal.print('This action cannot be executed now.');
