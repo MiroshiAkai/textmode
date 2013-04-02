@@ -1,1 +1,1 @@
-/home/ruben/projects/git/textmode/game/build/textmode_cli_all.js
+../../../game/build/textmode_cli_all.js
