@@ -4,6 +4,10 @@ Copyright (c) 2012 Willow Systems Corporation, willow-systems.com
 MIT license.
 */
 /**
+
+@licstart  The following is the entire license notice for the 
+JavaScript code in this page.
+
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -23,6 +27,10 @@ MIT license.
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ====================================================================
+
+@licend  The above is the entire license notice
+for the JavaScript code in this page.
+
  */
 
 var jsPDF = (function() {
