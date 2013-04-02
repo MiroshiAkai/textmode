@@ -1,3 +1,5 @@
+initializeVariables();
+
 function objectNameToId(object) {
 	if (object == "computer") {
 		objectid=0;
@@ -41,6 +43,13 @@ function initializeEverything() {
 	while (variablesInitialized == false && roomsInitialized == false && gamemodeInitialized == false) {
 	}
 }
+
+// Ask the gamemode in question to initialize itself. Preferrably, this will automatically do "gamemodeInit()" stuff. [FIXME] when you have time.
+function initializeGamemode() {
+	if (gamemode == "ghost") {
+		ghostInit();
+	}
+};
 
 // Early semi-randomization code
 function initializeVariables() {
@@ -101,39 +110,6 @@ function initializeVariables() {
 		window.playerlocation[i]=getRandomInt(0, roomAmount);
 	}
 	clearInterval(variablesTimer);
-}
-	
-// Execute gamemode-specific commands
-function initializeGamemode() {
-	window.gamemodeInitialized=false
-	window.gamemodeTime=0
-	gamemodeTimer=setInterval("gamemodeTime++", 1);
-	if (gamemode == 1) {
-		randomInt=getRandomInt(2,4);
-		window.ghostweakness=itemname[randomInt];
-		window.amountofghostmoves=0;
-		window.amountofscaressurvived=0;
-		window.playerlocation[2]=getRandomInt(0,roomAmount);
-		if (mutator == 2) {
-			// Realtime-specific code here
-		}
-		if (wayofplaying == 2) {
-			Terminal.print('Current player: Player '+currentplayer);
-		}
-		Terminal.print('=== Gamemode: GHOST ===');
-		if (mutator == 1) {
-			setTimeout("Terminal.print('=== Mutator: Turn-based ===');", 500);
-		} else if (mutator == 2) {
-			setTimeout("Terminal.print('=== Mutator: Realtime ===');", 500);
-		} else {
-			setTimeout("Terminal.print('ERROR REQUESTING MUTATOR STATUS');", 500);
-		}
-		setTimeout("Terminal.print('=== Winning condition: Meet the ghost while carrying the item which is his weakness ===');", 1000);
-		setTimeout("Terminal.print('=== Losing condition: Meet the ghost without carrying the required item ===');", 1500);
-		setTimeout("Terminal.print('=== Helpful object(s): Computer, Note ===');", 2000);
-	}
-	window.gamemodeInitialized=true
-	clearInterval(gamemodeTimer);
 }
 
 //Generate rooms
@@ -254,7 +230,7 @@ function createDescription() {
 		} else if (j == 0 && description[i].length >= 1) {
 			getInfoForClickableItems();
 			if (window.itemaction[itemnumber] != "none") {
-				roomdescription[i] = roomdescription[i] + 'It only contains <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
+				roomdescription[i] = roomdescription[i] + ' It only contains <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>.';
 			} else {
 				roomdescription[i] = roomdescription[i] + ' It only contains '+description[i].shift()+'.'
 			}
@@ -596,7 +572,7 @@ Adventure = {
 		using_computer=false
 		if (wayofplaying == 1) {
 			calledfrom='go'
-			Adventure.gamemode(terminal);
+			ghost();
 		}
 	}
 };
