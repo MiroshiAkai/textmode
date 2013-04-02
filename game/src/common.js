@@ -12,6 +12,11 @@ $('html').bind('keypress', function(e)
    }
 });
 
+function capitaliseFirstLetter(string) {
+	// via http://stackoverflow.com/a/1026087
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function pathFilename(path) {
 	var match = /\/([^\/]+)$/.exec(path);
 	if (match) {
