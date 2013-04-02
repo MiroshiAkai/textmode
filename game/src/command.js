@@ -175,7 +175,7 @@ TerminalShell.commands['1'] = function(terminal) {
 		menu='gamemode';
 		Terminal.print('Please choose a gamemode:');
 		for (i = 0; i < singleplayermodes.length; i++) {
-                	Terminal.print($('<p>').html('<a href="javascript:clicked('+(i+1)+');">'+(i+1)+'. '+singleplayermodes[i]+'</a>'));
+                	Terminal.print($('<p>').html('<a href="javascript:clicked('+(i+1)+');">'+(i+1)+'. '+capitaliseFirstLetter(singleplayermodes[i])+'</a>'));
 		}
 	} else if (menu == 'gamemode') {
 		if (wayofplaying == 1) {
@@ -199,7 +199,7 @@ TerminalShell.commands['2'] = function(terminal) {
 		menu='gamemode';
 		Terminal.print('Please choose a gamemode:');
 		for (i = 0; i < multiplayermodes.length; i++) {
-			Terminal.print($('<p>').html('<a href="javascript:clicked('+(i+1)+');">'+(i+1)+'. '+multiplayermodes[i]+'</a>'));
+			Terminal.print($('<p>').html('<a href="javascript:clicked('+(i+1)+');">'+(i+1)+'. '+capitaliseFirstLetter(multiplayermodes[i])+'</a>'));
 		}
 	} else {
 		Terminal.print('Could not find a question to answer "2" to.');
@@ -284,7 +284,7 @@ TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
 				if (inventory.length >= inventorylimit) {
 					terminal.print('Your inventory is full!');
 				} else {
-					terminal.print(roomcontainsitemlongname[objectid]+' has been put in your inventory.');
+					terminal.print(capitaliseFirstLetter(roomcontainsitemlongname[objectid])+' has been put in your inventory.');
 					inventory.push(object);
 					roomcontainsitem[objectid].splice(roomcontainsitem[objectid].indexOf(playerlocation[currentplayer]), 1)
 					description[playerlocation[currentplayer]] = descriptionbackup[playerlocation[currentplayer]]
