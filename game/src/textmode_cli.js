@@ -1,3 +1,27 @@
+/**
+ *
+ * @licstart  The following is the entire license notice for the 
+ *  JavaScript code in this page.
+ *
+ * Copyright (C) 2012-2013  Ruben van Os
+ *
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * @licend  The above is the entire license notice
+ * for the JavaScript code in this page.
+ *
+ */
+
+
 initializeVariables();
 
 function objectNameToId(object) {
@@ -44,7 +68,7 @@ function initializeEverything() {
 	}
 }
 
-// Ask the gamemode in question to initialize itself. Preferrably, this will automatically do "gamemodeInit()" stuff. [FIXME] when you have time.
+// Ask the gamemode in question to initialize itself.
 function initializeGamemode() {
 	gamemodeInit();
 };
@@ -586,7 +610,7 @@ $(document).ready(function() {
 	$('#screen').bind('cli-load', function(e) {
 		$('#screen').one('cli-ready', function(e) {
 		});
-			Terminal.print($('<p>').html('Textmode version 20130331, Copyright (c) 2012-2013 <a href="https://github.com/TheLastProject">Ruben van Os</a>'));
+			Terminal.print($('<p>').html('Textmode version 20130402, Copyright (c) 2012-2013 <a href="https://github.com/TheLastProject">Ruben van Os</a>'));
 			Terminal.print($('<p>').html('Textmode comes with ABSOLUTELY NO WARRANTY; for details <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a>.'));
 			Terminal.print($('<p>').html('This is free software, and you are welcome to redistribute it under certain conditions; <a href="https://raw.github.com/TheLastProject/textmode/master/LICENSE">click here</a> for details or <a href="https://github.com/TheLastProject/textmode">click here</a> for the source code to this project.'));
 			Terminal.print('');

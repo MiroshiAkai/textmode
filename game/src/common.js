@@ -7,9 +7,8 @@
  *
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 2 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +19,8 @@
  * for the JavaScript code in this page.
  *
  */
+
+debug = false;
 
 singleplayermodes = ["ghost"];
 multiplayermodes = ["ghost"];
@@ -34,6 +35,21 @@ $('html').bind('keypress', function(e)
       return false;
    }
 });
+
+function readCookie(cookieName) {
+	// via http://www.javascripter.net/faq/readinga.htm
+	var theCookie=" "+document.cookie;
+	var ind=theCookie.indexOf(" "+cookieName+"=");
+	if (ind==-1) ind=theCookie.indexOf(";"+cookieName+"=");
+	if (ind==-1 || cookieName=="") return "";
+	var ind1=theCookie.indexOf(";",ind+1);
+	if (ind1==-1) ind1=theCookie.length; 
+	return unescape(theCookie.substring(ind+cookieName.length+2,ind1));
+}
+
+function writeCookie(cookieName, data) {
+	document.cookie = cookieName + "=" + data + "; path=/";
+}
 
 function capitaliseFirstLetter(string) {
 	// via http://stackoverflow.com/a/1026087
@@ -144,9 +160,10 @@ function printgamemodemenu() {
 	Terminal.print('Please choose a way of playing:');
 	Terminal.print($('<p>').html('<a href="javascript:clicked(1);">1. Singleplayer</a>'));
 	Terminal.print($('<p>').html('<a href="javascript:clicked(2);">2. Local multiplayer</a>'));
-	if ($.browser.name != 'msie' && $.browser.name != 'safari') {
-		Terminal.print($('<p>').html('<a href="javascript:clicked(3);">3. Offline</a>'));
-	}
+	Terminal.print($('<p>').html('<a href="javascript:clicked(3);">3. Online multiplayer</a>'));
+//	if ($.browser.name != 'msie' && $.browser.name != 'safari') { // This is beyond broken. Please FIXME.
+//		Terminal.print($('<p>').html('<a href="javascript:clicked(4);">4. Create PDF</a>'));
+//	}
 }
 
 // Make stuff clickable for mobile devices

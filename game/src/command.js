@@ -7,9 +7,8 @@
  *
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 2 as published by
+ * the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -173,6 +172,15 @@ TerminalShell.commands['yes'] = function(terminal) {
 		ghostmove=0;
 		gameover=0;
 		Terminal.runCommand('end');
+	} else if (menu == 'savenickname') {
+		writeCookie("usersettings", username);
+		Terminal.print('Username saved.');
+		menu = '';
+		if (connected == true) {
+			changeNick();
+		} else if (prepareconnecting == true) {
+			prepareConnect();
+		}
 	} else {
 		Terminal.print('Could not find a question to answer "yes" to.');
 	}
@@ -186,6 +194,14 @@ TerminalShell.commands['no'] = function(terminal) {
 		Adventure.gamemode(terminal);
 		gameover=0
 		Terminal.runCommand('end');
+	} else if (menu == 'savenickname') {
+		Terminal.print('Username was not saved');
+		menu = '';
+		if (connected == true) {
+			changeNick();
+		} else if (prepareconnecting == true) {
+			prepareConnect();
+		}
 	} else {
 		Terminal.print('Could not find a question to answer "no" to.');
 	}
@@ -203,9 +219,11 @@ TerminalShell.commands['1'] = function(terminal) {
 	} else if (menu == 'gamemode') {
 		if (wayofplaying == 1) {
 			gamemode = singleplayermodes[0]; // First singleplayer mode
+			menu = false;
 			loadGamemode();
 		} else {
 			gamemode = multiplayermodes[0]; // First multiplayer mode
+			menu = false;
 			loadGamemode();
 		}
 		amountofplayers = 2; // NPCs are players too, to make singleplayer and multiplayer work together more easily
@@ -230,6 +248,18 @@ TerminalShell.commands['2'] = function(terminal) {
 };
 
 TerminalShell.commands['3'] = function(terminal) {
+	if (menu == 'wayofplaying') {
+		Terminal.print('Online multiplayer selected.');
+		Terminal.print('Connecting you to the server...');
+		menu = false;
+		prepareConnect();
+	} else {
+		Terminal.print('Could not find a question to answer "3" to.');
+	}
+}
+
+/** PDF support needs work. Please FIXME.
+TerminalShell.commands['4'] = function(terminal) {
 	browser=navigator.appName
 	if ((menu == 'wayofplaying') && ($.browser.name != 'msie' && $.browser.name != 'safari')) {
 		gamemode=0;
@@ -238,9 +268,11 @@ TerminalShell.commands['3'] = function(terminal) {
 		menu='wayofplaying';
 		printgamemodemenu();
 	} else {
-		Terminal.print('Could not find a question to answer "3" to.');
+		Terminal.print('Could not find a question to answer "4" to.');
 	}
 };
+*/
+
 
 TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 	// Convert objects to numbers
