@@ -70,7 +70,7 @@ function chat(message) {
 };
 
 function printUserList() {
-	for (i = 0; i < users.length; i++) {
+	for (var i = 0; i < users.length; i++) {
 		Terminal.print($('<p>').addClass('userlist').text(users[i].slice(2,-2)));
 	};
 };

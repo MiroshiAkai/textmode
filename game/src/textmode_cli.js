@@ -25,28 +25,21 @@
 initializeVariables();
 
 function objectNameToId(object) {
-	if (object == "computer") {
-		objectid=0;
-	} else if (object == "note") {
-		objectid=1;
-	} else if (object == "flashlight") {
-		objectid=2;
-	} else if (object == "crayons") {
-		objectid=3;
-	} else if (object == "screwdriver") {
-		objectid=4;
-	} else if (object == "clock") {
-		objectid=5;
-	} else if (object == "drawer") {
-		objectid=6;
-	} else {
-		objectid=-1;
-	}
-}
+	switch (object) {
+	case "computer": return 0;
+	case "note": return 1;
+	case "flashlight": return 2;
+	case "crayons": return 3;
+	case "screwdriver": return 4;
+	case "clock": return 5;
+	case "drawer": return 6;
+	default: return -1;
+	};
+};
 
 function getInfoForClickableItems() {
 	var item = description[i].slice(0,1);
-	for (k = 0; k < window.roomcontainsitem.length; k++) {
+	for (var k = 0; k < window.roomcontainsitem.length; k++) {
 		if (item == window.roomcontainsitemlongname[k]) {
 			window.itemnumber = k;
 		}
@@ -81,26 +74,7 @@ function initializeVariables() {
 	window.lockedcount=0
 	window.hallway_length=getRandomInt(3,9)
 	window.amount_of_floors=getRandomInt(1,2)
-	if (hallway_length == 1) {
-		window.roomAmount=13+(30*(amount_of_floors-1));
-	} else if (hallway_length == 2) {
-		window.roomAmount=15+(30*(amount_of_floors-1));
-	} else if (hallway_length == 3) {
-		window.roomAmount=17+(30*(amount_of_floors-1));
-	} else if (hallway_length == 4) {
-		window.roomAmount=19+(30*(amount_of_floors-1));
-	} else if (hallway_length == 5) {
-		window.roomAmount=21+(30*(amount_of_floors-1));
-	} else if (hallway_length == 6) {
-		window.roomAmount=23+(30*(amount_of_floors-1));
-	} else if (hallway_length == 7) {
-		window.roomAmount=25+(30*(amount_of_floors-1));
-	} else if (hallway_length == 8) {
-		window.roomAmount=27+(30*(amount_of_floors-1));
-	} else if (hallway_length == 9) {
-		window.roomAmount=29+(30*(amount_of_floors-1));
-	}
-	// Indexing variables like a gentleman
+	if (hallway_length >= 1 && hallway_length <= 9) window.roomAmount = hallway_length * 2 + 11 + 30 * (amount_of_floors-1);
 	window.amountofmoves=0;
 	window.amountofroomsentered=0;
 	window.time=getRandomInt(0,24);
@@ -121,14 +95,13 @@ function initializeVariables() {
 	window.inventory = [];
 	window.gameresult='start';
 	window.gameover=0;
-	window.objectid=-1;
 	window.mutator=1;
 	window.currentplayer=1;
 	window.movesdone=0;
 	window.gotlogininfo=false;
 	window.variablesInitialized=true;
 	window.playerlocation = new Array();
-	for (i=1; i<=amountofplayers; i++) {
+	for (var i = 1; i<=amountofplayers; i++) {
 		window.playerlocation[i]=getRandomInt(0, roomAmount);
 	}
 	clearInterval(variablesTimer);
@@ -143,7 +116,7 @@ function initializeRooms() {
 	window.roomdescription = new Array(roomAmount);
 	window.lightstatus = new Array(roomAmount);
 	window.itemlocation = new Array(5);
-	for (i = 0; i <= 5; i++) {
+	for (var i = 0; i <= 5; i++) {
 		randomInt=getRandomInt(1, amount_of_floors)
 		if (randomInt == 1) {
 			itemlocation[i] = getRandomInt(10, (10+(hallway_length*2-1)));
@@ -160,7 +133,7 @@ function initializeRooms() {
 	window.note = new Array(roomAmount);
 
 	window.roomcontainsitem = new Array(7)
-	for (i = 0; i <=7; i++) {
+	for (var i = 0; i <=7; i++) {
 		roomcontainsitem[i] = new Array
 	}
 	window.roomcontainsitemname = new Array(7)
@@ -207,7 +180,7 @@ function initializeRooms() {
 				lockedcount++
 				window.roomdescription[i]='The room is locked'
 			} else {
-				for (j = 0; j <= roomcontainsitem.length; j++) {
+				for (var j = 0; j <= roomcontainsitem.length; j++) {
 					if (j <= itemlocation.length) {
 						if (itemlocation[j] == i) {
 							roomcontainsitem[j].push(i)
@@ -241,7 +214,7 @@ function createDescription() {
 	} else {
 		window.roomdescription[i] = 'You are in a room.'
 	}
-	for (j = 0; j <= description[i].length; j++) {
+	for (var j = 0; j <= description[i].length; j++) {
 		if (j == 0 && description[i].length >= 2) {
 			getInfoForClickableItems();
 			if (window.itemaction[itemnumber] != "none") {
@@ -336,7 +309,7 @@ function createDescription() {
 			}
 		}
 		if (j == 7) {
-			for (j = 7; j <= description[i].length-1; j++) {
+			for (var j = 7; j <= description[i].length-1; j++) {
 			getInfoForClickableItems();
 				if (window.itemaction[itemnumber] != "none") {
 					roomdescription[i] = roomdescription[i] + ', <a href="javascript:clicked(\''+window.itemaction[itemnumber]+' '+window.roomcontainsitemname[itemnumber]+'\')">'+description[i].shift()+'</a>';

@@ -28,7 +28,7 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 			}
 			if (inventory.length > 0) {
 				inventorylist = 'Inventory: ';
-				for (i = 0; i < inventory.length; i++) {
+				for (var i = 0; i < inventory.length; i++) {
 					inventorylist = inventorylist + '<a href="javascript:clicked(\'drop '+inventory[i]+'\');">'+inventory[i]+'</a>.';
 				}
 				Terminal.print($('<p>').html(inventorylist));
@@ -87,13 +87,13 @@ TerminalShell.commands['look'] = Adventure.look = function(terminal) {
 
 TerminalShell.commands['debug'] = function(terminal) {
 	terminal.print('currentplayer = '+currentplayer);
-	for (i=1; i<=amountofplayers; i++) {
+	for (var i=1; i<=amountofplayers; i++) {
 		terminal.print('playerlocation['+i+'] = '+playerlocation[i]);
 	}
 	terminal.print('hallway_length = '+hallway_length);
 	terminal.print('amount_of_floors = '+amount_of_floors);
 	terminal.print('roomAmount = '+roomAmount);
-	for (i = 0; i <= itemname.length ; i++) {
+	for (var i = 0; i <= itemname.length ; i++) {
 		terminal.print(itemname[i]+' = '+itemlocation[i]);
 	}
 };
@@ -213,7 +213,7 @@ TerminalShell.commands['1'] = function(terminal) {
 		wayofplaying=1;
 		menu='gamemode';
 		Terminal.print('Please choose a gamemode:');
-		for (i = 0; i < singleplayermodes.length; i++) {
+		for (var i = 0; i < singleplayermodes.length; i++) {
                 	Terminal.print($('<p>').html('<a href="javascript:clicked('+(i+1)+');">'+(i+1)+'. '+capitaliseFirstLetter(singleplayermodes[i])+'</a>'));
 		}
 	} else if (menu == 'gamemode') {
@@ -239,7 +239,7 @@ TerminalShell.commands['2'] = function(terminal) {
 		wayofplaying=2;
 		menu='gamemode';
 		Terminal.print('Please choose a gamemode:');
-		for (i = 0; i < multiplayermodes.length; i++) {
+		for (var i = 0; i < multiplayermodes.length; i++) {
 			Terminal.print($('<p>').html('<a href="javascript:clicked('+(i+1)+');">'+(i+1)+'. '+capitaliseFirstLetter(multiplayermodes[i])+'</a>'));
 		}
 	} else {
@@ -276,7 +276,7 @@ TerminalShell.commands['4'] = function(terminal) {
 
 TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 	// Convert objects to numbers
-	objectNameToId(object);
+	var objectid = objectNameToId(object);
 	if (gameover == 0) {
 		if (!object) {
 			terminal.print('Use what?');
@@ -331,7 +331,7 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 
 TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
   	if (gameover == 0) {
-		objectNameToId(object)
+		var objectid = objectNameToId(object)
 		if (!object) {
 			terminal.print('Take what?');
 		} else if (objectid != -1) {
@@ -363,7 +363,7 @@ TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
 		if (!object) {
 			terminal.print('Drop what?');
 		} else {
-			objectNameToId(object)
+			var objectid = objectNameToId(object)
 			if ($.inArray(object, inventory) != -1) {
 				objectininventory = inventory.indexOf(object)
 				inventory.splice(objectininventory, 1);
@@ -386,7 +386,7 @@ TerminalShell.commands['inventory'] = function(terminal) {
 	if (gameover == 0) { 
 		inventory.sort()
 		inventoryoutput='Inventory: '
-		for (i = 0; i < inventory.length; i++) {
+		for (var i = 0; i < inventory.length; i++) {
 			inventoryoutput=inventoryoutput+inventory[i]
 			if (i+1 < inventory.length) {
 				inventoryoutput=inventoryoutput+', '
