@@ -66,40 +66,57 @@ function sendMessage(message) {
 };
 
 function chat(message) {
-	ws.send('cmc'+message) // C for CHAT
+	ws.send('cmc'+message);
 };
 
-function printUserList() {
+function sendPrivateMessage(message) {
+	var messagesplit = message.split(" "); // Split it up
+	var recipient = messagesplit.shift(); // Grab the first word as recipient
+	var message = messagesplit.join(" "); // Put the rest together as message
+	ws.send('cmp'+recipient+'|'+message);
+	Terminal.print($('<p>').addClass('server').text("To "+recipient+": "+message));
+};
+
+function receivePrivateMessage(message) {
+	var messagesplit = message.split("|"); // Split it up
+	var sender = messagesplit[0]; // Grab the first word as sender
+	var message = messagesplit[1];
+	Terminal.print($('<p>').addClass('server').text("From "+sender+": "+message));
+};
+
+function printUserList(users) {
 	for (var i = 0; i < users.length; i++) {
 		Terminal.print($('<p>').addClass('userlist').text(users[i].slice(2,-2)));
 	};
 };
 
 function receiveMessage(evt) {
-	messagetype = evt.data.slice(0,3) // Grab the first three characters to find out what kind of message we are dealing with
-	message = evt.data.slice(3) // Save the rest as the "message"
+	var messagetype = evt.data.slice(0,3) // Grab the first three characters to find out what kind of message we are dealing with
+	var message = evt.data.slice(3) // Save the rest as the "message"
 
 	switch (messagetype) {
 	case "scj": Terminal.print($('<p>').addClass('server').text(message+' has connected.')); break; // User joined
 	case "scl": Terminal.print($('<p>').addClass('server').text(message+' has left.')); break; // User left
 	case "scu": // Server sends user list
 		Terminal.print('Online users:');
-		users = message.split(',')
-		printUserList();
+		var users = message.split(',')
+		printUserList(users);
 		Terminal.print('');
 		break;
 	case "scn": // User changes nickname
-		oldnick = message.split('?')[0];
-		newnick = message.split('?')[1]; 
+		var oldnick = message.split('?')[0];
+		var newnick = message.split('?')[1]; 
 		Terminal.print($('<p>').addClass('server').text(oldnick+' is now known as '+newnick));
 		break;
 	case "smg": Terminal.print($('<p>').addClass('server').text('Server: '+message)); break; // General Server Message
 	case "smc": Terminal.print($('<p>').addClass('server').text(message)); break; // Server-wide chat message
+	case "smp": receivePrivateMessage(message); break; // Private Chat message
 	case "smd": // Server Debug Message
 		if (debug == true) {
 			Terminal.print($('<p>').addClass('server').text('Server debug: '+message));
 		}
 		break;
+	case "eno": Terminal.print($('<p>').addClass('server').text('Server: '+message+' is not online.')); break;
 	default:
 		Terminal.print('Server sent us a request we couldn\'t understand: '+evt.data);
 		ws.send('ens'+evt.data);

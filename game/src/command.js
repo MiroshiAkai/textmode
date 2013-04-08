@@ -308,8 +308,8 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 				terminal.setWorking(true);
 				terminal.print('');
 				setTimeout("Terminal.print('login: root '+password)", 1000);
-				setTimeout("Terminal.print(''", 1500);
-				setTimeout("Terminal.print('You remember this information, just in case it would be of use'", 1500);
+				setTimeout("Terminal.print('')", 1500);
+				setTimeout("Terminal.print('You remember this information, just in case it would be of use')", 1500);
 				gotlogininfo=true;
 				terminal.setWorking(false);
 			} else {

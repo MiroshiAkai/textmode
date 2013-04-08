@@ -25,12 +25,16 @@ TerminalShell.commands['name'] = function(terminal, nickname) {
 	Terminal.print('You are now known as \"'+username+'\"');
 	menu = "savenickname";
 	Terminal.print($('<p>').html('Do you want to save your nickname? <a href="javascript:clicked(\'yes\');">Yes</a> / <a href="javascript:clicked(\'no\');">No</a>'));
-}
+};
 
 TerminalShell.commands['say'] = function(terminal, message) { // Send a chat message
 	chat(Terminal.history[Terminal.historyPos-1].slice(4));
+};
+
+TerminalShell.commands['p'] = function(terminal, message) { // Send a private message
+	sendPrivateMessage(Terminal.history[Terminal.historyPos-1].slice(2));
 }
 
 TerminalShell.commands['users'] = function(terminal) { // Show user list
 	ws.send('cul');
-}
+};
