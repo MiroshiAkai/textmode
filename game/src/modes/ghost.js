@@ -27,7 +27,7 @@ function gamemodeInit() {
 	window.gamemodeTime = 0;
 	gamemodeTimer=setInterval("gamemodeTime++", 1);
 	randomInt=getRandomInt(2,4);
-	window.ghostweakness=itemname[randomInt];
+	// window.ghostweakness=itemname[randomInt]; // Can reenable this when the new item system is in place. FIXME
 	window.amountofghostmoves=0;
 	window.amountofscaressurvived=0;
 	window.playerlocation[2]=getRandomInt(0,roomAmount);

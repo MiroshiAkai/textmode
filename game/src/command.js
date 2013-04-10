@@ -20,66 +20,41 @@
  *
  */
 
-TerminalShell.commands['look'] = Adventure.look = function(terminal) {
+TerminalShell.commands['look'] = function(terminal) {
 	if (gameover == 0) {
 		if (silent_move == false) {
 			if (wayofplaying == 2) {
 				Terminal.print($('<p>').html('<a href="javascript:clicked(\'end\');">End turn</a>'));
-			}
+			};
 			if (inventory.length > 0) {
 				inventorylist = 'Inventory: ';
 				for (var i = 0; i < inventory.length; i++) {
 					inventorylist = inventorylist + '<a href="javascript:clicked(\'drop '+inventory[i]+'\');">'+inventory[i]+'</a>.';
-				}
+				};
 				Terminal.print($('<p>').html(inventorylist));
-			}
-			Terminal.print($('<p>').html(roomdescription[playerlocation[currentplayer]]));	
-			if (Adventure.location.exits) {
-				if (gamemode == 2) {
-					terminal.print(timeinfo);
-				} else {
-					terminal.print('');
-				}
-				if (playerlocation[currentplayer] == 0) {
-					if (amount_of_floors == 1) {
-						var possibleDirections = ['north', 'east', 'west'];
-						var possibleDirections2 = ['north', 'east', 'west'];
-					} else {
-						var possibleDirections = ['north', 'east', 'west', 'up'];
-						var possibleDirections2 = ['north', 'east', 'west', 'up'];
-					}
-				} else if (playerlocation[currentplayer] == 30) {
-					var possibleDirections = ['north', 'east', 'west', 'down'];
-					var possibleDirections2 = ['north', 'east', 'west', 'down'];
-				} else if ((playerlocation[currentplayer] == hallway_length) || (playerlocation[currentplayer] == hallway_length+30)) {
-					var possibleDirections = ['east', 'south', 'west'];
-					var possibleDirections2 = ['east', 'south', 'west'];
-				} else {
-					var possibleDirections = [];
-					var possibleDirections2 = [];
-					$.each(Adventure.location.exits, function(name, id) {
-					possibleDirections.push(name);
-					possibleDirections2.push(name);
-					});
-				}
-				exitslist = 'Exits: '
-				while (possibleDirections2.length > 0) {
-					direction = possibleDirections2.splice(0,1);
-					exitslist = exitslist + '<a href="javascript:clicked(\'go '+direction+'\');">'+direction+'</a>' + '          ';
-				}
-				Terminal.print($('<p>').html(exitslist));
-				if (menu != false) {
-					terminal.print('');
-					if (menu == "newgame") {
-						terminal.print('Would you like to start a new game?');
-						Terminal.print($('<p>').html('<a href="javascript:clicked(\'yes\');">Yes</a> or <a href="javascript:clicked(\'no\');">No</a>'));
-					}
-				}
-			}
-		}
-		if (lightstatus[playerlocation[currentplayer]] == 1) {
-			flicker($('#screen'));
-		}
+			};
+			// Terminal.print($('<p>').html(roomdescription[playerlocation[currentplayer]])); FIXME
+			var possibleDirections = room[playerlocation[currentplayer]]["exit"];
+			var possibleDirections2 = possibleDirections;
+			if (gamemode == 2) {
+				terminal.print(timeinfo);
+			} else {
+				terminal.print('');
+			};
+			exitslist = 'Exits: '
+			for (var i = 0; i < room[playerlocation[currentplayer]]["exit"].length; i++) {
+				direction = room[playerlocation[currentplayer]]["exit"][i];
+				exitslist = exitslist + '<a href="javascript:clicked(\'go '+direction+'\');">'+direction+'</a>' + '          ';
+			};
+			Terminal.print($('<p>').html(exitslist));
+			if (menu != false) {
+				terminal.print('');
+				if (menu == "newgame") {
+					terminal.print('Would you like to start a new game?');
+					Terminal.print($('<p>').html('<a href="javascript:clicked(\'yes\');">Yes</a> or <a href="javascript:clicked(\'no\');">No</a>'));
+				};
+			};
+		};
 	} else {
 		terminal.print('This action cannot be executed now.');
 	}
@@ -98,11 +73,52 @@ TerminalShell.commands['debug'] = function(terminal) {
 	}
 };
 
-TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
+TerminalShell.commands['n'] = function(terminal) { // Move north
+	Terminal.runCommand('go north');
+};
+
+TerminalShell.commands['e'] = function(terminal) { // Move east
+	Terminal.runCommand('go east');
+};
+
+TerminalShell.commands['s'] = function(terminal) { // Move south
+	Terminal.runCommand('go south');
+};
+
+TerminalShell.commands['w'] = function(terminal) { // Move west
+	Terminal.runCommand('go west');
+};
+
+TerminalShell.commands['u'] = function(terminal) { // Go up
+	Terminal.runCommand('go up');
+};
+
+TerminalShell.commands['d'] = function(terminal) { // Go down
+	Terminal.runCommand('go down');
+};
+
+TerminalShell.commands['go'] = function(terminal, direction) {
 	if (gameover == 0) {
 		if (wayofplaying != 2 || movesdone == 0) {
-			if (Adventure.location.exits && direction in Adventure.location.exits) {
-				destination=Adventure.location.exits[direction]
+			if (room[playerlocation[currentplayer]]["exit"].indexOf(direction) != -1) {
+				var directionY = room[playerlocation[currentplayer]]["y"];
+				var directionX = room[playerlocation[currentplayer]]["x"];
+				var directionFloor = room[playerlocation[currentplayer]]["floor"];
+				switch (direction) {
+					case "north": directionY++; break;
+					case "east": directionX++; break;
+					case "south": directionY--; break;
+					case "west": directionX--; break;
+					case "up": directionFloor++; break;
+					case "down": directionFloor--; break;
+					default: Terminal.print('ERROR THIS SHOULD NEVER HAPPEN');
+				};
+				for (var i = 0; i < 100; i++) {
+					if ((room[i]["x"] == directionX) && (room[i]["y"] == directionY) && (room[i]["floor"] == directionFloor)) {
+						window.playerlocation[currentplayer] = i;
+						break;
+					};
+				};
 				if (time_passes == true) {
 					random_time_passing=getRandomInt(0,5)
 					if (random_time_passing==5) {
@@ -121,34 +137,8 @@ TerminalShell.commands['go'] = Adventure.go = function(terminal, direction) {
 				} else {
 					timeinfo='\nIt is now '+time+':00AM.';
 				}
-				if (playerlocation[currentplayer] == hallway_length) {
-					if (direction == 'north') {
-						terminal.print('You cannot go '+direction+'.');
-					}
-				}
-				if (destination >= 10 && destination <= 99 && playerlocation[currentplayer] != hallway_length) {
-					if (direction == 'west') {
-						destination=destination-10
-					} else {
-						if (direction == 'east') {
-							destination=destination-10
-						}
-					}
-					if (rooms[destination] == 'locked') {
-						terminal.print('The door is locked!')
-					} else {
-						amountofroomsentered++
-						amountofmoves++			
-						Adventure.goTo(terminal, Adventure.location.exits[direction]);
-					}
-				} else {
-					amountofmoves++
-					Adventure.goTo(terminal, Adventure.location.exits[direction]);
-					// The player has everything needed to beat the ghost and checked the computer. Time to severely increase the chance of running into the ghost.
-					if (gamemode == "ghost") {
-						gamemodeIncreaseChance();
-					}
-				}
+				amountofroomsentered++
+				amountofmoves++			
 			} else if (!direction) {
 				terminal.print('Go where?');
 			} else {
@@ -274,7 +264,7 @@ TerminalShell.commands['4'] = function(terminal) {
 */
 
 
-TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
+TerminalShell.commands['use'] = function(terminal, object) {
 	// Convert objects to numbers
 	var objectid = objectNameToId(object);
 	if (gameover == 0) {
@@ -329,7 +319,7 @@ TerminalShell.commands['use'] = Adventure.go = function(terminal, object) {
 	}
 };
 
-TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
+TerminalShell.commands['take'] = function(terminal, object) {
   	if (gameover == 0) {
 		var objectid = objectNameToId(object)
 		if (!object) {
@@ -358,7 +348,7 @@ TerminalShell.commands['take'] = Adventure.go = function(terminal, object) {
 	}
 };
 
-TerminalShell.commands['drop'] = Adventure.go = function(terminal, object) {
+TerminalShell.commands['drop'] = function(terminal, object) {
 	if (gameover == 0) {  
 		if (!object) {
 			terminal.print('Drop what?');
