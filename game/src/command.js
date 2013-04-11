@@ -33,7 +33,7 @@ TerminalShell.commands['look'] = function(terminal) {
 				};
 				Terminal.print($('<p>').html(inventorylist));
 			};
-			// Terminal.print($('<p>').html(roomdescription[playerlocation[currentplayer]])); FIXME
+			createDescription();
 			var possibleDirections = room[playerlocation[currentplayer]]["exit"];
 			var possibleDirections2 = possibleDirections;
 			if (gamemode == 2) {
@@ -265,87 +265,72 @@ TerminalShell.commands['4'] = function(terminal) {
 
 
 TerminalShell.commands['use'] = function(terminal, object) {
-	// Convert objects to numbers
-	var objectid = objectNameToId(object);
 	if (gameover == 0) {
 		if (!object) {
 			terminal.print('Use what?');
-		} else if (objectid == 0) { // Computer
-			if (roomcontainsitem[0].indexOf(playerlocation[currentplayer]) != -1) {
-				using_computer=true
-				if (logged_in == false) {
-					if (gotlogininfo == true) {
-						logged_in=true
-						terminal.print('You have logged in succesfully.');
-						Terminal.runCommand('use computer');					  
-					} else {
-						terminal.print('The computer prompts you for login information, but you don\'t know what to type in...');
-					}
-				} else {
-					if (gamemode == "ghost") {
-						gamemodeUseComputer();
-					} else {
-						Terminal.print('You see no use for the computer');
-					}
-					using_computer=false
-				}
-			} else {
-				terminal.print('You cannot use '+object+'.');
-			}
-		} else if (objectid == 1) { // Note
-			if (roomcontainsitem[objectid].indexOf(playerlocation[currentplayer]) != -1) {
-				terminal.print('You grab the note and start reading...');
-				terminal.setWorking(true);
-				terminal.print('');
-				setTimeout("Terminal.print('login: root '+password)", 1000);
-				setTimeout("Terminal.print('')", 1500);
-				setTimeout("Terminal.print('You remember this information, just in case it would be of use')", 1500);
-				gotlogininfo=true;
-				terminal.setWorking(false);
-			} else {
-				terminal.print('There is no '+roomcontainsitemname[objectid]+' here.');
-			}
-		} else if (objectid != -1) {
-			if (roomcontainsitem[objectid].indexOf(playerlocation[currentplayer]) != -1) {
-				terminal.print('You try to use the '+roomcontainsitemlongname[objectid]+', but nothing useful seems to happen.');
-			} else {
-				terminal.print('There is no '+roomcontainsitemname[objectid]+' here.');
-			}
 		} else {
-			terminal.print('There is no '+object+' here.');
-		}
+			var objectid = objectNameToId(object);
+			if (room[playerlocation[currentplayer]]["items"].indexOf(object) != -1) {
+				if (object == "computer") {
+					using_computer=true
+					if (logged_in == false) {
+						if (gotlogininfo == true) {
+							logged_in=true
+							terminal.print('You have logged in succesfully.');
+							Terminal.runCommand('use computer');					  
+						} else {
+							terminal.print('The computer prompts you for login information, but you don\'t know what to type in...');
+						};
+					} else {
+						if (gamemode == "ghost") {
+							gamemodeUseComputer();
+						} else {
+							Terminal.print('You see no use for the computer');
+						};
+						using_computer=false
+					};
+				} else if (object == "note") { // Note
+					terminal.print('You grab the note and start reading...');
+					terminal.setWorking(true);
+					terminal.print('');
+					setTimeout("Terminal.print('login: root '+password)", 1000);
+					setTimeout("Terminal.print('')", 1500);
+					setTimeout("Terminal.print('You remember this information, just in case it would be of use')", 1500);
+					gotlogininfo=true;
+					terminal.setWorking(false);
+				} else { // No really useful item
+					Terminal.print('You try to use '+items[objectid]["longname"]+', but nothing useful seems to happen.');
+				};
+			} else {
+				terminal.print('There is no '+object+' here.');
+			};
+		};
 	} else {
 		terminal.print('This action cannot be executed now.');
-	}
+	};
 };
 
 TerminalShell.commands['take'] = function(terminal, object) {
   	if (gameover == 0) {
-		var objectid = objectNameToId(object)
 		if (!object) {
 			terminal.print('Take what?');
-		} else if (objectid != -1) {
-			if (roomcontainsitem[objectid].indexOf(playerlocation[currentplayer]) != -1) {
+		} else {
+			var objectid = objectNameToId(object);
+			if (room[playerlocation[currentplayer]]["items"].indexOf(object) != -1) {
 				if (inventory.length >= inventorylimit) {
 					terminal.print('Your inventory is full!');
 				} else {
-					terminal.print(capitaliseFirstLetter(roomcontainsitemlongname[objectid])+' has been put in your inventory.');
+					terminal.print(capitaliseFirstLetter(items[objectid]["longname"])+' has been put in your inventory.');
 					inventory.push(object);
-					roomcontainsitem[objectid].splice(roomcontainsitem[objectid].indexOf(playerlocation[currentplayer]), 1)
-					description[playerlocation[currentplayer]] = descriptionbackup[playerlocation[currentplayer]]
-					description[playerlocation[currentplayer]].splice(description[playerlocation[currentplayer]].indexOf(roomcontainsitemlongname[objectid]), 1)
-					i = playerlocation[currentplayer]
-					createDescription(playerlocation[currentplayer]);
-				}
+					room[playerlocation[currentplayer]]["items"].splice(room[playerlocation[currentplayer]]["items"].indexOf(object), 1)
+				};
 			} else {
 				terminal.print('You cannot take '+object+'.');
-			}
-		} else {
-			terminal.print('You cannot take '+object+'.');
-		}
+			};
+		};
 	} else {
 		terminal.print('This action cannot be executed now.');
-	}
+	};
 };
 
 TerminalShell.commands['drop'] = function(terminal, object) {
@@ -354,22 +339,18 @@ TerminalShell.commands['drop'] = function(terminal, object) {
 			terminal.print('Drop what?');
 		} else {
 			var objectid = objectNameToId(object)
-			if ($.inArray(object, inventory) != -1) {
+			if (inventory.indexOf(object) != -1) {
 				objectininventory = inventory.indexOf(object)
 				inventory.splice(objectininventory, 1);
-				roomcontainsitem[objectid].push(playerlocation[currentplayer])
-				description[playerlocation[currentplayer]] = descriptionbackup[playerlocation[currentplayer]]
-				description[playerlocation[currentplayer]].push(roomcontainsitemlongname[objectid])
-				i = playerlocation[currentplayer]
-				createDescription(playerlocation[currentplayer])
-				terminal.print('You dropped '+object+'.');
+				room[playerlocation[currentplayer]]["items"].push(object);
+				terminal.print('You dropped '+items[objectid]["longname"]+'.');
 			} else {
 				terminal.print('Could not find '+object+' in your inventory.');
-			}
-		}
+			};
+		};
 	} else {
 		terminal.print('This action cannot be executed now.');
-	}
+	};
 };
 
 TerminalShell.commands['inventory'] = function(terminal) {
