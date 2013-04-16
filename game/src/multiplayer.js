@@ -25,14 +25,6 @@ connected = false;
 prepareconnecting = false;
 username = "";
 
-TerminalShell.commands['say'] = function(terminal, message) { // Should be in commands.js. FIXME!
-	chat(Terminal.history[Terminal.historyPos-1].slice(4));
-}
-
-TerminalShell.commands['users'] = function(terminal) { // Show user list. Like say, FIXME
-	ws.send('cul');
-}
-
 function prepareConnect() {
 	prepareconnecting = true;
 	if (username == "") {
@@ -57,7 +49,14 @@ function identifyPlayer() {
 	ws.send('cni'+username);
 };
 
-function changeNick() {
+function login(message) {
+	var messagesplit = message.split(" ");
+	var loginname = messagesplit.shift(); // First word as loginname
+	var password = messagesplit.shift(); // Second word as password
+	ws.send('cal'+loginname+'|'+password);
+};
+
+function changeNick(message) {
 	ws.send('cnc'+username);
 };
 
@@ -95,6 +94,7 @@ function receiveMessage(evt) {
 	var message = evt.data.slice(3) // Save the rest as the "message"
 
 	switch (messagetype) {
+	case "sal": Terminal.print($('<p>').addClass('server').text('You have logged in succesfully')); break; // Succesful login
 	case "scj": Terminal.print($('<p>').addClass('server').text(message+' has connected.')); break; // User joined
 	case "scl": Terminal.print($('<p>').addClass('server').text(message+' has left.')); break; // User left
 	case "scu": // Server sends user list
@@ -104,8 +104,8 @@ function receiveMessage(evt) {
 		Terminal.print('');
 		break;
 	case "scn": // User changes nickname
-		var oldnick = message.split('?')[0];
-		var newnick = message.split('?')[1]; 
+		var oldnick = message.split('|')[0];
+		var newnick = message.split('|')[1]; 
 		Terminal.print($('<p>').addClass('server').text(oldnick+' is now known as '+newnick));
 		break;
 	case "smg": Terminal.print($('<p>').addClass('server').text('Server: '+message)); break; // General Server Message

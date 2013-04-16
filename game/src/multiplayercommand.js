@@ -27,6 +27,12 @@ TerminalShell.commands['name'] = function(terminal, nickname) {
 	Terminal.print($('<p>').html('Do you want to save your nickname? <a href="javascript:clicked(\'yes\');">Yes</a> / <a href="javascript:clicked(\'no\');">No</a>'));
 };
 
+TerminalShell.commands['login'] = function(terminal, message) {
+	Terminal.print('Trying to identify...');
+	login(Terminal.history[Terminal.historyPos-1].slice(6));
+	var loginname = message.split(" "); 
+};
+
 TerminalShell.commands['say'] = function(terminal, message) { // Send a chat message
 	chat(Terminal.history[Terminal.historyPos-1].slice(4));
 };
