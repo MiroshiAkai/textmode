@@ -56,6 +56,10 @@ function login(message) {
 	ws.send('cal'+loginname+'|'+password);
 };
 
+function kickPlayer(message) {
+	ws.send('ckr'+message);
+};
+
 function changeNick(message) {
 	ws.send('cnc'+username);
 };
@@ -116,7 +120,13 @@ function receiveMessage(evt) {
 			Terminal.print($('<p>').addClass('server').text('Server debug: '+message));
 		}
 		break;
+	case "smk": // Server Message Kick
+		var kicked = message.split('|')[0];
+		var kickedby = message.split('|')[1];
+		Terminal.print($('<p>').addClass('server').text(kicked+' was kicked by '+kickedby));
+		break;
 	case "eno": Terminal.print($('<p>').addClass('server').text('Server: '+message+' is not online.')); break;
+	case "ena": Terminal.print($('<p>').addClass('server').text('Server: You are not authorized to do this.')); break;
 	default:
 		Terminal.print('Server sent us a request we couldn\'t understand: '+evt.data);
 		ws.send('ens'+evt.data);

@@ -33,6 +33,10 @@ TerminalShell.commands['login'] = function(terminal, message) {
 	var loginname = message.split(" "); 
 };
 
+TerminalShell.commands['kick'] = function(terminal, message) {
+	kickPlayer(message);
+};
+
 TerminalShell.commands['say'] = function(terminal, message) { // Send a chat message
 	chat(Terminal.history[Terminal.historyPos-1].slice(4));
 };
