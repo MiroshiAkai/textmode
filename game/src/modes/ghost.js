@@ -48,6 +48,7 @@ function gamemodeInit() {
 	setTimeout("Terminal.print('=== Winning condition: Meet the ghost while carrying the item which is his weakness ===');", 1000);
 	setTimeout("Terminal.print('=== Losing condition: Meet the ghost without carrying the required item ===');", 1500);
 	setTimeout("Terminal.print('=== Helpful object(s): Computer, Note ===');", 2000);
+	setTimeout("Terminal.runCommand('look')", 2200);
 	window.gamemodeInitialized=true
 	clearInterval(gamemodeTimer);
 };

@@ -144,6 +144,7 @@ TerminalShell.commands['go'] = function(terminal, direction) {
 			} else {
 				terminal.print('You cannot go '+direction+'.');
 			}
+			Terminal.runCommand('look');
 		} else {
 			terminal.print('You are only allowed to move once per turn! Please end your turn if you are done.');
 		}

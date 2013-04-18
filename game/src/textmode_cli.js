@@ -242,110 +242,115 @@ function initializeItems() {
 	};
 };
 
-function createDescription() { // Old, evil, broken code. FIXME
+function createDescription() {
 	var description = [];
-	description.push(room[playerlocation[currentplayer]]["items"]);
-	var roomdescription = "";
+	if (room[playerlocation[currentplayer]]["items"].length >= 1) {
+		for (var i = 0; i < room[playerlocation[currentplayer]]["items"].length; i++) {
+			description.push(room[playerlocation[currentplayer]]["items"][i]);
+		};
+	};
+	console.log(description);
+	var roomdescription = "You are in a room.";
 	for (var j = 0; j <= description.length; j++) {
 		if (j == 0 && description.length >= 2) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ' The room contains <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ' The room contains <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>';
 			} else {
-				roomdescription = roomdescription + ' The room contains '+description.shift();
+				roomdescription = roomdescription + ' The room contains '+description.splice(0,1);
 			};
 		} else if (j == 0 && description.length >= 1) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ' It only contains <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>.';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ' It only contains <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>.';
 			} else {
-				roomdescription = roomdescription + ' It only contains '+description.shift()+'.'
+				roomdescription = roomdescription + ' It only contains '+description.splice(0,1)+'.'
 			};
 		} else if (j == 0) {
 			roomdescription = roomdescription + ' It is empty.'
 		};
 		if (j == 1 && description.length >= 3) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ', <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ', <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>';
 			} else {
-				roomdescription = roomdescription + ', '+description.shift()
+				roomdescription = roomdescription + ', '+description.splice(0,1)
 			};
 		} else if (j == 1) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ' and <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>.';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ' and <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>.';
 			} else {
-				roomdescription = roomdescription + ' and '+description.shift()+'.'
+				roomdescription = roomdescription + ' and '+description.splice(0,1)+'.'
 			};
 		};
 		if (j == 2) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ', and <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>.';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ', and <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>.';
 			} else {				
-				roomdescription = roomdescription + ', and '+description.shift()+'.'
+				roomdescription = roomdescription + ', and '+description.splice(0,1)+'.'
 			};
 		};
 		if (j == 3 && description.length >= 5) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ' It also contains <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ' It also contains <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>';
 			} else {
-				roomdescription = roomdescription + ' It also contains '+description.shift()
+				roomdescription = roomdescription + ' It also contains '+description.splice(0,1)
 			};
 		} else if (j == 3) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ' It also contains <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>.';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ' It also contains <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>.';
 			} else {
-				roomdescription = roomdescription + ' It also contains '+description.shift()+'.'
+				roomdescription = roomdescription + ' It also contains '+description.splice(0,1)+'.'
 			};
 		};
 		if (j == 4 && description.length >= 6) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ', <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ', <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>';
 			} else {			
-				roomdescription = roomdescription + ', '+description.shift()
+				roomdescription = roomdescription + ', '+description.splice(0,1)
 			};
 		} else if (j == 4) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ' and <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>.';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ' and <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>.';
 			} else {
-				roomdescription = roomdescription + ' and '+description.shift()+'.'
+				roomdescription = roomdescription + ' and '+description.splice(0,1)+'.'
 			};
 		};
 		if (j == 5) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ' and <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>.';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ' and <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>.';
 			} else {
-				roomdescription = roomdescription + ' and '+description.shift()+'.'
+				roomdescription = roomdescription + ' and '+description.splice(0,1)+'.'
 			};
 		};
 		if (j == 6 && description.length == 7) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ' You can also see <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>.';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ' You can also see <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>.';
 			} else {			  
-				roomdescription = roomdescription + ' You can also see '+description.shift()+'.'
+				roomdescription = roomdescription + ' You can also see '+description.splice(0,1)+'.'
 			};
 		} else if (j == 6 && description.length >= 8) {
-			if (item[j]["action"] != "none") {
-				roomdescription = roomdescription + ' You can also see <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>';
+			if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+				roomdescription = roomdescription + ' You can also see <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>';
 			} else {		  
-				roomdescription = roomdescription + ' You can also see '+description.shift()
+				roomdescription = roomdescription + ' You can also see '+description.splice(0,1)
 			};
 		};
 		if (j == 7) {
 			for (var j = 7; j <= description.length-1; j++) {
-				if (item[j]["action"] != "none") {
-					roomdescription = roomdescription + ', <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>';
+				if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+					roomdescription = roomdescription + ', <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>';
 				} else {			  
-					roomdescription = roomdescription + ', '+description.shift()
+					roomdescription = roomdescription + ', '+description.splice(0,1)
 				};
 			};
 			if (j == description.length) {
-				if (item[j]["action"] != "none") {
-					roomdescription = roomdescription + ' and <a href="javascript:clicked(\''+item[j]["action"]+' '+item[j]["name"]+'\')">'+description.shift()+'</a>.';
+				if (items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"] != "none") {
+					roomdescription = roomdescription + ' and <a href="javascript:clicked(\''+items[items[room[playerlocation[currentplayer]]["items"][j]]]["action"]+' '+items[items[room[playerlocation[currentplayer]]["items"][j]]]["name"]+'\')">'+description.splice(0,1)+'</a>.';
 				} else {			  
-					roomdescription = roomdescription + ' and '+description.shift()+'.'
+					roomdescription = roomdescription + ' and '+description.splice(0,1)+'.'
 				};
 			};
 		};
 	};
-	Terminal.print(roomdescription);
+	Terminal.print($('<p>').html(roomdescription));
 };
 
 $(document).ready(function() {
