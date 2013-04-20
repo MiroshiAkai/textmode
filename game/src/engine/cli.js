@@ -187,25 +187,9 @@ var Terminal = {
 					return; // sigh.
 				}
 				
-				if (this.sticky.keys.ctrl) {
-					if (letter == 'w') {
-						this.deleteWord();
-					} else if (letter == 'h') {
-						Terminal.deleteCharacter(false);
-					} else if (letter == 'l') {
-						this.clear();
-					} else if (letter == 'a') {
-						this.setPos(0);
-					} else if (letter == 'e') {
-						this.setPos(this.buffer.length);
-					} else if (letter == 'd') {
-						this.runCommand('logout');
-					}
-				} else {
-					if (character) {
-						this.addCharacter(character);
-						e.preventDefault();
-					}
+				if (character) {
+					this.addCharacter(character);
+					e.preventDefault();
 				}
 			}), this))
 			.bind('keydown', 'return', ifActive(function(e) { Terminal.processInputBuffer(); }))
