@@ -436,14 +436,33 @@ TerminalShell.commands['suicide'] = function(terminal) {
 	showGameResult();
 }
 
-TerminalShell.commands['help'] = function(terminal) {
-	terminal.print('There are two ways of navigation in the game. You either type commands (impossible on smartphones and tablets) or click on "links" to execute actions.');
-	terminal.print('If you choose to play by clicking, the information below here is unnecessary and you already know everything needed to play. If you choose to play by typing commands, here are the most important commands:');
-	terminal.print('Type "yes" or "no" to answer questions given by the system.');
-	terminal.print('Type "go" to go to a direction. For example, "go west" to go west.');
-	terminal.print('Type "look" to look around the environment.');
-	terminal.print('Type "take" to add an item to your inventory. For example, "take crayons" to put a box of crayons in your inventory.');
-	terminal.print('Type "drop" to drop an item. For example, "drop crayons" to drop a box of crayons.');
-	terminal.print('Type "inventory" to check which items you have in your inventory.');
-	terminal.print('Type "use" to use an object in the room. For example, type "use computer" to use a computer in the room. The "use" command is used for all kinds of interaction, so if you want to read a book write "use book" to do so.');
+TerminalShell.commands['help'] = function(terminal, subject) {
+	if (subject === undefined) {
+		Terminal.print('Please choose a help subject:');
+		Terminal.print($('<p>').html('<a href=javascript:clicked(\'help basic\');">Basic</a>'));
+		Terminal.print($('<p>').html('<a href=javascript:clicked(\'help gameplay\');">Gameplay</a>'));
+		Terminal.print($('<p>').html('<a href=javascript:clicked(\'multiplayer\');">Multiplayer</a>'));
+	} else if (subject == 'basic') {
+		Terminal.print('Textmode is a reimagination of the text adventure game genre, which focuses on shorter games which are randomly generated and can be played online.');
+		Terminal.print('The idea behind this is to make the text adventure genre more accessible to those who have no or little experience, and redefining the genre for those who do.');
+		Terminal.print('To play textmode, just choose a way of playing and a gamemode. If you need more help, feel free to use the help menu.');
+		Terminal.print('Textmode is written by Ruben van Os');
+	} else if (subject == 'gameplay') {
+		Terminal.print('Each gamemode has their own gameplay. To find out how it is played, just look at the information a gamemode gives you when the game starts.');
+		Terminal.print('However, there are obviously things which are the same in all cases.');
+		Terminal.print('For starters, each gamemode has a winning and losing condition. If you reach the winning condition, you win and reaching the losing condition causes you to lose. Simple enough.');
+		Terminal.print('There are two ways of playing Textmode. You either type commands (which is only possible on devices with a hardware keyboard which correctly detect our input method) or click on "links" to execute actions.');
+		Terminal.print('If you choose to play by clicking, you already know everything needed to play the game. Just look for bold text to click!');
+		Terminal.print('If you choose to play by typing commands, please type "help commands" to get a list of commands.');
+		Terminal.print('Please note that you are not required to stick with one input style. You can mix and match as much as you want.');
+	} else if (subject == 'commands') {
+		Terminal.print('Gameplay commands:');
+		Terminal.print('yes / no: Answers a question asked by the game.');
+		Terminal.print('go: Allows you to move into a direction. Example: "go west". Can also be shortened by the first letter of the direction. Example: "n" to go north.');
+		Terminal.print('look: Gives a description of the room.');
+		Terminal.print('take: Adds an item to your inventory. Example: "take crayons".');
+		Terminal.print('drop: Drops an item. Example: "drop screwdriver".');
+		Terminal.print('inventory: Lists items in inventory.');
+		Terminal.print('use: Interacts with an object. Example: "use note".');
+	};
 };
