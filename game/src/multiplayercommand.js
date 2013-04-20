@@ -30,7 +30,11 @@ TerminalShell.commands['name'] = function(terminal, nickname) {
 TerminalShell.commands['login'] = function(terminal, message) {
 	Terminal.print('Trying to identify...');
 	login(Terminal.history[Terminal.historyPos-1].slice(6));
-	var loginname = message.split(" "); 
+};
+
+TerminalShell.commands['register'] = function(terminal, message) {
+	Terminal.print('Trying to register...');
+	register(Terminal.history[Terminal.historyPos-1].slice(9));
 };
 
 TerminalShell.commands['kick'] = function(terminal, message) {

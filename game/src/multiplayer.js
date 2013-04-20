@@ -51,9 +51,16 @@ function identifyPlayer() {
 
 function login(message) {
 	var messagesplit = message.split(" ");
-	var loginname = messagesplit.shift(); // First word as loginname
+	var username = messagesplit.shift(); // First word as loginname
 	var password = messagesplit.shift(); // Second word as password
-	ws.send('cal'+loginname+'|'+password);
+	ws.send('cal'+username+'|'+password);
+};
+
+function register(message) {
+	var messagesplit = message.split(" ");
+	var username = messagesplit.shift();
+	var password = messagesplit.shift();
+	ws.send('car'+username+'|'+password);
 };
 
 function kickPlayer(message) {
@@ -99,6 +106,7 @@ function receiveMessage(evt) {
 
 	switch (messagetype) {
 	case "sal": Terminal.print($('<p>').addClass('server').text('You have logged in succesfully')); break; // Succesful login
+	case "sar": Terminal.print($('<p>').addClass('server').text('You have succesfully registered')); break;
 	case "scj": Terminal.print($('<p>').addClass('server').text(message+' has connected.')); break; // User joined
 	case "scl": Terminal.print($('<p>').addClass('server').text(message+' has left.')); break; // User left
 	case "scu": // Server sends user list
@@ -125,6 +133,7 @@ function receiveMessage(evt) {
 		var kickedby = message.split('|')[1];
 		Terminal.print($('<p>').addClass('server').text(kicked+' was kicked by '+kickedby));
 		break;
+	case "eal": Terminal.print($('<p>').addClass('server').text('Server: Could not log into this account. Please check if you have typed your username and password correctly, and if it is registered.')); break;
 	case "eno": Terminal.print($('<p>').addClass('server').text('Server: '+message+' is not online.')); break;
 	case "ena": Terminal.print($('<p>').addClass('server').text('Server: You are not authorized to do this.')); break;
 	default:
