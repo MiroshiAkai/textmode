@@ -138,13 +138,13 @@ TerminalShell.commands['go'] = function(terminal, direction) {
 					timeinfo='\nIt is now '+time+':00AM.';
 				}
 				amountofroomsentered++
-				amountofmoves++			
+				amountofmoves++
+				Terminal.runCommand('look');
 			} else if (!direction) {
 				terminal.print('Go where?');
 			} else {
 				terminal.print('You cannot go '+direction+'.');
 			}
-			Terminal.runCommand('look');
 		} else {
 			terminal.print('You are only allowed to move once per turn! Please end your turn if you are done.');
 		}
@@ -436,12 +436,14 @@ TerminalShell.commands['suicide'] = function(terminal) {
 	showGameResult();
 }
 
-TerminalShell.commands['help'] = function(terminal, subject) {
+TerminalShell.commands['help'] = function(terminal, subject, type) {
 	if (subject === undefined) {
-		Terminal.print('Please choose a help subject:');
-		Terminal.print($('<p>').html('<a href=javascript:clicked(\'help basic\');">Basic</a>'));
-		Terminal.print($('<p>').html('<a href=javascript:clicked(\'help gameplay\');">Gameplay</a>'));
-		Terminal.print($('<p>').html('<a href=javascript:clicked(\'multiplayer\');">Multiplayer</a>'));
+		Terminal.print('Subjects:');
+		Terminal.print($('<p>').html('<a href=javascript:clicked(\'help basic\');">basic</a>'));
+		Terminal.print($('<p>').html('<a href=javascript:clicked(\'help gameplay\');">gameplay</a>'));
+		Terminal.print($('<p>').html('<a href=javascript:clicked(\'multiplayer\');">multiplayer</a>'));
+		Terminal.print($('<p>').html('<a href=javascript:clicked(\'commands\');">commands</a>'));
+		Terminal.print('To select a subject, either click it or type "help" followed by the subject you want more information of');
 	} else if (subject == 'basic') {
 		Terminal.print('Textmode is a reimagination of the text adventure game genre, which focuses on shorter games which are randomly generated and can be played online.');
 		Terminal.print('The idea behind this is to make the text adventure genre more accessible to those who have no or little experience, and redefining the genre for those who do.');
@@ -455,14 +457,34 @@ TerminalShell.commands['help'] = function(terminal, subject) {
 		Terminal.print('If you choose to play by clicking, you already know everything needed to play the game. Just look for bold text to click!');
 		Terminal.print('If you choose to play by typing commands, please type "help commands" to get a list of commands.');
 		Terminal.print('Please note that you are not required to stick with one input style. You can mix and match as much as you want.');
+	} else if (subject == 'multiplayer') { // Add stuff
+		Terminal.print('Currently, multiplayer is no more than a chat room. Yay unfinished features!');
+		Terminal.print('Type "commands multiplayer" for multiplayer-related commands');
 	} else if (subject == 'commands') {
-		Terminal.print('Gameplay commands:');
-		Terminal.print('yes / no: Answers a question asked by the game.');
-		Terminal.print('go: Allows you to move into a direction. Example: "go west". Can also be shortened by the first letter of the direction. Example: "n" to go north.');
-		Terminal.print('look: Gives a description of the room.');
-		Terminal.print('take: Adds an item to your inventory. Example: "take crayons".');
-		Terminal.print('drop: Drops an item. Example: "drop screwdriver".');
-		Terminal.print('inventory: Lists items in inventory.');
-		Terminal.print('use: Interacts with an object. Example: "use note".');
+		if (type == 'all' | type == 'gameplay') {
+			Terminal.print('Gameplay commands:');
+			Terminal.print('yes / no: Answers a question asked by the game.');
+			Terminal.print('go: Moves into a direction. Example: "go west". Can also be shortened by the first letter of the direction. Example: "n" to go north.');
+			Terminal.print('look: Gives a description of the room.');
+			Terminal.print('take: Adds an item to your inventory. Example: "take crayons".');
+			Terminal.print('drop: Drops an item. Example: "drop screwdriver".');
+			Terminal.print('inventory: Lists items in inventory.');
+			Terminal.print('use: Interacts with an object. Example: "use note".');
+		if (type == 'all' | type == 'multiplayer') {
+			Terminal.print('Multiplayer commands:');
+			Terminal.print('say: Post a chat message. Example: "say Hi everyone!".');
+			Terminal.print('p: Send a private message to the player. Example: "p TLP Fix the bugs already, geez".');
+			Terminal.print('register: Register an account. Example: "register user password".');
+			Terminal.print('login: Log into an existing account. Example: "login user password".');
+			Terminal.print('name: Choose or change your nickname. Example: "name NewPlayer".');
+		} else {
+			Terminal.print('Please choose a subject:');
+			Terminal.print($('<p>').html('<a href=javascript:clicked(\'commands all\');">all</a>'));
+			Terminal.print($('<p>').html('<a href=javascript:clicked(\'commands gameplay\');">gameplay</a>'));
+			Terminal.print($('<p>').html('<a href=javascript:clicked(\'commands multiplayer\');">multiplayer</a>'));
+		};
+	} else {
+		Terminal.print('Please select a subject');
+		Terminal.runComman('help'); // Cheap way to print all subject info again
 	};
 };
