@@ -443,12 +443,12 @@ TerminalShell.commands['help'] = function(terminal, subject, type) {
 		Terminal.print($('<p>').html('<a href=javascript:clicked(\'help gameplay\');">gameplay</a>'));
 		Terminal.print($('<p>').html('<a href=javascript:clicked(\'multiplayer\');">multiplayer</a>'));
 		Terminal.print($('<p>').html('<a href=javascript:clicked(\'commands\');">commands</a>'));
-		Terminal.print('To select a subject, either click it or type "help" followed by the subject you want more information of');
+		Terminal.print('To select a subject, either click it or type "help" followed by the subject you want more information of.');
 	} else if (subject == 'basic') {
 		Terminal.print('Textmode is a reimagination of the text adventure game genre, which focuses on shorter games which are randomly generated and can be played online.');
 		Terminal.print('The idea behind this is to make the text adventure genre more accessible to those who have no or little experience, and redefining the genre for those who do.');
-		Terminal.print('To play textmode, just choose a way of playing and a gamemode. If you need more help, feel free to use the help menu.');
-		Terminal.print('Textmode is written by Ruben van Os');
+		Terminal.print('To play Textmode, just choose a way of playing and a gamemode. If you need more help, feel free to use the help menu.');
+		Terminal.print('Textmode is written by Ruben van Os.');
 	} else if (subject == 'gameplay') {
 		Terminal.print('Each gamemode has their own gameplay. To find out how it is played, just look at the information a gamemode gives you when the game starts.');
 		Terminal.print('However, there are obviously things which are the same in all cases.');
@@ -470,7 +470,7 @@ TerminalShell.commands['help'] = function(terminal, subject, type) {
 			Terminal.print('drop: Drops an item. Example: "drop screwdriver".');
 			Terminal.print('inventory: Lists items in inventory.');
 			Terminal.print('use: Interacts with an object. Example: "use note".');
-		if (type == 'all' | type == 'multiplayer') {
+		} else if (type == 'all' | type == 'multiplayer') {
 			Terminal.print('Multiplayer commands:');
 			Terminal.print('say: Post a chat message. Example: "say Hi everyone!".');
 			Terminal.print('p: Send a private message to the player. Example: "p TLP Fix the bugs already, geez".');
@@ -484,7 +484,7 @@ TerminalShell.commands['help'] = function(terminal, subject, type) {
 			Terminal.print($('<p>').html('<a href=javascript:clicked(\'commands multiplayer\');">multiplayer</a>'));
 		};
 	} else {
-		Terminal.print('Please select a subject');
-		Terminal.runComman('help'); // Cheap way to print all subject info again
+		Terminal.print('Could not find subject '+subject+'.');
+		Terminal.runCommand('help'); // Cheap way to print all subject info again
 	};
 };
